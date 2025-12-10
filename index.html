@@ -1,0 +1,1872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epic EMR Trainer Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --epic-purple: #4B286D;
+            --epic-light-purple: #7B52AB;
+            --epic-lighter-purple: #E6E6FA;
+            --epic-gray: #F5F5F5;
+            --text-dark: #333;
+            --text-light: #FFF;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+            --premium-gold: #FFD700;
+            --premium-dark: #D4AF37;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        
+        body {
+            background-color: var(--epic-gray);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--epic-purple), var(--epic-light-purple));
+            color: var(--text-light);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 1.8rem;
+        }
+        
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .premium-badge {
+            background: linear-gradient(135deg, var(--premium-gold), var(--premium-dark));
+            color: #333;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* Navigation */
+        nav {
+            background-color: var(--epic-light-purple);
+            padding: 0.5rem;
+            position: sticky;
+            top: 68px;
+            z-index: 99;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            list-style: none;
+            max-width: 1400px;
+            margin: 0 auto;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .nav-tabs li {
+            margin-right: 1.5rem;
+        }
+        
+        .nav-tabs a {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            display: block;
+            white-space: nowrap;
+            border-radius: 20px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-tabs a.active, .nav-tabs a:hover {
+            background-color: var(--epic-purple);
+        }
+        
+        /* Main Content */
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Dashboard Styles */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-card i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--epic-light-purple);
+        }
+        
+        .stat-card h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--epic-purple);
+        }
+        
+        /* Search Section */
+        .search-container {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 1px solid #ddd;
+            border-radius: 50px;
+            font-size: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+        
+        /* Hospital Cards */
+        .hospital-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .hospital-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            position: relative;
+        }
+        
+        .hospital-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .hospital-card h3 {
+            color: var(--epic-purple);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .hospital-card h3 i {
+            margin-right: 10px;
+        }
+        
+        .hospital-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .module-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .module-tag {
+            background-color: var(--epic-lighter-purple);
+            color: var(--epic-purple);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        /* Premium Lock */
+        .premium-lock {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            color: var(--premium-gold);
+            font-size: 1.2rem;
+        }
+        
+        /* FAQ Section */
+        .faq-item {
+            margin-bottom: 1rem;
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .faq-question {
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+        }
+        
+        .faq-answer {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            display: none;
+            border-top: 1px solid #eee;
+        }
+        
+        .faq-answer.active {
+            display: block;
+        }
+        
+        /* Resource Cards */
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .resource-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            position: relative;
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .resource-card h3 {
+            color: var(--epic-purple);
+            margin-bottom: 1rem;
+        }
+        
+        .resource-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--epic-purple);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--epic-light-purple);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--epic-purple);
+            color: var(--epic-purple);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--epic-lighter-purple);
+        }
+        
+        .btn-premium {
+            background: linear-gradient(135deg, var(--premium-gold), var(--premium-dark));
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .btn-premium:hover {
+            opacity: 0.9;
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        /* File Upload */
+        .file-upload {
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .file-upload:hover {
+            border-color: var(--epic-purple);
+        }
+        
+        .file-upload i {
+            font-size: 3rem;
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+        
+        .file-upload:hover i {
+            color: var(--epic-purple);
+        }
+        
+        /* Profile */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: var(--epic-light-purple);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            margin-right: 1.5rem;
+        }
+        
+        .profile-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 2rem;
+        }
+        
+        .profile-tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .profile-tab.active {
+            border-bottom-color: var(--epic-purple);
+            color: var(--epic-purple);
+            font-weight: bold;
+        }
+        
+        .saved-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .saved-item-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .saved-item-actions {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+        
+        .saved-item-notes {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Premium Upgrade Section */
+        .premium-upgrade {
+            background: linear-gradient(135deg, #f6f0c4, #d4d3dd);
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+            border: 2px solid var(--premium-gold);
+        }
+        
+        .premium-upgrade h2 {
+            color: #333;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .premium-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+        
+        .premium-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .premium-feature i {
+            color: var(--premium-dark);
+        }
+        
+        .pricing-plans {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .pricing-plan {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pricing-plan.popular {
+            border: 2px solid var(--premium-gold);
+            transform: scale(1.05);
+        }
+        
+        .popular-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--premium-gold);
+            color: #333;
+            padding: 0.5rem 1rem;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        .plan-price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            color: var(--epic-purple);
+        }
+        
+        .plan-features {
+            list-style: none;
+            margin: 1.5rem 0;
+        }
+        
+        .plan-features li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--epic-purple);
+            color: var(--text-light);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Hospital Contact */
+        .hospital-contact {
+            margin: 1rem 0;
+            padding: 0.5rem;
+            background-color: var(--epic-lighter-purple);
+            border-radius: 5px;
+        }
+        
+        /* FAQ Meta */
+        .faq-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .faq-category {
+            background-color: var(--epic-lighter-purple);
+            color: var(--epic-purple);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+        }
+        
+        /* Notifications */
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--epic-purple);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+            animation: fadeIn 0.3s, fadeOut 0.3s 2.7s forwards;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hospital-grid, .resource-grid, .saved-items-grid, .pricing-plans {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .logo {
+                margin-bottom: 1rem;
+            }
+            
+            .stats-grid, .premium-features {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-avatar {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+            
+            .pricing-plan.popular {
+                transform: none;
+            }
+        }
+        
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 30px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--epic-purple);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+        
+        /* Notification Preferences */
+        .preference-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-hospital-user"></i>
+                <span>Epic EMR Trainer Assistant</span>
+            </div>
+            <div class="user-actions">
+                <div class="premium-badge" id="premium-status">
+                    <i class="fas fa-crown"></i>
+                    <span>Free Plan</span>
+                </div>
+                <button id="login-btn" class="btn btn-primary"><i class="fas fa-user"></i> Trainer Login</button>
+            </div>
+        </div>
+    </header>
+    
+    <nav>
+        <ul class="nav-tabs">
+            <li><a href="#dashboard" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="#hospitals" class="nav-link"><i class="fas fa-hospital"></i> Hospital Systems</a></li>
+            <li><a href="#playground" class="nav-link"><i class="fas fa-gamepad"></i> Playground Navigation</a></li>
+            <li><a href="#resources" class="nav-link"><i class="fas fa-book"></i> Resources</a></li>
+            <li><a href="#faq" class="nav-link"><i class="fas fa-question-circle"></i> FAQ</a></li>
+            <li><a href="#profile" class="nav-link"><i class="fas fa-user"></i> My Profile</a></li>
+            <li><a href="#premium" class="nav-link"><i class="fas fa-crown"></i> Premium</a></li>
+        </ul>
+    </nav>
+    
+    <main>
+        <!-- Dashboard Tab -->
+        <section id="dashboard" class="tab-content active">
+            <h2>Welcome, Epic Trainer</h2>
+            <p class="subtitle">Your central hub for Epic EMR training resources</p>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-box" placeholder="Search across all hospitals, resources, and FAQs...">
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fas fa-hospital"></i>
+                    <h3>24</h3>
+                    <p>Hospital Systems</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>156</h3>
+                    <p>Training Resources</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-question-circle"></i>
+                    <h3>89</h3>
+                    <p>Answered FAQs</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-sync-alt"></i>
+                    <h3>6</h3>
+                    <p>System Updates This Month</p>
+                </div>
+            </div>
+            
+            <h3>Recently Added Hospitals</h3>
+            <div class="hospital-grid" id="dashboard-hospitals">
+                <!-- Hospitals will be dynamically rendered here -->
+            </div>
+            
+            <h3>Recent Resources</h3>
+            <div class="resource-grid">
+                <div class="resource-card">
+                    <div class="premium-lock" title="Premium feature">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>Epic 2023 Upgrade Guide</h3>
+                    <div class="resource-meta">
+                        <span>PDF Document</span>
+                        <span>2.4 MB</span>
+                    </div>
+                    <p>Complete guide to new features and changes in Epic 2023 version.</p>
+                    <button class="btn btn-primary"><i class="fas fa-download"></i> Download</button>
+                    <button class="btn btn-outline save-btn" data-id="doc-001" data-type="resource" data-premium="true"><i class="fas fa-bookmark"></i> Save</button>
+                </div>
+                
+                <div class="resource-card">
+                    <div class="premium-lock" title="Premium feature">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>Playground Navigation Video</h3>
+                    <div class="resource-meta">
+                        <span>Video Tutorial</span>
+                        <span>15:32 min</span>
+                    </div>
+                    <p>Step-by-step guide to setting up and using the Epic playground environment.</p>
+                    <button class="btn btn-primary"><i class="fas fa-play-circle"></i> Watch</button>
+                    <button class="btn btn-outline save-btn" data-id="doc-002" data-type="resource" data-premium="true"><i class="fas fa-bookmark"></i> Save</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Hospitals Tab -->
+        <section id="hospitals" class="tab-content">
+            <h2>Hospital Systems</h2>
+            <p>Comprehensive database of hospital Epic implementations</p>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-box" placeholder="Search hospital systems...">
+            </div>
+            
+            <div class="hospital-grid" id="hospital-list">
+                <!-- Hospitals will be dynamically rendered here -->
+            </div>
+        </section>
+        
+        <!-- Playground Navigation Tab -->
+        <section id="playground" class="tab-content">
+            <h2>Epic Playground Navigation</h2>
+            <p>Guidance for using the Epic training environments</p>
+            
+            <div class="faq-container">
+                <!-- FAQs will be dynamically rendered here -->
+            </div>
+        </section>
+        
+        <!-- Resources Tab -->
+        <section id="resources" class="tab-content">
+            <h2>Epic Resources</h2>
+            <p>Training materials, guides, and documentation</p>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-box" placeholder="Search resources...">
+            </div>
+            
+            <button class="btn btn-primary" id="upload-resource-btn"><i class="fas fa-upload"></i> Upload New Resource</button>
+            
+            <div class="resource-grid">
+                <div class="resource-card">
+                    <div class="premium-lock" title="Premium feature">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>Epic Fundamentals Training Guide</h3>
+                    <div class="resource-meta">
+                        <span>PDF Document</span>
+                        <span>5.2 MB</span>
+                    </div>
+                    <p>Complete guide to Epic fundamentals for new trainers.</p>
+                    <button class="btn btn-primary"><i class="fas fa-download"></i> Download</button>
+                    <button class="btn btn-outline save-btn" data-id="res-001" data-type="resource" data-premium="true"><i class="fas fa-bookmark"></i> Save</button>
+                </div>
+                
+                <div class="resource-card">
+                    <div class="premium-lock" title="Premium feature">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>MyChart Patient Portal Tutorial</h3>
+                    <div class="resource-meta">
+                        <span>Video</span>
+                        <span>22:15 min</span>
+                    </div>
+                    <p>Detailed walkthrough of MyChart features and patient communication tools.</p>
+                    <button class="btn btn-primary"><i class="fas fa-play-circle"></i> Watch</button>
+                    <button class="btn btn-outline save-btn" data-id="res-002" data-type="resource" data-premium="true"><i class="fas fa-bookmark"></i> Save</button>
+                </div>
+                
+                <div class="resource-card">
+                    <div class="premium-lock" title="Premium feature">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>Clinical Documentation Templates</h3>
+                    <div class="resource-meta">
+                        <span>ZIP File</span>
+                        <span>3.7 MB</span>
+                    </div>
+                    <p>Collection of customizable clinical documentation templates.</p>
+                    <button class="btn btn-primary"><i class="fas fa-download"></i> Download</button>
+                    <button class="btn btn-outline save-btn" data-id="res-003" data-type="resource" data-premium="true"><i class="fas fa-bookmark"></i> Save</button>
+                </div>
+                
+                <div class="resource-card">
+                    <div class="premium-lock" title="Premium feature">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>Reporting Workbench Guide</h3>
+                    <div class="resource-meta">
+                        <span>PDF Document</span>
+                        <span>4.1 MB</span>
+                    </div>
+                    <p>Creating and customizing reports in Epic.</p>
+                    <button class="btn btn-primary"><i class="fas fa-download"></i> Download</button>
+                    <button class="btn btn-outline save-btn" data-id="res-004" data-type="resource" data-premium="true"><i class="fas fa-bookmark"></i> Save</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- FAQ Tab -->
+        <section id="faq" class="tab-content">
+            <h2>Frequently Asked Questions</h2>
+            <p>Find answers to common Epic navigation questions</p>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-box" placeholder="Search FAQs...">
+            </div>
+            
+            <div class="faq-container" id="faq-list">
+                <!-- FAQs will be dynamically rendered here -->
+            </div>
+        </section>
+        
+        <!-- Profile Tab -->
+        <section id="profile" class="tab-content">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div>
+                    <h2>John Smith</h2>
+                    <p>Epic Certified Trainer</p>
+                    <p>Mercy General Hospital</p>
+                    <div class="premium-badge">
+                        <i class="fas fa-crown"></i>
+                        <span>Free Plan</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="premium-upgrade">
+                <h2><i class="fas fa-crown"></i> Upgrade to Premium</h2>
+                <p>Unlock the ability to save hospitals, resources, and FAQs to your personal profile</p>
+                <button class="btn btn-premium pulse" id="upgrade-btn"><i class="fas fa-star"></i> Upgrade Now</button>
+                
+                <div class="premium-features">
+                    <div class="premium-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Save hospitals to your profile</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Save resources and documentation</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Save FAQ answers for quick reference</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Add personal notes to saved items</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Access your saved content from any device</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Organize content with custom categories</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="profile-tabs">
+                <div class="profile-tab active" data-tab="saved">Saved Content</div>
+                <div class="profile-tab" data-tab="uploads">My Uploads</div>
+                <div class="profile-tab" data-tab="questions">My Questions</div>
+                <div class="profile-tab" data-tab="settings">Settings</div>
+            </div>
+            
+            <div class="profile-content">
+                <div class="profile-tab-content active" id="saved-tab">
+                    <div class="premium-upgrade">
+                        <h2><i class="fas fa-lock"></i> Premium Feature</h2>
+                        <p>Upgrade to Premium to save hospitals, resources, and FAQs to your personal profile</p>
+                        <button class="btn btn-premium" id="upgrade-btn-2"><i class="fas fa-crown"></i> Upgrade to Premium</button>
+                    </div>
+                </div>
+                
+                <div class="profile-tab-content" id="uploads-tab">
+                    <h3>My Uploaded Resources</h3>
+                    <p>You haven't uploaded any resources yet.</p>
+                    <button class="btn btn-primary" id="upload-from-profile-btn"><i class="fas fa-upload"></i> Upload Your First Resource</button>
+                </div>
+                
+                <div class="profile-tab-content" id="questions-tab">
+                    <h3>My Questions</h3>
+                    <p>You haven't asked any questions yet.</p>
+                </div>
+                
+                <div class="profile-tab-content" id="settings-tab">
+                    <h3>Account Settings</h3>
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" class="form-control" id="name" value="John Smith">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" class="form-control" id="email" value="john.smith@mercygeneral.org">
+                    </div>
+                    <div class="form-group">
+                        <label for="hospital">Primary Hospital</label>
+                        <select class="form-control" id="hospital">
+                            <option value="mercy">Mercy General Hospital</option>
+                            <option value="mayo">Mayo Clinic</option>
+                            <option value="hopkins">Johns Hopkins Hospital</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="certification">Epic Certification</label>
+                        <input type="text" class="form-control" id="certification" value="Epic Physician Trainer Certified">
+                    </div>
+                    <button class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Premium Tab -->
+        <section id="premium" class="tab-content">
+            <h2><i class="fas fa-crown"></i> Epic Trainer Premium</h2>
+            <p class="subtitle">Upgrade your experience with powerful profile features</p>
+            
+            <div class="premium-upgrade">
+                <h2>Unlock Premium Features</h2>
+                <p>Get access to personalized profile features designed for Epic trainers</p>
+                
+                <div class="premium-features">
+                    <div class="premium-feature">
+                        <i class="fas fa-bookmark"></i>
+                        <span>Save hospitals, resources, and FAQs to your profile</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-sticky-note"></i>
+                        <span>Add personal notes to saved content</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-folder"></i>
+                        <span>Organize content with custom categories</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>Access your profile from any device</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-search"></i>
+                        <span>Save search history and preferences</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-cloud-download-alt"></i>
+                        <span>Download resources for offline access</span>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>Choose Your Plan</h3>
+            <div class="pricing-plans">
+                <div class="pricing-plan">
+                    <h4>Free</h4>
+                    <div class="plan-price">$0<span>/month</span></div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Access to all hospitals</li>
+                        <li><i class="fas fa-check"></i> Browse resources</li>
+                        <li><i class="fas fa-check"></i> Read FAQs</li>
+                        <li><i class="fas fa-times"></i> <span class="text-muted">Save to profile</span></li>
+                        <li><i class="fas fa-times"></i> <span class="text-muted">Personal notes</span></li>
+                        <li><i class="fas fa-times"></i> <span class="text-muted">Offline access</span></li>
+                    </ul>
+                    <button class="btn btn-outline" disabled>Current Plan</button>
+                </div>
+                
+                <div class="pricing-plan popular">
+                    <div class="popular-badge">MOST POPULAR</div>
+                    <h4>Premium Monthly</h4>
+                    <div class="plan-price">$9.99<span>/month</span></div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Everything in Free</li>
+                        <li><i class="fas fa-check"></i> Save unlimited items</li>
+                        <li><i class="fas fa-check"></i> Add personal notes</li>
+                        <li><i class="fas fa-check"></i> Organize with categories</li>
+                        <li><i class="fas fa-check"></i> Search history</li>
+                        <li><i class="fas fa-check"></i> Offline access</li>
+                    </ul>
+                    <button class="btn btn-premium"><i class="fas fa-crown"></i> Upgrade Now</button>
+                </div>
+                
+                <div class="pricing-plan">
+                    <h4>Premium Annual</h4>
+                    <div class="plan-price">$99.99<span>/year</span></div>
+                    <div class="small">Save $20 compared to monthly</div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Everything in Free</li>
+                        <li><i class="fas fa-check"></i> Save unlimited items</li>
+                        <li><i class="fas fa-check"></i> Add personal notes</li>
+                        <li><i class="fas fa-check"></i> Organize with categories</li>
+                        <li><i class="fas fa-check"></i> Search history</li>
+                        <li><i class="fas fa-check"></i> Offline access</li>
+                    </ul>
+                    <button class="btn btn-premium"><i class="fas fa-crown"></i> Upgrade Now</button>
+                </div>
+            </div>
+            
+            <div class="premium-upgrade">
+                <h2>Frequently Asked Questions</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question">What payment methods do you accept? <span>+</span></div>
+                    <div class="faq-answer">
+                        <p>We accept all major credit cards, PayPal, and Apple Pay for your convenience.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Can I cancel my subscription anytime? <span>+</span></div>
+                    <div class="faq-answer">
+                        <p>Yes, you can cancel your subscription at any time. Your premium features will remain active until the end of your billing period.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Will I lose my saved data if I cancel? <span>+</span></div>
+                    <div class="faq-answer">
+                        <p>Your saved data will be preserved for 6 months after cancellation. If you resubscribe within that time, you'll regain access to all your saved content.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Is there a free trial? <span>+</span></div>
+                    <div class="faq-answer">
+                        <p>Yes, we offer a 7-day free trial for new premium subscribers. No credit card required to start the trial.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Upload Resource Modal -->
+    <div class="modal-overlay" id="upload-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Upload Epic Documentation</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            
+            <div class="file-upload" id="file-upload-area">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Click to select a file or drag and drop here</p>
+                <p class="small">Maximum file size: 50MB</p>
+                <input type="file" id="file-input" style="display: none;">
+            </div>
+            
+            <div id="file-info" style="display: none;">
+                <h4>Selected file: <span id="file-name"></span></h4>
+                <p>Size: <span id="file-size"></span></p>
+            </div>
+            
+            <div class="form-group">
+                <label for="doc-title">Document Title</label>
+                <input type="text" class="form-control" id="doc-title" placeholder="Enter a descriptive title">
+            </div>
+            
+            <div class="form-group">
+                <label for="doc-description">Description</label>
+                <textarea class="form-control" id="doc-description" placeholder="Describe what this document contains"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="doc-category">Category</label>
+                <select class="form-control" id="doc-category">
+                    <option value="">Select a category</option>
+                    <option value="user-guide">User Guide</option>
+                    <option value="training-manual">Training Manual</option>
+                    <option value="release-notes">Release Notes</option>
+                    <option value="cheat-sheet">Cheat Sheet</option>
+                    <option value="presentation">Presentation</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="doc-tags">Tags (comma separated)</label>
+                <input type="text" class="form-control" id="doc-tags" placeholder="e.g., billing, clinical, reports">
+            </div>
+            
+            <div class="form-group">
+                <label for="doc-hospital">Related Hospital (optional)</label>
+                <select class="form-control" id="doc-hospital">
+                    <option value="">Select a hospital</option>
+                    <option value="mercy">Mercy General Hospital</option>
+                    <option value="mayo">Mayo Clinic</option>
+                    <option value="hopkins">Johns Hopkins Hospital</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="checkbox">
+                    <input type="checkbox" id="doc-public"> Make this document public for all users
+                </label>
+            </div>
+            
+            <button class="btn btn-primary" id="start-upload-btn" disabled><i class="fas fa-upload"></i> Upload Document</button>
+        </div>
+    </div>
+    
+    <!-- Upgrade Modal -->
+    <div class="modal-overlay" id="upgrade-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-crown"></i> Upgrade to Premium</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            
+            <div class="premium-upgrade">
+                <h3>Start Your 7-Day Free Trial</h3>
+                <p>Get immediate access to all premium features</p>
+                
+                <div class="plan-price">$9.99<span>/month after trial</span></div>
+                
+                <div class="premium-features">
+                    <div class="premium-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Save hospitals to your profile</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Save resources and documentation</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Save FAQ answers for quick reference</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Add personal notes to saved items</span>
+                    </div>
+                </div>
+                
+                <button class="btn btn-premium" id="start-trial-btn"><i class="fas fa-play-circle"></i> Start Free Trial</button>
+                <p class="small">No credit card required. Cancel anytime.</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Epic EMR Trainer Assistant | For training purposes only</p>
+        <p>This application is not affiliated with Epic Systems Corporation</p>
+        <p>© 2023 Epic EMR Trainer Assistant. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // User state
+        const userState = {
+            isPremium: false,
+            savedItems: []
+        };
+
+        // Sample data
+        const hospitals = [
+            { 
+                id: 1, 
+                name: "Mayo Clinic", 
+                version: "Epic 2022", 
+                modules: ["Radiant", "Beaker", "OpTime", "Research", "Cadence", "Prelude"], 
+                notes: "Uses special billing modules and research functionality. Strong focus on oncology and cardiology.",
+                lastUpdated: "2023-10-15",
+                contact: {
+                    name: "Dr. Sarah Johnson",
+                    email: "sjohnson@mayoclinic.org",
+                    phone: "(555) 123-4567"
+                }
+            },
+            { 
+                id: 2, 
+                name: "Johns Hopkins Hospital", 
+                version: "Epic 2023", 
+                modules: ["Care Everywhere", "MyChart", "Healthy Planet", "Research", "Cupid"], 
+                notes: "Research-focused customization with specialized modules. Early adopter of new Epic features.",
+                lastUpdated: "2023-11-05",
+                contact: {
+                    name: "Michael Chen",
+                    email: "mchen@jh.edu",
+                    phone: "(555) 234-5678"
+                }
+            },
+            { 
+                id: 3, 
+                name: "Massachusetts General Hospital", 
+                version: "Epic 2022", 
+                modules: ["Cadence", "Prelude", "Grand Central", "Beaker", "Radiant"], 
+                notes: "Integrated with Partners healthcare system. Strong emphasis on patient portal implementation.",
+                lastUpdated: "2023-09-22",
+                contact: {
+                    name: "Emily Rodriguez",
+                    email: "erodriguez@mgh.harvard.edu",
+                    phone: "(555) 345-6789"
+                }
+            },
+            { 
+                id: 4, 
+                name: "Cleveland Clinic", 
+                version: "Epic 2023", 
+                modules: ["Hyperspace", "Cupid", "Bones", "MyChart", "Healthy Planet"], 
+                notes: "Cardiology specialty focus with custom modules. Strong telemedicine integration.",
+                lastUpdated: "2023-11-12",
+                contact: {
+                    name: "Robert Williams",
+                    email: "rwilliams@clevelandclinic.org",
+                    phone: "(555) 456-7890"
+                }
+            },
+            { 
+                id: 5, 
+                name: "UCSF Medical Center", 
+                version: "Epic 2022", 
+                modules: ["Beaker", "Willow", "Phoenix", "Radiant", "Care Everywhere"], 
+                notes: "Academic medical center configuration with research emphasis. Strong pediatric specialization.",
+                lastUpdated: "2023-08-30",
+                contact: {
+                    name: "Jennifer Lee",
+                    email: "jlee@ucsf.edu",
+                    phone: "(555) 567-8901"
+                }
+            },
+            { 
+                id: 6, 
+                name: "NewYork-Presbyterian Hospital", 
+                version: "Epic 2023", 
+                modules: ["Healthy Planet", "MyChart", "Care Companion", "Cadence", "Prelude"], 
+                notes: "Large multi-campus system with unified Epic implementation. Strong population health focus.",
+                lastUpdated: "2023-10-28",
+                contact: {
+                    name: "David Kim",
+                    email: "dkim@nyp.org",
+                    phone: "(555) 678-9012"
+                }
+            }
+        ];
+
+        const faqs = [
+            { 
+                id: 1,
+                question: "How do I access the Epic Playground?", 
+                answer: "Access to the Epic Playground varies by organization. Typically, you need to connect through your organization's VPN and use a specific URL provided by your Epic team. Some organizations require additional authentication steps or special permissions granted by your Epic coordinator.",
+                category: "Access",
+                helpfulCount: 24
+            },
+            { 
+                id: 2,
+                question: "What's the difference between Hyperspace and Hyperdrive?", 
+                answer: "Hyperspace is the traditional Epic interface, while Hyperdrive is the newer, web-based version that offers improved performance and customization options. Hyperdrive allows for faster navigation, better mobile compatibility, and more personalized workspace configurations. Most organizations are transitioning to Hyperdrive, but some modules may still require Hyperspace.",
+                category: "Navigation",
+                helpfulCount: 31
+            },
+            { 
+                id: 3,
+                question: "How often does Epic release updates?", 
+                answer: "Epic typically releases major updates once a year, with smaller updates and patches throughout the year. Organizations can choose when to implement these updates, but most follow a regular schedule. Major updates usually occur in the spring or fall, with preview environments available 3-4 months before the production upgrade.",
+                category: "Updates",
+                helpfulCount: 18
+            },
+            { 
+                id: 4,
+                question: "How can I customize training for different specialties?", 
+                answer: "Epic allows trainers to create specialized training profiles, build custom training environments, and use the Training Wheels feature to guide users through workflows. You can create specialty-specific patient scenarios, develop custom learning paths, and utilize the role-based access configurations to simulate real clinical environments for each specialty.",
+                category: "Training",
+                helpfulCount: 29
+            },
+            { 
+                id: 5,
+                question: "How do I get access to Epic UserWeb?", 
+                answer: "Access to Epic UserWeb is typically provided by your organization's Epic coordinator. You'll need to complete required training and request access through proper channels. Most organizations have a process for requesting UserWeb access that may include completing security training, signing access agreements, and having a legitimate business need for the resource.",
+                category: "Access",
+                helpfulCount: 15
+            },
+            { 
+                id: 6,
+                question: "What's the best way to train physicians on Epic?", 
+                answer: "Physician training works best when it's specialty-specific, concise, and focused on workflow efficiency. Use real clinical scenarios, emphasize time-saving features like SmartTools and SmartPhrases, and provide just-in-time training resources. Many organizations find success with a combination of classroom training, one-on-one coaching, and specialty-specific tip sheets.",
+                category: "Training",
+                helpfulCount: 42
+            }
+        ];
+
+        // DOM Elements
+        const navLinks = document.querySelectorAll('.nav-link');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const uploadModal = document.getElementById('upload-modal');
+        const upgradeModal = document.getElementById('upgrade-modal');
+        const uploadResourceBtn = document.getElementById('upload-resource-btn');
+        const uploadFromProfileBtn = document.getElementById('upload-from-profile-btn');
+        const modalCloseBtns = document.querySelectorAll('.modal-close');
+        const fileUploadArea = document.getElementById('file-upload-area');
+        const fileInput = document.getElementById('file-input');
+        const fileInfo = document.getElementById('file-info');
+        const fileName = document.getElementById('file-name');
+        const fileSize = document.getElementById('file-size');
+        const startUploadBtn = document.getElementById('start-upload-btn');
+        const profileTabs = document.querySelectorAll('.profile-tab');
+        const profileTabContents = document.querySelectorAll('.profile-tab-content');
+        const upgradeButtons = document.querySelectorAll('#upgrade-btn, #upgrade-btn-2');
+        const startTrialBtn = document.getElementById('start-trial-btn');
+        const premiumStatus = document.getElementById('premium-status');
+
+        // Initialize the application
+        function initApp() {
+            // Set up navigation
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href').substring(1);
+                    
+                    // Update active tab
+                    navLinks.forEach(navLink => navLink.classList.remove('active'));
+                    link.classList.add('active');
+                    
+                    // Show target content
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(targetId).classList.add('active');
+                });
+            });
+
+            // Render dynamic content
+            renderHospitals();
+            renderFAQs();
+            
+            // Set up search functionality
+            initSearchFunctionality();
+            
+            // Set up upload modal
+            uploadResourceBtn.addEventListener('click', () => {
+                uploadModal.classList.add('active');
+            });
+            
+            uploadFromProfileBtn.addEventListener('click', () => {
+                uploadModal.classList.add('active');
+            });
+            
+            modalCloseBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    uploadModal.classList.remove('active');
+                    upgradeModal.classList.remove('active');
+                });
+            });
+            
+            // File upload handling
+            fileUploadArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    const file = e.target.files[0];
+                    fileName.textContent = file.name;
+                    fileSize.textContent = formatFileSize(file.size);
+                    fileInfo.style.display = 'block';
+                    
+                    // Enable upload button if title is filled
+                    if (document.getElementById('doc-title').value.trim() !== '') {
+                        startUploadBtn.disabled = false;
+                    }
+                }
+            });
+            
+            // Enable upload button when title is entered
+            document.getElementById('doc-title').addEventListener('input', (e) => {
+                if (e.target.value.trim() !== '' && fileInput.files.length > 0) {
+                    startUploadBtn.disabled = false;
+                } else {
+                    startUploadBtn.disabled = true;
+                }
+            });
+            
+            // Start upload process
+            startUploadBtn.addEventListener('click', () => {
+                startUploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+                startUploadBtn.disabled = true;
+                
+                // Simulate upload process
+                setTimeout(() => {
+                    showNotification('Document uploaded successfully!');
+                    uploadModal.classList.remove('active');
+                    startUploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Document';
+                    startUploadBtn.disabled = false;
+                    
+                    // Reset form
+                    document.getElementById('doc-title').value = '';
+                    document.getElementById('doc-description').value = '';
+                    document.getElementById('doc-category').value = '';
+                    document.getElementById('doc-tags').value = '';
+                    document.getElementById('doc-hospital').value = '';
+                    document.getElementById('doc-public').checked = false;
+                    fileInfo.style.display = 'none';
+                    fileInput.value = '';
+                }, 2000);
+            });
+            
+            // Profile tabs
+            profileTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Update active tab
+                    profileTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Show target content
+                    profileTabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // Upgrade buttons
+            upgradeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    upgradeModal.classList.add('active');
+                });
+            });
+            
+            // Start trial button
+            startTrialBtn.addEventListener('click', () => {
+                startTrialBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                
+                // Simulate upgrade process
+                setTimeout(() => {
+                    userState.isPremium = true;
+                    premiumStatus.innerHTML = '<i class="fas fa-crown"></i> Premium Member';
+                    showNotification('Welcome to Premium! You now have access to all profile features.');
+                    upgradeModal.classList.remove('active');
+                    startTrialBtn.innerHTML = '<i class="fas fa-play-circle"></i> Start Free Trial';
+                    
+                    // Update profile page
+                    document.querySelector('.profile-header .premium-badge').innerHTML = '<i class="fas fa-crown"></i> Premium Member';
+                }, 1500);
+            });
+            
+            // Check for system status (simulated)
+            checkSystemStatus();
+        }
+
+        // Render hospitals
+        function renderHospitals() {
+            const hospitalList = document.getElementById('hospital-list');
+            const dashboardHospitals = document.getElementById('dashboard-hospitals');
+            
+            if (hospitalList) {
+                hospitalList.innerHTML = '';
+                hospitals.forEach(hospital => {
+                    hospitalList.appendChild(createHospitalCard(hospital));
+                });
+            }
+            
+            if (dashboardHospitals) {
+                dashboardHospitals.innerHTML = '';
+                // Show only 2 hospitals on dashboard
+                hospitals.slice(0, 2).forEach(hospital => {
+                    dashboardHospitals.appendChild(createHospitalCard(hospital));
+                });
+            }
+            
+            // Reattach event listeners to save buttons
+            document.querySelectorAll('.save-btn').forEach(button => {
+                button.addEventListener('click', handleSaveItem);
+            });
+        }
+
+        // Create hospital card
+        function createHospitalCard(hospital) {
+            const card = document.createElement('div');
+            card.className = 'hospital-card';
+            card.innerHTML = `
+                <div class="premium-lock" title="Premium feature">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3><i class="fas fa-hospital"></i> ${hospital.name}</h3>
+                <div class="hospital-meta">
+                    <span>${hospital.version}</span>
+                    <span>Last updated: ${hospital.lastUpdated}</span>
+                </div>
+                <p>${hospital.notes}</p>
+                <div class="module-list">
+                    ${hospital.modules.map(module => `<span class="module-tag">${module}</span>`).join('')}
+                </div>
+                <div class="hospital-contact">
+                    <p><strong>Contact:</strong> ${hospital.contact.name} | ${hospital.contact.email}</p>
+                </div>
+                <button class="btn btn-primary">View Details</button>
+                <button class="btn btn-outline save-btn" data-id="hosp-${hospital.id}" data-type="hospital" data-premium="true">
+                    <i class="fas fa-bookmark"></i> Save
+                </button>
+            `;
+            return card;
+        }
+
+        // Render FAQs
+        function renderFAQs() {
+            const faqContainer = document.querySelector('.faq-container');
+            const faqList = document.getElementById('faq-list');
+            
+            if (faqContainer) {
+                faqContainer.innerHTML = '';
+                faqs.forEach(faq => {
+                    faqContainer.appendChild(createFAQItem(faq));
+                });
+            }
+            
+            if (faqList) {
+                faqList.innerHTML = '';
+                faqs.forEach(faq => {
+                    faqList.appendChild(createFAQItem(faq));
+                });
+            }
+            
+            // Reattach event listeners to FAQ questions
+            document.querySelectorAll('.faq-question').forEach(question => {
+                question.addEventListener('click', function() {
+                    const answer = this.nextElementSibling;
+                    answer.classList.toggle('active');
+                    this.querySelector('span').textContent = answer.classList.contains('active') ? '-' : '+';
+                });
+            });
+            
+            // Reattach event listeners to save buttons
+            document.querySelectorAll('.save-btn').forEach(button => {
+                button.addEventListener('click', handleSaveItem);
+            });
+        }
+
+        // Create FAQ item
+        function createFAQItem(faq) {
+            const faqItem = document.createElement('div');
+            faqItem.className = 'faq-item';
+            faqItem.innerHTML = `
+                <div class="faq-question">${faq.question} <span>+</span></div>
+                <div class="faq-answer">
+                    <p>${faq.answer}</p>
+                    <div class="faq-meta">
+                        <span class="faq-category">${faq.category}</span>
+                        <span class="faq-helpful">${faq.helpfulCount} people found this helpful</span>
+                    </div>
+                    <button class="btn btn-outline save-btn" data-id="faq-${faq.id}" data-type="faq" data-premium="true">
+                        <i class="fas fa-bookmark"></i> Save this answer
+                    </button>
+                </div>
+            `;
+            return faqItem;
+        }
+
+        // Handle save item
+        function handleSaveItem(e) {
+            const button = e.currentTarget;
+            const isPremiumFeature = button.getAttribute('data-premium') === 'true';
+            
+            if (isPremiumFeature && !userState.isPremium) {
+                upgradeModal.classList.add('active');
+                return;
+            }
+            
+            const itemId = button.getAttribute('data-id');
+            const itemType = button.getAttribute('data-type');
+            
+            if (button.classList.contains('saved')) {
+                button.classList.remove('saved');
+                button.innerHTML = '<i class="fas fa-bookmark"></i> Save';
+                removeFromSavedItems(itemId);
+                showNotification('Item removed from your saved content.');
+            } else {
+                button.classList.add('saved');
+                button.innerHTML = '<i class="fas fa-check"></i> Saved';
+                addToSavedItems(itemId, itemType);
+                showNotification('Item saved to your profile!');
+            }
+        }
+
+        // Initialize search functionality
+        function initSearchFunctionality() {
+            const searchBoxes = document.querySelectorAll('.search-box');
+            
+            searchBoxes.forEach(box => {
+                box.addEventListener('input', (e) => {
+                    const searchTerm = e.target.value.toLowerCase();
+                    const tabId = e.target.closest('.tab-content').id;
+                    
+                    if (tabId === 'hospitals') {
+                        filterHospitals(searchTerm);
+                    } else if (tabId === 'faq') {
+                        filterFAQs(searchTerm);
+                    } else if (tabId === 'resources') {
+                        filterResources(searchTerm);
+                    } else if (tabId === 'dashboard') {
+                        filterAllContent(searchTerm);
+                    }
+                });
+            });
+        }
+
+        // Filter hospitals
+        function filterHospitals(searchTerm) {
+            const hospitalCards = document.querySelectorAll('#hospital-list .hospital-card');
+            
+            hospitalCards.forEach(card => {
+                const hospitalName = card.querySelector('h3').textContent.toLowerCase();
+                const hospitalDetails = card.textContent.toLowerCase();
+                
+                if (hospitalName.includes(searchTerm) || hospitalDetails.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Filter FAQs
+        function filterFAQs(searchTerm) {
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question').textContent.toLowerCase();
+                const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+                
+                if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Filter resources
+        function filterResources(searchTerm) {
+            const resourceCards = document.querySelectorAll('.resource-card');
+            
+            resourceCards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const description = card.textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Filter all content
+        function filterAllContent(searchTerm) {
+            const allContent = document.querySelectorAll('.hospital-card, .resource-card, .faq-item');
+            
+            allContent.forEach(item => {
+                const contentText = item.textContent.toLowerCase();
+                
+                if (contentText.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Add item to saved items
+        function addToSavedItems(itemId, itemType) {
+            userState.savedItems.push({
+                id: itemId,
+                type: itemType,
+                savedAt: new Date()
+            });
+        }
+
+        // Remove item from saved items
+        function removeFromSavedItems(itemId) {
+            userState.savedItems = userState.savedItems.filter(item => item.id !== itemId);
+        }
+
+        // Show notification
+        function showNotification(message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
+            }, 3000);
+        }
+
+        // Check system status (simulated)
+        function checkSystemStatus() {
+            // In a real app, this would check the status of various Epic environments
+            console.log('System status checked');
+        }
+
+        // Initialize the app when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>

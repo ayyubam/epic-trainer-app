@@ -1,0 +1,9 @@
+/* Basic styling for your app */
+body {
+    font-family: Arial, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Add any custom styles here */
