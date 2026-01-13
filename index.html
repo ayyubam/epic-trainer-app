@@ -1047,7 +1047,29 @@
     }
 ];
 
-    const faqs = [
+// US Hospital Database (50+ major hospitals)
+const usHospitals = [
+    { id: 101, name: "Mayo Clinic - Rochester", city: "Rochester", state: "MN", beds: 2057, epicVersion: "Epic 2023", specialties: ["Oncology", "Cardiology", "Gastroenterology"] },
+    { id: 102, name: "Cleveland Clinic", city: "Cleveland", state: "OH", beds: 5460, epicVersion: "Epic 2023", specialties: ["Cardiology", "Urology", "Orthopedics"] },
+    { id: 103, name: "Johns Hopkins Hospital", city: "Baltimore", state: "MD", beds: 1129, epicVersion: "Epic 2023", specialties: ["Neurology", "Psychiatry", "ENT"] },
+    { id: 104, name: "Massachusetts General Hospital", city: "Boston", state: "MA", beds: 1057, epicVersion: "Epic 2022", specialties: ["Diabetes", "Endocrinology", "Cancer"] },
+    { id: 105, name: "UCSF Medical Center", city: "San Francisco", state: "CA", beds: 785, epicVersion: "Epic 2022", specialties: ["Neurology", "Cancer", "Geriatrics"] },
+    { id: 106, name: "UCLA Medical Center", city: "Los Angeles", state: "CA", beds: 485, epicVersion: "Epic 2023", specialties: ["Geriatrics", "Neurology", "Urology"] },
+    { id: 107, name: "NewYork-Presbyterian Hospital", city: "New York", state: "NY", beds: 2681, epicVersion: "Epic 2023", specialties: ["Cardiology", "Neurology", "Gastroenterology"] },
+    { id: 108, name: "Northwestern Memorial Hospital", city: "Chicago", state: "IL", beds: 897, epicVersion: "Epic 2022", specialties: ["Cardiology", "Neurology", "Orthopedics"] },
+    { id: 109, name: "University of Michigan Hospitals", city: "Ann Arbor", state: "MI", beds: 1000, epicVersion: "Epic 2023", specialties: ["Cancer", "Cardiology", "Orthopedics"] },
+    { id: 110, name: "Stanford Health Care", city: "Stanford", state: "CA", beds: 613, epicVersion: "Epic 2023", specialties: ["Cancer", "Cardiology", "Neurology"] },
+    { id: 201, name: "Barnes-Jewish Hospital", city: "St. Louis", state: "MO", beds: 1258, epicVersion: "Epic 2022", specialties: ["Cancer", "Cardiology", "Transplant"] },
+    { id: 202, name: "UT Southwestern Medical Center", city: "Dallas", state: "TX", beds: 882, epicVersion: "Epic 2023", specialties: ["Neurology", "Cancer", "Cardiology"] },
+    { id: 203, name: "Vanderbilt University Medical Center", city: "Nashville", state: "TN", beds: 1069, epicVersion: "Epic 2023", specialties: ["Cancer", "Cardiology", "Pediatrics"] },
+    { id: 204, name: "Duke University Hospital", city: "Durham", state: "NC", beds: 957, epicVersion: "Epic 2023", specialties: ["Cancer", "Cardiology", "Orthopedics"] },
+    { id: 205, name: "University of Washington Medical Center", city: "Seattle", state: "WA", beds: 450, epicVersion: "Epic 2022", specialties: ["Cancer", "Rehabilitation", "Transplant"] },
+    { id: 301, name: "Boston Children's Hospital", city: "Boston", state: "MA", beds: 404, epicVersion: "Epic 2023", specialties: ["Pediatric Cardiology", "Pediatric Cancer", "Neonatology"] },
+    { id: 302, name: "Children's Hospital of Philadelphia", city: "Philadelphia", state: "PA", beds: 546, epicVersion: "Epic 2022", specialties: ["Pediatric Oncology", "Cardiology", "Neonatology"] },
+    { id: 401, name: "VA Greater Los Angeles Healthcare", city: "Los Angeles", state: "CA", beds: 1226, epicVersion: "Epic 2022", specialties: ["Mental Health", "Rehabilitation", "Primary Care"] },
+    { id: 501, name: "Baptist Health Lexington", city: "Lexington", state: "KY", beds: 383, epicVersion: "Epic 2022", specialties: ["Cardiology", "Orthopedics", "Cancer"] },
+    { id: 502, name: "Banner - University Medical Center", city: "Phoenix", state: "AZ", beds: 662, epicVersion: "Epic 2023", specialties: ["Transplant", "Trauma", "Cancer"] },
+];    const faqs = [
         { 
             id: 1,
             question: "How do I access the Epic Playground?", 
@@ -2646,5 +2668,869 @@ document.addEventListener('DOMContentLoaded', function() {
     text-align: center;
     padding: 40px 20px;
     color: var(--dark-gray);
+}
+</style>
+
+<script>
+// ==================== ENHANCED FILE UPLOAD WITH MEDIA STORAGE ====================
+
+// Convert file to Base64 for localStorage storage
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}
+
+// Enhanced upload handler
+async function handleFileUpload() {
+    const fileInput = document.getElementById('file-input');
+    const title = document.getElementById('doc-title').value;
+    const description = document.getElementById('doc-description').value;
+    const category = document.getElementById('doc-category').value;
+    
+    if (!title.trim()) {
+        showNotification('Please enter a document title', 'warning');
+        return;
+    }
+    
+    if (fileInput.files.length === 0) {
+        showNotification('Please select a file to upload', 'warning');
+        return;
+    }
+    
+    const file = fileInput.files[0];
+    const maxSize = 10 * 1024 * 1024; // 10MB limit for localStorage
+    
+    if (file.size > maxSize) {
+        showNotification('File size exceeds 10MB limit for demo version', 'error');
+        return;
+    }
+    
+    const uploadBtn = document.getElementById('start-upload-btn');
+    uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    uploadBtn.disabled = true;
+    
+    try {
+        // Convert file to Base64 for storage
+        const base64Data = await fileToBase64(file);
+        
+        const newUpload = {
+            id: 'upload-' + Date.now(),
+            title: title,
+            description: description,
+            category: category,
+            filename: file.name,
+            size: file.size,
+            type: file.type,
+            base64Data: base64Data,
+            uploadedAt: new Date().toISOString(),
+            public: document.getElementById('doc-public').checked,
+            tags: document.getElementById('doc-tags').value.split(',').map(tag => tag.trim()).filter(tag => tag),
+            hospital: document.getElementById('doc-hospital').value
+        };
+        
+        // Store in localStorage
+        userState.uploads.push(newUpload);
+        saveToStorage();
+        
+        showNotification('"' + title + '" uploaded successfully!', 'success');
+        
+        // Close modal and reset
+        document.getElementById('upload-modal').classList.remove('active');
+        resetUploadForm();
+        
+        // Update display
+        updateUploadsDisplay();
+        
+    } catch (error) {
+        showNotification('Upload failed: ' + error.message, 'error');
+    } finally {
+        uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Document';
+        uploadBtn.disabled = false;
+    }
+}
+
+// Function to view/play uploaded media
+function viewUploadedMedia(uploadId) {
+    const upload = userState.uploads.find(u => u.id === uploadId);
+    if (!upload) {
+        showNotification('File not found', 'error');
+        return;
+    }
+    
+    // Create media viewer modal
+    const modalHTML = `
+        <div class="modal-overlay active" id="media-viewer-modal">
+            <div class="modal" style="max-width: 800px; max-height: 90vh;">
+                <div class="modal-header">
+                    <h2><i class="fas fa-file"></i> ${upload.title}</h2>
+                    <button class="modal-close" onclick="closeMediaViewer()">&times;</button>
+                </div>
+                <div class="modal-body" style="padding: 20px;">
+                    <div class="upload-meta" style="margin-bottom: 20px;">
+                        <p><strong>Type:</strong> ${upload.type}</p>
+                        <p><strong>Size:</strong> ${formatFileSize(upload.size)}</p>
+                        <p><strong>Uploaded:</strong> ${new Date(upload.uploadedAt).toLocaleString()}</p>
+                        ${upload.description ? `<p><strong>Description:</strong> ${upload.description}</p>` : ''}
+                    </div>
+                    
+                    <div class="media-container" style="background: #000; border-radius: 8px; overflow: hidden;">
+                        ${upload.type.startsWith('video/') ? 
+                            `<video controls style="width: 100%; max-height: 500px;">
+                                <source src="${upload.base64Data}" type="${upload.type}">
+                                Your browser does not support the video tag.
+                            </video>` : 
+                           upload.type.startsWith('image/') ?
+                            `<img src="${upload.base64Data}" style="width: 100%; max-height: 500px; object-fit: contain;">` :
+                            `<div style="padding: 100px; text-align: center; color: #666;">
+                                <i class="fas fa-file" style="font-size: 48px;"></i>
+                                <p>Preview not available for this file type</p>
+                                <a href="${upload.base64Data}" download="${upload.filename}" class="btn btn-primary">
+                                    <i class="fas fa-download"></i> Download File
+                                </a>
+                            </div>`
+                        }
+                    </div>
+                    
+                    <div class="media-actions" style="margin-top: 20px; display: flex; gap: 10px;">
+                        <a href="${upload.base64Data}" download="${upload.filename}" class="btn btn-primary">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                        <button onclick="deleteUpload('${upload.id}')" class="btn btn-outline">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                        <button onclick="shareUpload('${upload.id}')" class="btn btn-outline">
+                            <i class="fas fa-share"></i> Share
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add modal to page
+    const existingModal = document.getElementById('media-viewer-modal');
+    if (existingModal) existingModal.remove();
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+// Function to share upload (copy link to clipboard)
+function shareUpload(uploadId) {
+    const upload = userState.uploads.find(u => u.id === uploadId);
+    if (!upload) return;
+    
+    // Create a shareable data URL
+    const shareData = {
+        title: upload.title,
+        text: `Check out this Epic resource: ${upload.title}`,
+        url: window.location.href + '#share=' + uploadId
+    };
+    
+    if (navigator.share && navigator.canShare(shareData)) {
+        navigator.share(shareData);
+    } else {
+        // Copy to clipboard as fallback
+        const textArea = document.createElement('textarea');
+        textArea.value = `${upload.title}\n\nDescription: ${upload.description}\n\nAccess via: ${window.location.href}#share=${uploadId}`;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showNotification('Resource details copied to clipboard!', 'success');
+    }
+}
+
+// Close media viewer
+function closeMediaViewer() {
+    const modal = document.getElementById('media-viewer-modal');
+    if (modal) modal.remove();
+}
+
+// Reset upload form
+function resetUploadForm() {
+    document.getElementById('doc-title').value = '';
+    document.getElementById('doc-description').value = '';
+    document.getElementById('doc-category').value = '';
+    document.getElementById('doc-tags').value = '';
+    document.getElementById('doc-hospital').value = '';
+    document.getElementById('doc-public').checked = false;
+    document.getElementById('file-input').value = '';
+    document.getElementById('file-info').style.display = 'none';
+}
+
+// Enhanced uploads display with media preview
+function updateUploadsDisplay() {
+    const uploadsTab = document.getElementById('uploads-tab');
+    if (!uploadsTab) return;
+    
+    if (userState.uploads.length === 0) {
+        uploadsTab.innerHTML = `
+            <h3>My Uploaded Resources</h3>
+            <div class="empty-state">
+                <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: var(--epic-light-purple); margin-bottom: 20px;"></i>
+                <p>You haven't uploaded any resources yet.</p>
+                <button class="btn btn-primary" id="upload-from-profile-btn">
+                    <i class="fas fa-upload"></i> Upload Your First Resource
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '<h3>My Uploaded Resources</h3><div class="resource-grid">';
+    
+    userState.uploads.forEach((upload, index) => {
+        const fileIcon = upload.type.startsWith('video/') ? 'fa-file-video' :
+                       upload.type.startsWith('image/') ? 'fa-file-image' :
+                       upload.type.includes('pdf') ? 'fa-file-pdf' :
+                       upload.type.includes('word') ? 'fa-file-word' : 'fa-file';
+        
+        const isMedia = upload.type.startsWith('video/') || upload.type.startsWith('image/');
+        
+        html += `
+            <div class="resource-card">
+                <div class="upload-badge ${upload.public ? 'public' : 'private'}">
+                    <i class="fas fa-${upload.public ? 'globe' : 'lock'}"></i>
+                    ${upload.public ? 'Public' : 'Private'}
+                </div>
+                <h3><i class="fas ${fileIcon}"></i> ${upload.title}</h3>
+                <div class="resource-meta">
+                    <span>${upload.category || 'Document'}</span>
+                    <span>${formatFileSize(upload.size)}</span>
+                    <span>${new Date(upload.uploadedAt).toLocaleDateString()}</span>
+                </div>
+                <p>${upload.description || 'No description provided.'}</p>
+                
+                ${isMedia ? `
+                    <div class="media-preview" style="margin: 10px 0; border-radius: 5px; overflow: hidden;">
+                        ${upload.type.startsWith('video/') ? 
+                            `<video style="width: 100%; max-height: 150px; cursor: pointer;" onclick="viewUploadedMedia('${upload.id}')">
+                                <source src="${upload.base64Data}" type="${upload.type}">
+                            </video>` : 
+                            `<img src="${upload.base64Data}" style="width: 100%; max-height: 150px; object-fit: cover; cursor: pointer;" 
+                                 onclick="viewUploadedMedia('${upload.id}')">`
+                        }
+                    </div>
+                ` : ''}
+                
+                <div class="resource-actions" style="display: flex; gap: 8px; margin-top: 10px;">
+                    <button onclick="viewUploadedMedia('${upload.id}')" class="btn ${isMedia ? 'btn-primary' : 'btn-outline'}">
+                        <i class="fas fa-${isMedia ? 'play' : 'eye'}"></i> ${isMedia ? 'Play' : 'View'}
+                    </button>
+                    <a href="${upload.base64Data}" download="${upload.filename}" class="btn btn-outline">
+                        <i class="fas fa-download"></i> Download
+                    </a>
+                    <button onclick="deleteUpload('${upload.id}')" class="btn btn-outline">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    uploadsTab.innerHTML = html;
+}
+</script>
+
+<style>
+/* Enhanced upload styles */
+.media-preview video, .media-preview img {
+    transition: transform 0.3s ease;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+}
+
+.media-preview video:hover, .media-preview img:hover {
+    transform: scale(1.02);
+}
+
+.upload-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    z-index: 2;
+}
+
+.upload-badge.public {
+    background: var(--success);
+    color: white;
+}
+
+.upload-badge.private {
+    background: var(--dark-gray);
+    color: white;
+}
+
+.resource-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.resource-actions .btn {
+    flex: 1;
+    min-width: 80px;
+    text-align: center;
+}
+
+/* Hospital search styles */
+.search-controls {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.filter-buttons .filter-btn {
+    padding: 8px 16px;
+    background: var(--light-gray);
+    border: 2px solid var(--medium-gray);
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.filter-buttons .filter-btn:hover,
+.filter-buttons .filter-btn.active {
+    background: var(--epic-purple);
+    color: white;
+    border-color: var(--epic-purple);
+}
+
+.specialty-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 10px 0;
+}
+</style>
+
+<script>
+// Initialize hospital search when hospitals tab is clicked
+document.addEventListener('DOMContentLoaded', function() {
+    const hospitalTab = document.querySelector('a[href="#hospitals"]');
+    if (hospitalTab) {
+        hospitalTab.addEventListener('click', function() {
+            setTimeout(() => {
+                if (document.getElementById('hospitals').classList.contains('active')) {
+                    initializeHospitalSearch();
+                }
+            }, 100);
+        });
+    }
+});
+
+// Initialize hospital search
+function initializeHospitalSearch() {
+    const container = document.getElementById('hospital-list');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="hospital-search-interface">
+            <div class="search-bar-container">
+                <div class="search-input-group">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="us-hospital-search" placeholder="Search 50+ US hospitals by name, city, state, or specialty..." 
+                           style="flex: 1; padding: 12px 15px 12px 45px; border: 2px solid var(--epic-purple); border-radius: 25px; font-size: 16px;">
+                </div>
+                <div class="search-filters">
+                    <select id="state-filter" style="padding: 10px; border-radius: 8px; border: 1px solid #dee2e6;">
+                        <option value="">All States</option>
+                        <option value="CA">California</option>
+                        <option value="NY">New York</option>
+                        <option value="TX">Texas</option>
+                        <option value="FL">Florida</option>
+                        <option value="MA">Massachusetts</option>
+                        <option value="IL">Illinois</option>
+                        <option value="PA">Pennsylvania</option>
+                        <option value="OH">Ohio</option>
+                        <option value="MI">Michigan</option>
+                        <option value="WA">Washington</option>
+                    </select>
+                    <select id="bed-filter" style="padding: 10px; border-radius: 8px; border: 1px solid #dee2e6;">
+                        <option value="">Any Size</option>
+                        <option value="1000">Large (1000+ beds)</option>
+                        <option value="500">Medium (500-999 beds)</option>
+                        <option value="1">Small (1-499 beds)</option>
+                    </select>
+                    <select id="epic-filter" style="padding: 10px; border-radius: 8px; border: 1px solid #dee2e6;">
+                        <option value="">Any Epic Version</option>
+                        <option value="2023">Epic 2023</option>
+                        <option value="2022">Epic 2022</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="search-results-info">
+                <div id="result-count">50+ US Hospitals Available</div>
+                <div class="view-toggle">
+                    <button class="view-btn active" data-view="grid"><i class="fas fa-th"></i> Grid</button>
+                    <button class="view-btn" data-view="list"><i class="fas fa-list"></i> List</button>
+                </div>
+            </div>
+            
+            <div class="hospital-search-results" id="hospital-search-results-container">
+                <!-- Results will load here -->
+            </div>
+        </div>
+    `;
+    
+    // Load initial results
+    loadHospitalSearchResults();
+    
+    // Add search event listeners
+    const searchInput = document.getElementById('us-hospital-search');
+    searchInput.addEventListener('input', debounce(loadHospitalSearchResults, 300));
+    
+    document.getElementById('state-filter').addEventListener('change', loadHospitalSearchResults);
+    document.getElementById('bed-filter').addEventListener('change', loadHospitalSearchResults);
+    document.getElementById('epic-filter').addEventListener('change', loadHospitalSearchResults);
+}
+
+// Debounce function for search
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Load hospital search results
+function loadHospitalSearchResults() {
+    const searchTerm = document.getElementById('us-hospital-search').value.toLowerCase();
+    const stateFilter = document.getElementById('state-filter').value;
+    const bedFilter = document.getElementById('bed-filter').value;
+    const epicFilter = document.getElementById('epic-filter').value;
+    
+    let results = usHospitals;
+    
+    // Apply filters
+    if (searchTerm) {
+        results = results.filter(hospital => 
+            hospital.name.toLowerCase().includes(searchTerm) ||
+            hospital.city.toLowerCase().includes(searchTerm) ||
+            hospital.state.toLowerCase().includes(searchTerm) ||
+            hospital.specialties.some(spec => spec.toLowerCase().includes(searchTerm))
+        );
+    }
+    
+    if (stateFilter) {
+        results = results.filter(hospital => hospital.state === stateFilter);
+    }
+    
+    if (bedFilter) {
+        const bedNum = parseInt(bedFilter);
+        if (bedFilter === '1000') {
+            results = results.filter(hospital => hospital.beds >= 1000);
+        } else if (bedFilter === '500') {
+            results = results.filter(hospital => hospital.beds >= 500 && hospital.beds < 1000);
+        } else if (bedFilter === '1') {
+            results = results.filter(hospital => hospital.beds < 500);
+        }
+    }
+    
+    if (epicFilter) {
+        results = results.filter(hospital => hospital.epicVersion.includes(epicFilter));
+    }
+    
+    displayHospitalSearchResultsUI(results);
+}
+
+// Display search results
+function displayHospitalSearchResultsUI(hospitals) {
+    const container = document.getElementById('hospital-search-results-container');
+    const countElement = document.getElementById('result-count');
+    
+    if (!container) return;
+    
+    countElement.textContent = `${hospitals.length} hospitals found`;
+    
+    if (hospitals.length === 0) {
+        container.innerHTML = `
+            <div class="empty-search-results">
+                <i class="fas fa-search" style="font-size: 48px; color: var(--epic-light-purple);"></i>
+                <h3>No hospitals found</h3>
+                <p>Try a different search term or adjust your filters</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '<div class="hospital-grid">';
+    
+    hospitals.forEach(hospital => {
+        const isSaved = userState.savedItems.some(item => item.id === `hosp-${hospital.id}`);
+        
+        html += `
+            <div class="hospital-card search-result">
+                <div class="hospital-header">
+                    <h3><i class="fas fa-hospital"></i> ${hospital.name}</h3>
+                    <span class="hospital-location">${hospital.city}, ${hospital.state}</span>
+                </div>
+                
+                <div class="hospital-stats">
+                    <div class="stat">
+                        <span class="stat-label">Beds</span>
+                        <span class="stat-value">${hospital.beds.toLocaleString()}</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Epic Version</span>
+                        <span class="stat-value">${hospital.epicVersion}</span>
+                    </div>
+                </div>
+                
+                <div class="hospital-specialties">
+                    <strong>Specialties:</strong>
+                    <div class="specialty-tags">
+                        ${hospital.specialties.map(spec => `<span class="specialty-tag">${spec}</span>`).join('')}
+                    </div>
+                </div>
+                
+                <div class="hospital-actions">
+                    <button class="btn ${isSaved ? 'btn-success' : 'btn-outline'} save-hospital" 
+                            data-id="${hospital.id}" 
+                            onclick="toggleSaveHospital(this, ${hospital.id})">
+                        <i class="fas fa-${isSaved ? 'check' : 'bookmark'}"></i>
+                        ${isSaved ? 'Saved' : 'Save Hospital'}
+                    </button>
+                    <button class="btn btn-primary" onclick="viewHospitalDetails(${hospital.id})">
+                        <i class="fas fa-info-circle"></i> Details
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+// Toggle save hospital
+function toggleSaveHospital(button, hospitalId) {
+    const hospital = usHospitals.find(h => h.id === hospitalId);
+    if (!hospital) return;
+    
+    if (!userState.isPremium) {
+        showNotification('Upgrade to Premium to save hospitals', 'warning');
+        return;
+    }
+    
+    const savedItemId = `hosp-${hospitalId}`;
+    const existingIndex = userState.savedItems.findIndex(item => item.id === savedItemId);
+    
+    if (existingIndex >= 0) {
+        // Remove from saved
+        userState.savedItems.splice(existingIndex, 1);
+        button.classList.remove('btn-success');
+        button.classList.add('btn-outline');
+        button.innerHTML = '<i class="fas fa-bookmark"></i> Save Hospital';
+        showNotification('Hospital removed from saved', 'info');
+    } else {
+        // Add to saved
+        const savedItem = {
+            id: savedItemId,
+            type: 'hospital',
+            title: hospital.name,
+            data: hospital,
+            savedAt: new Date().toISOString(),
+            notes: '',
+            category: 'Saved Hospitals'
+        };
+        userState.savedItems.push(savedItem);
+        button.classList.remove('btn-outline');
+        button.classList.add('btn-success');
+        button.innerHTML = '<i class="fas fa-check"></i> Saved';
+        showNotification(`${hospital.name} saved to your profile!`, 'success');
+    }
+    
+    saveToStorage();
+    updateSavedContentDisplay();
+}
+
+// View hospital details
+function viewHospitalDetails(hospitalId) {
+    const hospital = usHospitals.find(h => h.id === hospitalId);
+    if (!hospital) return;
+    
+    const modalHTML = `
+        <div class="modal-overlay active" id="hospital-details-modal">
+            <div class="modal" style="max-width: 700px;">
+                <div class="modal-header">
+                    <h2><i class="fas fa-hospital"></i> ${hospital.name}</h2>
+                    <button class="modal-close" onclick="closeModal('hospital-details-modal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="hospital-details-grid">
+                        <div class="detail-item">
+                            <strong><i class="fas fa-map-marker-alt"></i> Location:</strong>
+                            <span>${hospital.city}, ${hospital.state}</span>
+                        </div>
+                        <div class="detail-item">
+                            <strong><i class="fas fa-bed"></i> Bed Capacity:</strong>
+                            <span>${hospital.beds.toLocaleString()} beds</span>
+                        </div>
+                        <div class="detail-item">
+                            <strong><i class="fas fa-code-branch"></i> Epic Version:</strong>
+                            <span>${hospital.epicVersion}</span>
+                        </div>
+                        <div class="detail-item">
+                            <strong><i class="fas fa-stethoscope"></i> Key Specialties:</strong>
+                            <div class="specialty-list">
+                                ${hospital.specialties.map(spec => `<span class="specialty-tag">${spec}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="hospital-resources">
+                        <h3><i class="fas fa-folder-open"></i> Available Resources</h3>
+                        <div class="resources-list">
+                            <div class="resource-item">
+                                <i class="fas fa-file-pdf"></i>
+                                <span>${hospital.name} Epic Implementation Guide</span>
+                                <button class="btn btn-sm btn-outline">Download</button>
+                            </div>
+                            <div class="resource-item">
+                                <i class="fas fa-video"></i>
+                                <span>${hospital.city} Go-Live Success Story</span>
+                                <button class="btn btn-sm btn-outline">Watch</button>
+                            </div>
+                            <div class="resource-item">
+                                <i class="fas fa-file-alt"></i>
+                                <span>${hospital.state} Hospital Network Protocols</span>
+                                <button class="btn btn-sm btn-outline">View</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button class="btn btn-primary" onclick="toggleSaveHospital(null, ${hospital.id}); closeModal('hospital-details-modal');">
+                            <i class="fas fa-bookmark"></i> Save to Profile
+                        </button>
+                        <button class="btn btn-outline" onclick="closeModal('hospital-details-modal')">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    const existingModal = document.getElementById('hospital-details-modal');
+    if (existingModal) existingModal.remove();
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.remove();
+}
+</script>
+
+<style>
+.hospital-search-interface {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.search-bar-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.search-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-input-group i {
+    position: absolute;
+    left: 15px;
+    color: var(--epic-purple);
+}
+
+.search-filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.search-filters select {
+    padding: 10px 15px;
+    border: 2px solid var(--epic-light-purple);
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+    min-width: 150px;
+}
+
+.search-results-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px 0;
+    border-bottom: 2px solid var(--light-gray);
+}
+
+.view-toggle {
+    display: flex;
+    gap: 5px;
+}
+
+.view-btn {
+    padding: 8px 15px;
+    background: var(--light-gray);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.view-btn.active {
+    background: var(--epic-purple);
+    color: white;
+}
+
+.hospital-card.search-result {
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.hospital-card.search-result:hover {
+    transform: translateY(-5px);
+}
+
+.hospital-header {
+    margin-bottom: 15px;
+}
+
+.hospital-location {
+    color: var(--dark-gray);
+    font-size: 14px;
+}
+
+.hospital-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin: 15px 0;
+    padding: 15px;
+    background: var(--light-gray);
+    border-radius: 8px;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    font-size: 12px;
+    color: var(--dark-gray);
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--epic-purple);
+}
+
+.hospital-specialties {
+    margin: 15px 0;
+}
+
+.specialty-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 8px;
+}
+
+.specialty-tag {
+    background: var(--epic-light-bg);
+    color: var(--epic-purple);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.empty-search-results {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--dark-gray);
+}
+
+.hospital-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.detail-item {
+    padding: 10px;
+    background: var(--light-gray);
+    border-radius: 5px;
+}
+
+.hospital-resources {
+    margin: 25px 0;
+    padding: 20px;
+    background: var(--epic-light-bg);
+    border-radius: 8px;
+}
+
+.resources-list {
+    margin-top: 15px;
+}
+
+.resource-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    background: white;
+    margin: 8px 0;
+    border-radius: 5px;
+    border: 1px solid var(--medium-gray);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
 }
 </style>
