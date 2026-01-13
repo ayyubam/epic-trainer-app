@@ -144,7 +144,9 @@
             </div>
             
             <button class="btn btn-primary" id="upload-resource-btn"><i class="fas fa-upload"></i> Upload New Resource</button>
-            
+            <button class="btn btn-success" onclick="openSimulator()" style="margin-left: 10px;">
+                <i class="fas fa-laptop-medical"></i> Training Simulator
+            </button>            
             <div class="resource-grid">
                 <div class="resource-card">
                     <div class="premium-lock" title="Premium feature">
@@ -532,7 +534,9 @@
                 <h2><i class="fas fa-crown"></i> Upgrade to Premium</h2>
                 <p>Unlock the ability to save hospitals, resources, and FAQs to your personal profile</p>
                 <button class="btn btn-premium pulse" id="upgrade-btn"><i class="fas fa-star"></i> Upgrade Now</button>
-                
+                <button class="btn btn-info" onclick="openStaffingCalculator()" style="margin-left: 10px;">
+                    <i class="fas fa-calculator"></i> Staffing Calculator
+                </button>                
                 <div class="premium-features">
                     <div class="premium-feature">
                         <i class="fas fa-check-circle"></i>
@@ -3531,6 +3535,777 @@ function closeModal(modalId) {
     display: flex;
     gap: 10px;
     justify-content: flex-end;
+    margin-top: 20px;
+}
+</style>
+
+<!-- Training Simulator Modal -->
+<div id="simulator-modal" class="modal-overlay">
+    <div class="modal" style="max-width: 900px;">
+        <div class="modal-header">
+            <h2><i class="fas fa-laptop-medical"></i> Epic Training Simulator</h2>
+            <button class="modal-close" onclick="closeSimulator()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="simulator-controls">
+                <select id="sim-scenario">
+                    <option value="">Select Training Scenario</option>
+                    <option value="patient-admit">Patient Admission</option>
+                    <option value="medication-order">Medication Order Entry</option>
+                    <option value="clinical-doc">Clinical Documentation</option>
+                    <option value="discharge">Discharge Process</option>
+                    <option value="billing">Billing & Coding</option>
+                </select>
+                <select id="sim-role">
+                    <option value="">Select User Role</option>
+                    <option value="physician">Physician</option>
+                    <option value="nurse">Nurse</option>
+                    <option value="med-rec">Medical Records</option>
+                    <option value="biller">Billing Specialist</option>
+                </select>
+                <button class="btn btn-primary" onclick="startSimulation()">
+                    <i class="fas fa-play"></i> Start Simulation
+                </button>
+            </div>
+            
+            <div id="simulator-content" class="simulator-content" style="display: none;">
+                <div class="simulator-step" id="step-1">
+                    <h3>Step 1: Patient Lookup</h3>
+                    <p>Enter patient MRN or search by name:</p>
+                    <input type="text" class="sim-input" placeholder="MRN: 12345678">
+                    <button class="btn btn-primary" onclick="nextStep(2)">Search</button>
+                </div>
+                <!-- More steps would be added dynamically -->
+            </div>
+            
+            <div class="simulator-resources">
+                <h4><i class="fas fa-lightbulb"></i> Pro Tips:</h4>
+                <ul id="sim-tips"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Training Simulator
+function openSimulator() {
+    document.getElementById('simulator-modal').classList.add('active');
+}
+
+function closeSimulator() {
+    document.getElementById('simulator-modal').classList.remove('active');
+}
+
+function startSimulation() {
+    const scenario = document.getElementById('sim-scenario').value;
+    const role = document.getElementById('sim-role').value;
+    
+    if (!scenario || !role) {
+        showNotification('Please select both scenario and role', 'warning');
+        return;
+    }
+    
+    document.getElementById('simulator-content').style.display = 'block';
+    loadSimulation(scenario, role);
+}
+
+function loadSimulation(scenario, role) {
+    const tips = {
+        'patient-admit': [
+            'Always verify patient identity using two identifiers',
+            'Check for existing records before creating new admission',
+            'Verify insurance eligibility in real-time',
+            'Use SmartTools for common admission diagnoses'
+        ],
+        'medication-order': [
+            'Use BPA (Best Practice Alerts) for drug interactions',
+            'Verify allergies before prescribing',
+            'Use SmartPhrases for common medication orders',
+            'Set appropriate start/stop dates for all medications'
+        ]
+    };
+    
+    const tipsList = document.getElementById('sim-tips');
+    tipsList.innerHTML = '';
+    (tips[scenario] || []).forEach(tip => {
+        tipsList.innerHTML += `<li>${tip}</li>`;
+    });
+}
+</script>
+
+<!-- Go-Live Dashboard Widget -->
+<div class="widget" style="background: linear-gradient(135deg, #4B286D, #7B52AB); color: white; padding: 20px; border-radius: 10px; margin: 20px 0;">
+    <h3><i class="fas fa-calendar-check"></i> Go-Live Countdown</h3>
+    <div id="countdown-timer" style="font-size: 32px; font-weight: bold; text-align: center; margin: 15px 0;">
+        <div class="countdown-item">
+            <span id="days">00</span>
+            <small>Days</small>
+        </div>
+        <div class="countdown-item">
+            <span id="hours">00</span>
+            <small>Hours</small>
+        </div>
+        <div class="countdown-item">
+            <span id="minutes">00</span>
+            <small>Minutes</small>
+        </div>
+    </div>
+    <div class="timeline">
+        <div class="timeline-item completed">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <strong>Team Training Completed</strong>
+                <small>✓ 100% trained</small>
+            </div>
+        </div>
+        <div class="timeline-item current">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <strong>Dress Rehearsal</strong>
+                <small>In progress</small>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <strong>Go-Live Day</strong>
+                <small>Target: Jan 30, 2024</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Countdown Timer
+function updateCountdown() {
+    const targetDate = new Date('2024-01-30T08:00:00');
+    const now = new Date();
+    const diff = targetDate - now;
+    
+    if (diff > 0) {
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        
+        document.getElementById('days').textContent = days.toString().padStart(2, '0');
+        document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+        document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+    } else {
+        document.getElementById('countdown-timer').innerHTML = '<div style="color: #FFD700;">🚀 Go-Live Complete!</div>';
+    }
+}
+
+// Update every minute
+setInterval(updateCountdown, 60000);
+updateCountdown();
+</script>
+
+<style>
+.countdown-item {
+    display: inline-block;
+    margin: 0 10px;
+    text-align: center;
+}
+
+.countdown-item span {
+    display: block;
+    font-size: 48px;
+    line-height: 1;
+}
+
+.timeline {
+    margin-top: 20px;
+    position: relative;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.timeline-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ccc;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.timeline-item.completed .timeline-dot {
+    background: #28a745;
+}
+
+.timeline-item.current .timeline-dot {
+    background: #FFD700;
+    animation: pulse 1.5s infinite;
+}
+
+.timeline-content {
+    flex: 1;
+}
+</style>
+
+<!-- Certification Section in Profile -->
+<div class="certification-tracker" style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin: 20px 0;">
+    <h3><i class="fas fa-certificate"></i> Epic Certification Tracker</h3>
+    <div class="cert-cards">
+        <div class="cert-card completed">
+            <div class="cert-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="cert-info">
+                <h4>Epic Physician Trainer</h4>
+                <p>Completed: Jan 2023</p>
+                <p>Expires: Jan 2025</p>
+            </div>
+        </div>
+        <div class="cert-card in-progress">
+            <div class="cert-icon">
+                <i class="fas fa-spinner"></i>
+            </div>
+            <div class="cert-info">
+                <h4>Epic Beacon Oncology</h4>
+                <p>Progress: 65%</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 65%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="cert-card upcoming">
+            <div class="cert-icon">
+                <i class="fas fa-calendar"></i>
+            </div>
+            <div class="cert-info">
+                <h4>Epic Radiant</h4>
+                <p>Scheduled: Mar 2024</p>
+                <button class="btn btn-sm btn-outline">Schedule</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="cert-requirements">
+        <h4><i class="fas fa-clipboard-list"></i> Certification Requirements</h4>
+        <ul>
+            <li><input type="checkbox" checked> Complete 40 hours of training</li>
+            <li><input type="checkbox" checked> Pass proficiency exam (80%+)</li>
+            <li><input type="checkbox"> Complete 3 supervised training sessions</li>
+            <li><input type="checkbox"> Submit training portfolio</li>
+        </ul>
+    </div>
+</div>
+
+<style>
+.cert-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.cert-card {
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border: 2px solid transparent;
+}
+
+.cert-card.completed {
+    background: #e8f5e9;
+    border-color: #28a745;
+}
+
+.cert-card.in-progress {
+    background: #e3f2fd;
+    border-color: #2196f3;
+}
+
+.cert-card.upcoming {
+    background: #fff3e0;
+    border-color: #ff9800;
+}
+
+.cert-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.completed .cert-icon {
+    background: #28a745;
+    color: white;
+}
+
+.in-progress .cert-icon {
+    background: #2196f3;
+    color: white;
+}
+
+.upcoming .cert-icon {
+    background: #ff9800;
+    color: white;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #ddd;
+    border-radius: 4px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #2196f3;
+    transition: width 0.5s ease;
+}
+
+.cert-requirements ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.cert-requirements li {
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+</style>
+
+<!-- Staffing Calculator Modal -->
+<div id="staffing-calculator" class="modal-overlay">
+    <div class="modal" style="max-width: 800px;">
+        <div class="modal-header">
+            <h2><i class="fas fa-calculator"></i> Go-Live Staffing Calculator</h2>
+            <button class="modal-close" onclick="closeStaffingCalculator()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="calculator-inputs">
+                <div class="input-group">
+                    <label><i class="fas fa-users"></i> Number of End Users:</label>
+                    <input type="number" id="user-count" value="500" min="1" max="10000">
+                </div>
+                
+                <div class="input-group">
+                    <label><i class="fas fa-hospital"></i> Facility Type:</label>
+                    <select id="facility-type">
+                        <option value="acute">Acute Care Hospital</option>
+                        <option value="ambulatory">Ambulatory/Clinic</option>
+                        <option value="specialty">Specialty Hospital</option>
+                        <option value="multi">Multi-Facility System</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label><i class="fas fa-procedures"></i> High-Acuity Areas:</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" id="has-ed" checked> Emergency Department</label>
+                        <label><input type="checkbox" id="has-or" checked> Operating Rooms</label>
+                        <label><input type="checkbox" id="has-icu" checked> Intensive Care Unit</label>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" onclick="calculateStaffing()" style="width: 100%; padding: 15px; margin: 20px 0;">
+                <i class="fas fa-calculator"></i> Calculate Staffing Needs
+            </button>
+            
+            <div id="staffing-results" style="display: none;">
+                <h3><i class="fas fa-chart-pie"></i> Recommended Staffing</h3>
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h4>Tier 1 Support</h4>
+                        <div class="result-value" id="tier1-count">0</div>
+                        <p>At-the-elbow support (1:50 ratio)</p>
+                    </div>
+                    <div class="result-card">
+                        <h4>Tier 2 Support</h4>
+                        <div class="result-value" id="tier2-count">0</div>
+                        <p>Command Center (1:100 ratio)</p>
+                    </div>
+                    <div class="result-card">
+                        <h4>Tier 3 Support</h4>
+                        <div class="result-value" id="tier3-count">0</div>
+                        <p>Analyst/Builder (1:200 ratio)</p>
+                    </div>
+                    <div class="result-card">
+                        <h4>Total Staff</h4>
+                        <div class="result-value" id="total-staff">0</div>
+                        <p>Required for successful go-live</p>
+                    </div>
+                </div>
+                
+                <div class="recommendations">
+                    <h4><i class="fas fa-lightbulb"></i> Recommendations:</h4>
+                    <ul id="staffing-recommendations"></ul>
+                </div>
+                
+                <button class="btn btn-outline" onclick="exportStaffingPlan()">
+                    <i class="fas fa-download"></i> Export Staffing Plan
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openStaffingCalculator() {
+    document.getElementById('staffing-calculator').classList.add('active');
+}
+
+function closeStaffingCalculator() {
+    document.getElementById('staffing-calculator').classList.remove('active');
+}
+
+function calculateStaffing() {
+    const userCount = parseInt(document.getElementById('user-count').value) || 500;
+    const facilityType = document.getElementById('facility-type').value;
+    const hasED = document.getElementById('has-ed').checked;
+    const hasOR = document.getElementById('has-or').checked;
+    const hasICU = document.getElementById('has-icu').checked;
+    
+    // Base ratios
+    let tier1Ratio = 50;  // 1:50
+    let tier2Ratio = 100; // 1:100
+    let tier3Ratio = 200; // 1:200
+    
+    // Adjust for high-acuity areas
+    let highAcuityMultiplier = 1.0;
+    if (hasED || hasOR || hasICU) {
+        highAcuityMultiplier = 1.3; // Increase staffing by 30%
+    }
+    
+    // Adjust for facility type
+    if (facilityType === 'ambulatory') {
+        tier1Ratio = 75; // Less intensive support
+    } else if (facilityType === 'multi') {
+        highAcuityMultiplier *= 1.2; // Additional complexity
+    }
+    
+    // Calculate staffing
+    const tier1Count = Math.ceil((userCount / tier1Ratio) * highAcuityMultiplier);
+    const tier2Count = Math.ceil((userCount / tier2Ratio) * highAcuityMultiplier);
+    const tier3Count = Math.ceil((userCount / tier3Ratio) * highAcuityMultiplier);
+    const totalStaff = tier1Count + tier2Count + tier3Count;
+    
+    // Update UI
+    document.getElementById('tier1-count').textContent = tier1Count;
+    document.getElementById('tier2-count').textContent = tier2Count;
+    document.getElementById('tier3-count').textContent = tier3Count;
+    document.getElementById('total-staff').textContent = totalStaff;
+    
+    // Generate recommendations
+    const recommendations = [
+        `Schedule staff in 12-hour shifts for 24/7 coverage`,
+        `Ensure 2:1 ratio of clinical to technical support staff`,
+        `Plan for 20% contingency coverage for unexpected absences`
+    ];
+    
+    if (hasED) {
+        recommendations.push('Increase ED support ratio to 1:25 during peak hours');
+    }
+    
+    if (hasICU) {
+        recommendations.push('Assign dedicated ICU support with critical care experience');
+    }
+    
+    const recList = document.getElementById('staffing-recommendations');
+    recList.innerHTML = '';
+    recommendations.forEach(rec => {
+        recList.innerHTML += `<li>${rec}</li>`;
+    });
+    
+    document.getElementById('staffing-results').style.display = 'block';
+}
+
+function exportStaffingPlan() {
+    const plan = {
+        userCount: document.getElementById('user-count').value,
+        tier1: document.getElementById('tier1-count').textContent,
+        tier2: document.getElementById('tier2-count').textContent,
+        tier3: document.getElementById('tier3-count').textContent,
+        total: document.getElementById('total-staff').textContent,
+        timestamp: new Date().toISOString()
+    };
+    
+    const dataStr = JSON.stringify(plan, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    
+    const exportFileDefaultName = `staffing-plan-${new Date().toISOString().split('T')[0]}.json`;
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+    
+    showNotification('Staffing plan exported successfully!', 'success');
+}
+</script>
+
+<style>
+.calculator-inputs {
+    display: grid;
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
+    font-weight: 600;
+    color: var(--epic-purple);
+}
+
+.input-group input, .input-group select {
+    padding: 10px;
+    border: 2px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.checkbox-group {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: normal;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.result-card {
+    background: var(--light-gray);
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    border-top: 4px solid var(--epic-purple);
+}
+
+.result-value {
+    font-size: 32px;
+    font-weight: bold;
+    color: var(--epic-purple);
+    margin: 10px 0;
+}
+
+.recommendations {
+    background: #e8f4fd;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.recommendations ul {
+    margin: 10px 0 0 20px;
+    color: #555;
+}
+</style>
+
+<!-- Analytics Dashboard in Premium -->
+<div class="analytics-dashboard" style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin: 20px 0;">
+    <h3><i class="fas fa-chart-line"></i> Training Analytics</h3>
+    
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-header">
+                <i class="fas fa-user-graduate" style="color: #4B286D;"></i>
+                <h4>Training Completion</h4>
+            </div>
+            <div class="metric-value">92%</div>
+            <div class="metric-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 92%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-header">
+                <i class="fas fa-clock" style="color: #28a745;"></i>
+                <h4>Avg. Training Time</h4>
+            </div>
+            <div class="metric-value">4.2 hrs</div>
+            <div class="metric-trend up">↓ 12% from last month</div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-header">
+                <i class="fas fa-star" style="color: #FFD700;"></i>
+                <h4>User Satisfaction</h4>
+            </div>
+            <div class="metric-value">4.7/5.0</div>
+            <div class="metric-trend up">↑ 0.3 from baseline</div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-header">
+                <i class="fas fa-question-circle" style="color: #dc3545;"></i>
+                <h4>Support Tickets</h4>
+            </div>
+            <div class="metric-value">42</div>
+            <div class="metric-trend down">↓ 18% from last week</div>
+        </div>
+    </div>
+    
+    <div class="chart-container">
+        <h4><i class="fas fa-chart-bar"></i> Training Progress by Department</h4>
+        <div class="chart" style="height: 200px; margin: 20px 0; display: flex; align-items: flex-end; gap: 10px;">
+            <div class="chart-bar" style="height: 85%; background: #4B286D;" title="Nursing: 85%">
+                <span>Nursing</span>
+            </div>
+            <div class="chart-bar" style="height: 72%; background: #7B52AB;" title="Physicians: 72%">
+                <span>Physicians</span>
+            </div>
+            <div class="chart-bar" style="height: 95%; background: #28a745;" title="Ancillary: 95%">
+                <span>Ancillary</span>
+            </div>
+            <div class="chart-bar" style="height: 68%; background: #ffc107;" title="ED: 68%">
+                <span>ED</span>
+            </div>
+            <div class="chart-bar" style="height: 88%; background: #17a2b8;" title="OR: 88%">
+                <span>OR</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="data-export">
+        <button class="btn btn-outline" onclick="exportAnalytics()">
+            <i class="fas fa-download"></i> Export Analytics Report
+        </button>
+        <button class="btn btn-primary" onclick="scheduleReport()">
+            <i class="fas fa-calendar-alt"></i> Schedule Weekly Report
+        </button>
+    </div>
+</div>
+
+<script>
+function exportAnalytics() {
+    const report = {
+        generated: new Date().toISOString(),
+        metrics: {
+            completionRate: "92%",
+            avgTrainingTime: "4.2 hours",
+            satisfaction: "4.7/5.0",
+            supportTickets: 42
+        },
+        departments: {
+            nursing: "85%",
+            physicians: "72%",
+            ancillary: "95%",
+            ed: "68%",
+            or: "88%"
+        }
+    };
+    
+    const csv = `Metric,Value\nTraining Completion,92%\nAvg Training Time,4.2 hrs\nUser Satisfaction,4.7/5.0\nSupport Tickets,42\n\nDepartment,Completion\nNursing,85%\nPhysicians,72%\nAncillary,95%\nED,68%\nOR,88%`;
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `training-analytics-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    
+    showNotification('Analytics report exported as CSV', 'success');
+}
+
+function scheduleReport() {
+    showNotification('Weekly analytics report scheduled for Monday mornings', 'info');
+}
+</script>
+
+<style>
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.metric-card {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #4B286D;
+}
+
+.metric-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.metric-header h4 {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.metric-value {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    margin: 5px 0;
+}
+
+.metric-trend {
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.metric-trend.up {
+    color: #28a745;
+}
+
+.metric-trend.down {
+    color: #dc3545;
+}
+
+.chart-bar {
+    flex: 1;
+    position: relative;
+    border-radius: 4px 4px 0 0;
+    min-width: 60px;
+    text-align: center;
+    padding-top: 10px;
+    color: white;
+    font-weight: bold;
+}
+
+.chart-bar span {
+    position: absolute;
+    bottom: -25px;
+    left: 0;
+    right: 0;
+    color: #333;
+    font-size: 12px;
+}
+
+.data-export {
+    display: flex;
+    gap: 10px;
     margin-top: 20px;
 }
 </style>
