@@ -4309,3 +4309,1372 @@ function scheduleReport() {
     margin-top: 20px;
 }
 </style>
+// ==================== COMPLETE MEDIA HANDLING SYSTEM ====================
+
+// Store media files as Blob URLs for better performance
+const mediaCache = new Map();
+
+// Convert file to Blob URL for efficient storage and playback
+function fileToBlobURL(file) {
+    return new Promise((resolve, reject) => {
+        try {
+            // Create blob URL for immediate use
+            const blobURL = URL.createObjectURL(file);
+            
+            // Also store as base64 for localStorage
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Data = e.target.result;
+                const mediaInfo = {
+                    blobURL: blobURL,
+                    base64Data: base64Data,
+                    type: file.type,
+                    size: file.size,
+                    name: file.name,
+                    lastAccessed: Date.now()
+                };
+                
+                // Cache the media info
+                const cacheKey = 'media_' + Date.now() + '_' + file.name;
+                mediaCache.set(cacheKey, mediaInfo);
+                
+                // Clean up old cache entries if needed
+                cleanupMediaCache();
+                
+                resolve({
+                    cacheKey: cacheKey,
+                    blobURL: blobURL,
+                    base64Data: base64Data,
+                    type: file.type,
+                    size: file.size,
+                    name: file.name
+                });
+            };
+            
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+// Clean up old media cache entries to prevent memory issues
+function cleanupMediaCache() {
+    const maxCacheSize = 50; // Keep last 50 items
+    if (mediaCache.size > maxCacheSize) {
+        const entries = Array.from(mediaCache.entries());
+        // Sort by last accessed time
+        entries.sort((a, b) => a[1].lastAccessed - b[1].lastAccessed);
+        // Remove oldest entries
+        entries.slice(0, mediaCache.size - maxCacheSize).forEach(([key]) => {
+            URL.revokeObjectURL(mediaCache.get(key).blobURL);
+            mediaCache.delete(key);
+        });
+    }
+}
+
+// Get media URL for playback/download
+function getMediaURL(cacheKey) {
+    const mediaInfo = mediaCache.get(cacheKey);
+    if (mediaInfo) {
+        mediaInfo.lastAccessed = Date.now();
+        return mediaInfo.blobURL;
+    }
+    return null;
+}
+
+// Enhanced upload with progress tracking
+async function handleFileUploadWithProgress() {
+    const fileInput = document.getElementById('file-input');
+    const title = document.getElementById('doc-title').value;
+    const description = document.getElementById('doc-description').value;
+    const category = document.getElementById('doc-category').value;
+    
+    if (!title.trim()) {
+        showNotification('Please enter a document title', 'warning');
+        return;
+    }
+    
+    if (fileInput.files.length === 0) {
+        showNotification('Please select a file to upload', 'warning');
+        return;
+    }
+    
+    const file = fileInput.files[0];
+    const maxSize = 25 * 1024 * 1024; // 25MB limit for better video support
+    
+    if (file.size > maxSize) {
+        showNotification(`File size exceeds ${formatFileSize(maxSize)} limit`, 'error');
+        return;
+    }
+    
+    // Create progress UI
+    const uploadBtn = document.getElementById('start-upload-btn');
+    const originalHTML = uploadBtn.innerHTML;
+    
+    uploadBtn.innerHTML = `
+        <div style="width: 100%; background: #e9ecef; border-radius: 4px; overflow: hidden;">
+            <div id="upload-progress-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #4B286D, #7B52AB); transition: width 0.3s; text-align: center; color: white; font-size: 12px; line-height: 30px;">
+                0%
+            </div>
+        </div>
+    `;
+    uploadBtn.disabled = true;
+    
+    try {
+        // Simulate progress for better UX
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += 5;
+            if (progress > 90) clearInterval(progressInterval);
+            const progressBar = document.getElementById('upload-progress-bar');
+            if (progressBar) {
+                progressBar.style.width = progress + '%';
+                progressBar.textContent = progress + '%';
+            }
+        }, 100);
+        
+        // Process the file
+        const mediaData = await fileToBlobURL(file);
+        
+        clearInterval(progressInterval);
+        
+        // Complete progress bar
+        const progressBar = document.getElementById('upload-progress-bar');
+        if (progressBar) {
+            progressBar.style.width = '100%';
+            progressBar.textContent = 'Processing...';
+        }
+        
+        // Create upload record
+        const newUpload = {
+            id: 'upload-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9),
+            title: title,
+            description: description,
+            category: category,
+            filename: file.name,
+            size: file.size,
+            type: file.type,
+            cacheKey: mediaData.cacheKey,
+            base64Data: mediaData.base64Data, // Store for persistence
+            uploadedAt: new Date().toISOString(),
+            public: document.getElementById('doc-public').checked,
+            tags: document.getElementById('doc-tags').value.split(',').map(tag => tag.trim()).filter(tag => tag),
+            hospital: document.getElementById('doc-hospital').value,
+            metadata: {
+                duration: null, // Will be populated for videos
+                dimensions: null, // Will be populated for images
+                pages: null // Will be populated for PDFs
+            }
+        };
+        
+        // Get metadata for media files
+        if (file.type.startsWith('video/')) {
+            try {
+                const video = document.createElement('video');
+                video.preload = 'metadata';
+                video.onloadedmetadata = function() {
+                    newUpload.metadata.duration = Math.round(video.duration);
+                    newUpload.metadata.dimensions = {
+                        width: video.videoWidth,
+                        height: video.videoHeight
+                    };
+                    saveUploadAndClose(newUpload);
+                };
+                video.src = mediaData.blobURL;
+            } catch (e) {
+                saveUploadAndClose(newUpload);
+            }
+        } else if (file.type.startsWith('image/')) {
+            const img = new Image();
+            img.onload = function() {
+                newUpload.metadata.dimensions = {
+                    width: img.width,
+                    height: img.height
+                };
+                saveUploadAndClose(newUpload);
+            };
+            img.src = mediaData.blobURL;
+            setTimeout(() => saveUploadAndClose(newUpload), 1000); // Fallback
+        } else {
+            saveUploadAndClose(newUpload);
+        }
+        
+    } catch (error) {
+        console.error('Upload error:', error);
+        showNotification('Upload failed: ' + error.message, 'error');
+        uploadBtn.innerHTML = originalHTML;
+        uploadBtn.disabled = false;
+    }
+}
+
+// Save upload and close modal
+function saveUploadAndClose(upload) {
+    // Store in userState
+    userState.uploads.push(upload);
+    saveToStorage();
+    
+    showNotification(`"${upload.title}" uploaded successfully!`, 'success');
+    
+    // Close modal and reset
+    document.getElementById('upload-modal').classList.remove('active');
+    resetUploadForm();
+    
+    // Update display
+    updateUploadsDisplay();
+    
+    // Reset upload button
+    const uploadBtn = document.getElementById('start-upload-btn');
+    uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Document';
+    uploadBtn.disabled = false;
+}
+
+// Advanced media viewer with full controls
+function openAdvancedMediaViewer(uploadId) {
+    const upload = userState.uploads.find(u => u.id === uploadId);
+    if (!upload) {
+        showNotification('File not found', 'error');
+        return;
+    }
+    
+    const mediaURL = getMediaURL(upload.cacheKey) || upload.base64Data;
+    
+    // Create advanced viewer modal
+    const modalHTML = `
+        <div class="modal-overlay active" id="advanced-media-viewer">
+            <div class="modal" style="max-width: 90vw; max-height: 90vh; width: 90vw; height: 90vh;">
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas ${getFileIcon(upload.type)}"></i>
+                        <span style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${upload.title}
+                        </span>
+                    </h2>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <button onclick="downloadMedia('${uploadId}')" class="btn btn-sm btn-primary" title="Download">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button onclick="shareMedia('${uploadId}')" class="btn btn-sm btn-outline" title="Share">
+                            <i class="fas fa-share"></i>
+                        </button>
+                        <button onclick="closeAdvancedViewer()" class="modal-close">&times;</button>
+                    </div>
+                </div>
+                
+                <div class="modal-body" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 0;">
+                    ${renderMediaContent(upload, mediaURL)}
+                </div>
+                
+                <div class="modal-footer" style="padding: 15px; border-top: 1px solid #dee2e6; background: #f8f9fa;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 14px;">
+                        <div>
+                            <strong>Type:</strong> ${upload.type} | 
+                            <strong>Size:</strong> ${formatFileSize(upload.size)} | 
+                            <strong>Uploaded:</strong> ${new Date(upload.uploadedAt).toLocaleDateString()}
+                            ${upload.metadata.duration ? ` | <strong>Duration:</strong> ${formatDuration(upload.metadata.duration)}` : ''}
+                        </div>
+                        <div>
+                            <button onclick="deleteUpload('${uploadId}', true)" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal
+    const existingModal = document.getElementById('advanced-media-viewer');
+    if (existingModal) existingModal.remove();
+    
+    // Add new modal
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Initialize media player if video
+    if (upload.type.startsWith('video/')) {
+        setTimeout(() => {
+            const video = document.querySelector('#advanced-media-viewer video');
+            if (video) {
+                video.controls = true;
+                video.controlsList = 'nodownload';
+                
+                // Add custom controls enhancement
+                enhanceVideoPlayer(video, upload);
+            }
+        }, 100);
+    }
+}
+
+// Render appropriate media content
+function renderMediaContent(upload, mediaURL) {
+    if (upload.type.startsWith('video/')) {
+        return `
+            <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: #000;">
+                <video id="media-player" 
+                       style="max-width: 100%; max-height: 100%;"
+                       controls
+                       playsinline
+                       preload="metadata">
+                    <source src="${mediaURL}" type="${upload.type}">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        `;
+    } else if (upload.type.startsWith('image/')) {
+        return `
+            <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: #f8f9fa; overflow: auto;">
+                <img src="${mediaURL}" 
+                     alt="${upload.title}"
+                     style="max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in;"
+                     onclick="toggleImageZoom(this)">
+                <div class="image-zoom-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 10002; cursor: zoom-out; align-items: center; justify-content: center;">
+                    <img src="${mediaURL}" style="max-width: 95vw; max-height: 95vh;">
+                </div>
+            </div>
+        `;
+    } else if (upload.type.includes('pdf')) {
+        return `
+            <div style="flex: 1; display: flex; flex-direction: column; background: #f8f9fa;">
+                <div style="padding: 15px; background: white; border-bottom: 1px solid #dee2e6;">
+                    <strong>PDF Preview:</strong> ${upload.filename}
+                </div>
+                <iframe src="${mediaURL}" 
+                        style="flex: 1; border: none;"
+                        title="${upload.title}">
+                </iframe>
+            </div>
+        `;
+    } else {
+        return `
+            <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: #f8f9fa;">
+                <div style="text-align: center; padding: 40px;">
+                    <i class="fas fa-file" style="font-size: 64px; color: #4B286D; margin-bottom: 20px;"></i>
+                    <h3>${upload.title}</h3>
+                    <p>${upload.description || 'No description available'}</p>
+                    <p><strong>File type:</strong> ${upload.type}</p>
+                    <a href="${mediaURL}" download="${upload.filename}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-download"></i> Download File (${formatFileSize(upload.size)})
+                    </a>
+                </div>
+            </div>
+        `;
+    }
+}
+
+// Enhance video player with additional features
+function enhanceVideoPlayer(videoElement, upload) {
+    // Add download button to controls
+    const downloadBtn = document.createElement('button');
+    downloadBtn.className = 'video-download-btn';
+    downloadBtn.innerHTML = '<i class="fas fa-download"></i>';
+    downloadBtn.title = 'Download video';
+    downloadBtn.style.cssText = `
+        background: rgba(0,0,0,0.7);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 8px;
+        margin-left: 10px;
+        cursor: pointer;
+    `;
+    downloadBtn.onclick = () => downloadMedia(upload.id);
+    
+    // Wait for controls to be available
+    setTimeout(() => {
+        const controls = videoElement.parentElement.querySelector('.video-controls') || 
+                        videoElement.parentElement;
+        if (controls) {
+            controls.appendChild(downloadBtn);
+        }
+    }, 500);
+    
+    // Add keyboard shortcuts
+    videoElement.addEventListener('keydown', (e) => {
+        switch(e.key) {
+            case ' ':
+            case 'k':
+                e.preventDefault();
+                videoElement.paused ? videoElement.play() : videoElement.pause();
+                break;
+            case 'f':
+                e.preventDefault();
+                if (videoElement.requestFullscreen) {
+                    videoElement.requestFullscreen();
+                }
+                break;
+            case 'm':
+                e.preventDefault();
+                videoElement.muted = !videoElement.muted;
+                break;
+            case 'ArrowRight':
+                e.preventDefault();
+                videoElement.currentTime += 10;
+                break;
+            case 'ArrowLeft':
+                e.preventDefault();
+                videoElement.currentTime -= 10;
+                break;
+        }
+    });
+}
+
+// Toggle image zoom
+function toggleImageZoom(imgElement) {
+    const overlay = imgElement.nextElementSibling;
+    if (overlay && overlay.classList.contains('image-zoom-overlay')) {
+        overlay.style.display = overlay.style.display === 'flex' ? 'none' : 'flex';
+    }
+}
+
+// Download media file
+function downloadMedia(uploadId) {
+    const upload = userState.uploads.find(u => u.id === uploadId);
+    if (!upload) {
+        showNotification('File not found', 'error');
+        return;
+    }
+    
+    const mediaURL = getMediaURL(upload.cacheKey) || upload.base64Data;
+    
+    // Create download link
+    const a = document.createElement('a');
+    a.href = mediaURL;
+    a.download = upload.filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    showNotification(`Downloading "${upload.title}"...`, 'info');
+}
+
+// Share media
+function shareMedia(uploadId) {
+    const upload = userState.uploads.find(u => u.id === uploadId);
+    if (!upload) return;
+    
+    const shareData = {
+        title: upload.title,
+        text: upload.description || `Epic Trainer Resource: ${upload.title}`,
+        url: window.location.href + '?resource=' + uploadId
+    };
+    
+    if (navigator.share && navigator.canShare(shareData)) {
+        navigator.share(shareData).catch(console.error);
+    } else {
+        // Copy to clipboard
+        const text = `${upload.title}\n\n${upload.description || ''}\n\nAccess this resource in Epic Trainer Assistant`;
+        navigator.clipboard.writeText(text).then(() => {
+            showNotification('Resource information copied to clipboard!', 'success');
+        }).catch(() => {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showNotification('Resource information copied to clipboard!', 'success');
+        });
+    }
+}
+
+// Close advanced viewer
+function closeAdvancedViewer() {
+    const modal = document.getElementById('advanced-media-viewer');
+    if (modal) {
+        // Revoke blob URLs to free memory
+        const videos = modal.querySelectorAll('video');
+        videos.forEach(video => {
+            if (video.src && video.src.startsWith('blob:')) {
+                URL.revokeObjectURL(video.src);
+            }
+        });
+        modal.remove();
+    }
+}
+
+// Format duration in MM:SS
+function formatDuration(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+// Get appropriate file icon
+function getFileIcon(fileType) {
+    if (fileType.startsWith('video/')) return 'fa-file-video';
+    if (fileType.startsWith('audio/')) return 'fa-file-audio';
+    if (fileType.startsWith('image/')) return 'fa-file-image';
+    if (fileType.includes('pdf')) return 'fa-file-pdf';
+    if (fileType.includes('word')) return 'fa-file-word';
+    if (fileType.includes('excel')) return 'fa-file-excel';
+    if (fileType.includes('powerpoint')) return 'fa-file-powerpoint';
+    if (fileType.includes('zip') || fileType.includes('compressed')) return 'fa-file-archive';
+    return 'fa-file';
+}
+
+// Delete upload with confirmation
+function deleteUpload(uploadId, fromViewer = false) {
+    const upload = userState.uploads.find(u => u.id === uploadId);
+    if (!upload) return;
+    
+    if (confirm(`Are you sure you want to delete "${upload.title}"?`)) {
+        // Remove from storage
+        userState.uploads = userState.uploads.filter(u => u.id !== uploadId);
+        saveToStorage();
+        
+        // Revoke blob URL if cached
+        if (upload.cacheKey && mediaCache.has(upload.cacheKey)) {
+            const mediaInfo = mediaCache.get(upload.cacheKey);
+            URL.revokeObjectURL(mediaInfo.blobURL);
+            mediaCache.delete(upload.cacheKey);
+        }
+        
+        showNotification('Upload deleted', 'info');
+        
+        if (fromViewer) {
+            closeAdvancedViewer();
+        }
+        
+        updateUploadsDisplay();
+    }
+}
+
+// Update uploads display with enhanced previews
+function updateUploadsDisplay() {
+    const uploadsTab = document.getElementById('uploads-tab');
+    if (!uploadsTab) return;
+    
+    if (userState.uploads.length === 0) {
+        uploadsTab.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-cloud-upload-alt" style="font-size: 64px; color: var(--epic-light-purple); margin-bottom: 20px;"></i>
+                <h3>No Uploads Yet</h3>
+                <p>Upload training videos, documents, or images to get started</p>
+                <button class="btn btn-primary" onclick="document.getElementById('upload-modal').classList.add('active')">
+                    <i class="fas fa-upload"></i> Upload Your First Resource
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = `
+        <div class="uploads-header">
+            <h3>My Uploaded Resources (${userState.uploads.length})</h3>
+            <div class="upload-filters">
+                <select id="upload-type-filter" onchange="filterUploads()">
+                    <option value="all">All Types</option>
+                    <option value="video">Videos</option>
+                    <option value="image">Images</option>
+                    <option value="document">Documents</option>
+                    <option value="other">Other</option>
+                </select>
+                <select id="upload-sort" onchange="sortUploads()">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="name">Name A-Z</option>
+                    <option value="size">Size (Largest)</option>
+                </select>
+            </div>
+        </div>
+        <div class="uploads-grid" id="uploads-grid-container">
+    `;
+    
+    // Sort by newest first by default
+    const sortedUploads = [...userState.uploads].sort((a, b) => 
+        new Date(b.uploadedAt) - new Date(a.uploadedAt)
+    );
+    
+    sortedUploads.forEach((upload, index) => {
+        const fileIcon = getFileIcon(upload.type);
+        const isVideo = upload.type.startsWith('video/');
+        const isImage = upload.type.startsWith('image/');
+        const isPDF = upload.type.includes('pdf');
+        
+        html += `
+            <div class="upload-card" data-type="${isVideo ? 'video' : isImage ? 'image' : isPDF ? 'document' : 'other'}">
+                <div class="upload-card-header">
+                    <div class="upload-type-icon">
+                        <i class="fas ${fileIcon}"></i>
+                    </div>
+                    <div class="upload-info">
+                        <h4 title="${upload.title}">${upload.title}</h4>
+                        <div class="upload-meta">
+                            <span>${formatFileSize(upload.size)}</span>
+                            <span>•</span>
+                            <span>${new Date(upload.uploadedAt).toLocaleDateString()}</span>
+                            ${upload.metadata.duration ? `<span>•</span><span>${formatDuration(upload.metadata.duration)}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="upload-actions">
+                        <button onclick="downloadMedia('${upload.id}')" class="btn-icon" title="Download">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button onclick="deleteUpload('${upload.id}')" class="btn-icon" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="upload-preview">
+                    ${isVideo ? `
+                        <div class="video-preview" onclick="openAdvancedMediaViewer('${upload.id}')">
+                            <video muted preload="metadata">
+                                <source src="${getMediaURL(upload.cacheKey) || upload.base64Data}" type="${upload.type}">
+                            </video>
+                            <div class="play-button">
+                                <i class="fas fa-play"></i>
+                            </div>
+                            <div class="video-duration">
+                                ${upload.metadata.duration ? formatDuration(upload.metadata.duration) : ''}
+                            </div>
+                        </div>
+                    ` : isImage ? `
+                        <div class="image-preview" onclick="openAdvancedMediaViewer('${upload.id}')">
+                            <img src="${getMediaURL(upload.cacheKey) || upload.base64Data}" 
+                                 alt="${upload.title}"
+                                 loading="lazy">
+                            <div class="image-overlay">
+                                <i class="fas fa-expand"></i>
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="document-preview" onclick="openAdvancedMediaViewer('${upload.id}')">
+                            <div class="document-icon">
+                                <i class="fas ${fileIcon} fa-3x"></i>
+                            </div>
+                            <div class="document-info">
+                                <p>${upload.description || 'Click to view/download'}</p>
+                                <button class="btn btn-outline btn-sm">
+                                    <i class="fas fa-external-link-alt"></i> Open
+                                </button>
+                            </div>
+                        </div>
+                    `}
+                </div>
+                
+                <div class="upload-footer">
+                    <div class="upload-tags">
+                        ${upload.tags && upload.tags.length > 0 ? 
+                            upload.tags.map(tag => `<span class="tag">${tag}</span>`).join('') : 
+                            '<span class="no-tags">No tags</span>'}
+                    </div>
+                    <button onclick="openAdvancedMediaViewer('${upload.id}')" class="btn btn-primary btn-sm">
+                        <i class="fas fa-${isVideo ? 'play' : isImage ? 'image' : 'eye'}"></i>
+                        ${isVideo ? 'Play' : isImage ? 'View' : 'Open'}
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    uploadsTab.innerHTML = html;
+    
+    // Add hover effects for video previews
+    setTimeout(() => {
+        document.querySelectorAll('.video-preview video').forEach(video => {
+            video.addEventListener('mouseenter', function() {
+                this.play().catch(e => console.log('Autoplay prevented:', e));
+            });
+            video.addEventListener('mouseleave', function() {
+                this.pause();
+                this.currentTime = 0;
+            });
+        });
+    }, 100);
+}
+
+// Filter uploads by type
+function filterUploads() {
+    const filter = document.getElementById('upload-type-filter').value;
+    const cards = document.querySelectorAll('.upload-card');
+    
+    cards.forEach(card => {
+        if (filter === 'all' || card.dataset.type === filter) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+// Sort uploads
+function sortUploads() {
+    const sortBy = document.getElementById('upload-sort').value;
+    let sorted = [...userState.uploads];
+    
+    switch(sortBy) {
+        case 'newest':
+            sorted.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
+            break;
+        case 'oldest':
+            sorted.sort((a, b) => new Date(a.uploadedAt) - new Date(b.uploadedAt));
+            break;
+        case 'name':
+            sorted.sort((a, b) => a.title.localeCompare(b.title));
+            break;
+        case 'size':
+            sorted.sort((a, b) => b.size - a.size);
+            break;
+    }
+    
+    userState.uploads = sorted;
+    saveToStorage();
+    updateUploadsDisplay();
+}
+
+// Initialize media system on page load
+function initializeMediaSystem() {
+    // Convert existing base64 uploads to blob URLs
+    userState.uploads.forEach((upload, index) => {
+        if (upload.base64Data && !upload.cacheKey) {
+            try {
+                // Create blob from base64
+                const byteCharacters = atob(upload.base64Data.split(',')[1]);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], {type: upload.type});
+                const blobURL = URL.createObjectURL(blob);
+                
+                // Update upload with cache key
+                const cacheKey = 'media_' + upload.uploadedAt + '_' + upload.filename;
+                upload.cacheKey = cacheKey;
+                
+                // Cache the blob URL
+                mediaCache.set(cacheKey, {
+                    blobURL: blobURL,
+                    base64Data: upload.base64Data,
+                    type: upload.type,
+                    size: upload.size,
+                    name: upload.filename,
+                    lastAccessed: Date.now()
+                });
+            } catch (e) {
+                console.warn('Failed to convert upload to blob:', upload.title, e);
+            }
+        }
+    });
+    
+    saveToStorage();
+    console.log('Media system initialized with', userState.uploads.length, 'uploads');
+}
+
+<style>
+/* Enhanced upload modal styles */
+#upload-modal .modal {
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.file-upload-area {
+    border: 3px dashed #4B286D;
+    border-radius: 15px;
+    padding: 40px 20px;
+    text-align: center;
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.file-upload-area:hover {
+    background: #e9ecef;
+    border-color: #7B52AB;
+}
+
+.file-upload-area.drag-over {
+    background: #e3f2fd;
+    border-color: #2196f3;
+    transform: scale(1.02);
+}
+
+.file-upload-area i {
+    font-size: 64px;
+    color: #4B286D;
+    margin-bottom: 20px;
+}
+
+.file-upload-area p {
+    margin: 10px 0;
+    color: #495057;
+}
+
+.file-preview-container {
+    display: none;
+    margin-top: 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+}
+
+.file-preview {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.file-icon {
+    font-size: 48px;
+    color: #4B286D;
+}
+
+.file-info h4 {
+    margin: 0 0 5px 0;
+    color: #343a40;
+}
+
+.file-info p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.file-progress {
+    width: 100%;
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.file-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #4B286D, #7B52AB);
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+.supported-formats {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 10px;
+}
+
+/* Upload cards grid */
+.uploads-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.upload-card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #dee2e6;
+}
+
+.upload-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.upload-card-header {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #dee2e6;
+    background: #f8f9fa;
+}
+
+.upload-type-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #4B286D, #7B52AB);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    margin-right: 12px;
+}
+
+.upload-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.upload-info h4 {
+    margin: 0;
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.upload-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 4px;
+}
+
+.upload-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.btn-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+    background: white;
+    color: #6c757d;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.btn-icon:hover {
+    background: #4B286D;
+    color: white;
+    border-color: #4B286D;
+}
+
+.upload-preview {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.video-preview {
+    position: relative;
+    aspect-ratio: 16/9;
+    background: #000;
+}
+
+.video-preview video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    background: rgba(75, 40, 109, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    transition: all 0.3s ease;
+}
+
+.video-preview:hover .play-button {
+    background: rgba(123, 82, 171, 0.9);
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+.video-duration {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.image-preview {
+    position: relative;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.image-preview:hover img {
+    transform: scale(1.05);
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    color: white;
+    font-size: 24px;
+}
+
+.image-preview:hover .image-overlay {
+    opacity: 1;
+}
+
+.document-preview {
+    padding: 30px 20px;
+    text-align: center;
+    background: #f8f9fa;
+}
+
+.document-icon {
+    color: #4B286D;
+    margin-bottom: 15px;
+}
+
+.document-info p {
+    margin: 0 0 15px 0;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.upload-footer {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #dee2e6;
+}
+
+.upload-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    flex: 1;
+    margin-right: 10px;
+}
+
+.tag {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.no-tags {
+    color: #6c757d;
+    font-style: italic;
+    font-size: 12px;
+}
+
+.uploads-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.upload-filters {
+    display: flex;
+    gap: 10px;
+}
+
+.upload-filters select {
+    padding: 8px 12px;
+    border: 2px solid #dee2e6;
+    border-radius: 6px;
+    background: white;
+    font-size: 14px;
+    min-width: 150px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 64px;
+    margin-bottom: 20px;
+    color: #adb5bd;
+}
+
+/* Advanced viewer styles */
+#advanced-media-viewer .modal {
+    display: flex;
+    flex-direction: column;
+}
+
+#advanced-media-viewer .modal-body {
+    flex: 1;
+    min-height: 0;
+}
+
+.video-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.video-controls button {
+    background: rgba(255,255,255,0.9);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #333;
+    font-size: 18px;
+    transition: all 0.2s ease;
+}
+
+.video-controls button:hover {
+    background: white;
+    transform: scale(1.1);
+}
+
+.progress-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 3px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #4B286D;
+    width: 0%;
+}
+
+.time-display {
+    color: white;
+    font-size: 14px;
+    min-width: 100px;
+    text-align: center;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .uploads-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .uploads-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .upload-filters {
+        flex-direction: column;
+    }
+    
+    .upload-filters select {
+        width: 100%;
+    }
+    
+    #upload-modal .modal {
+        width: 95vw;
+        margin: 10px;
+    }
+}
+</style>
+
+<script>
+// Enhanced file upload area interactions
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('file-upload-area');
+    const fileInput = document.getElementById('file-input');
+    const fileInfo = document.getElementById('file-info');
+    
+    if (uploadArea && fileInput) {
+        // Click to select file
+        uploadArea.addEventListener('click', () => fileInput.click());
+        
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            uploadArea.classList.add('drag-over');
+        }
+        
+        function unhighlight() {
+            uploadArea.classList.remove('drag-over');
+        }
+        
+        // Handle dropped files
+        uploadArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileSelect();
+            }
+        }
+        
+        // Handle file selection
+        fileInput.addEventListener('change', handleFileSelect);
+    }
+});
+
+function handleFileSelect() {
+    const fileInput = document.getElementById('file-input');
+    const fileName = document.getElementById('file-name');
+    const fileSize = document.getElementById('file-size');
+    const fileInfo = document.getElementById('file-info');
+    const uploadArea = document.getElementById('file-upload-area');
+    
+    if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        
+        // Update file info display
+        fileName.textContent = file.name;
+        fileSize.textContent = formatFileSize(file.size);
+        fileInfo.style.display = 'block';
+        
+        // Update upload area with preview
+        const fileIcon = getFileIcon(file.type);
+        uploadArea.innerHTML = `
+            <i class="fas ${fileIcon}"></i>
+            <p><strong>${file.name}</strong></p>
+            <p>${formatFileSize(file.size)} • ${file.type}</p>
+            <p class="supported-formats">Click to choose a different file</p>
+        `;
+        
+        // Enable upload button if title is filled
+        const title = document.getElementById('doc-title').value;
+        const uploadBtn = document.getElementById('start-upload-btn');
+        if (title.trim() && uploadBtn) {
+            uploadBtn.disabled = false;
+        }
+    }
+}
+
+// Update upload button state based on form validity
+document.addEventListener('input', function(e) {
+    if (e.target.id === 'doc-title') {
+        const fileInput = document.getElementById('file-input');
+        const uploadBtn = document.getElementById('start-upload-btn');
+        if (uploadBtn) {
+            uploadBtn.disabled = !(e.target.value.trim() && fileInput.files.length > 0);
+        }
+    }
+});
+
+// Replace the upload button handler
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        const uploadBtn = document.getElementById('start-upload-btn');
+        if (uploadBtn) {
+            uploadBtn.onclick = handleFileUploadWithProgress;
+        }
+    }, 1000);
+});
+
+// Initialize media system when app loads
+window.addEventListener('load', function() {
+    setTimeout(() => {
+        if (typeof initializeMediaSystem === 'function') {
+            initializeMediaSystem();
+        }
+    }, 2000);
+});
+</script>
+
+<script>
+// Update the main initialization
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing enhanced Epic Trainer with media system...');
+    
+    // Initialize core app
+    if (typeof initApp === 'function') {
+        initApp();
+    }
+    
+    // Initialize media system
+    if (typeof initializeMediaSystem === 'function') {
+        setTimeout(() => {
+            initializeMediaSystem();
+            console.log('Media system initialized');
+        }, 1000);
+    }
+    
+    // Update uploads display
+    if (typeof updateUploadsDisplay === 'function') {
+        setTimeout(updateUploadsDisplay, 1500);
+    }
+    
+    // Initialize hospital search
+    const hospitalTab = document.querySelector('a[href="#hospitals"]');
+    if (hospitalTab && typeof initializeHospitalSearch === 'function') {
+        hospitalTab.addEventListener('click', function() {
+            setTimeout(() => {
+                if (document.getElementById('hospitals').classList.contains('active')) {
+                    initializeHospitalSearch();
+                }
+            }, 100);
+        });
+    }
+    
+    console.log('Enhanced Epic Trainer with complete media system initialized!');
+});
+
+// Make sure upload modal works
+document.addEventListener('click', function(e) {
+    if (e.target.id === 'upload-from-profile-btn' || 
+        (e.target.closest && e.target.closest('#upload-from-profile-btn'))) {
+        document.getElementById('upload-modal').classList.add('active');
+    }
+});
+</script>
