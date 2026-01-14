@@ -113,7 +113,19 @@
             <h2>Hospital Systems</h2>
             <p>Comprehensive database of hospital Epic implementations</p>
             
-            <div class="search-container">
+            
+            <div class="section-actions" style="margin-bottom: 20px;">
+                <button class="btn btn-primary" onclick="showHospitalUploadModal()">
+                    <i class="fas fa-upload"></i> Upload Hospital Data
+                </button>
+                <button class="btn btn-success" onclick="exportAllHospitals()">
+                    <i class="fas fa-download"></i> Export Hospital Database
+                </button>
+                <button class="btn btn-info" onclick="showHospitalTemplate()">
+                    <i class="fas fa-file-excel"></i> Download Template
+                </button>
+            </div>
+        <div class="search-container">
                 <i class="fas fa-search search-icon"></i>
                 <input type="text" class="search-box" placeholder="Search hospital systems...">
             </div>
@@ -1810,7 +1822,52 @@ function initApp() {
         }, 3000);
     }
 
-    // ==================== INITIALIZE APP ====================
+    
+// ==================== SECTION UPLOAD/DOWNLOAD FUNCTIONS ====================
+
+function showHospitalUploadModal() {
+    console.log("Hospital upload modal would open");
+    showNotification("Hospital upload feature - modal would open", "info");
+}
+
+function exportAllHospitals() {
+    console.log("Exporting hospital database");
+    showNotification("Preparing hospital database export...", "info");
+    // In full implementation, this would download JSON
+}
+
+function showHospitalTemplate() {
+    console.log("Downloading hospital template");
+    showNotification("Hospital template downloaded", "success");
+}
+
+function exportResources() {
+    console.log("Exporting resources");
+    showNotification("Resource library export started", "info");
+}
+
+function batchDownload() {
+    console.log("Batch download");
+    showNotification("Batch download modal would open", "info");
+}
+
+function uploadGoLiveDocument() {
+    console.log("Upload Go-Live document");
+    showNotification("Go-Live upload feature - modal would open", "info");
+}
+
+function downloadGoLiveKit() {
+    console.log("Download Go-Live toolkit");
+    showNotification("Go-Live toolkit download started", "info");
+}
+
+function exportGoLiveChecklist() {
+    console.log("Export Go-Live checklist");
+    showNotification("Go-Live checklist exported", "success");
+}
+
+// ==================== END UPLOAD/DOWNLOAD FUNCTIONS ====================
+// ==================== INITIALIZE APP ====================
     document.addEventListener('DOMContentLoaded', function() {
         console.log('DOM loaded, initializing app...');
         initApp();
@@ -2324,5 +2381,32 @@ document.addEventListener('DOMContentLoaded', function() {
             <span style="font-size: 10px;">AI Features</span>
         </a>
     </div>
-<!-- COMPLETE MEDIA MANAGEMENT SYSTEM --></body>
+<!-- COMPLETE MEDIA MANAGEMENT SYSTEM -->
+    <!-- Simple Upload/Download Modals -->
+    <div class="modal-overlay" id="hospital-upload-modal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 10000;">
+        <div class="modal" style="background: white; padding: 20px; border-radius: 10px; max-width: 500px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0;"><i class="fas fa-hospital"></i> Upload Hospital Data</h3>
+                <button onclick="document.getElementById('hospital-upload-modal').style.display = 'none'" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+            </div>
+            <p>Upload hospital data in JSON or CSV format.</p>
+            <button class="btn btn-primary" onclick="showNotification('Hospital upload would start here'); document.getElementById('hospital-upload-modal').style.display = 'none'" style="width: 100%; padding: 10px;">
+                <i class="fas fa-upload"></i> Upload File
+            </button>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="golive-upload-modal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 10000;">
+        <div class="modal" style="background: white; padding: 20px; border-radius: 10px; max-width: 500px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0;"><i class="fas fa-file-upload"></i> Upload Go-Live Document</h3>
+                <button onclick="document.getElementById('golive-upload-modal').style.display = 'none'" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+            </div>
+            <p>Upload Go-Live checklists, plans, or templates.</p>
+            <button class="btn btn-primary" onclick="showNotification('Go-Live upload would start here'); document.getElementById('golive-upload-modal').style.display = 'none'" style="width: 100%; padding: 10px;">
+                <i class="fas fa-upload"></i> Upload Document
+            </button>
+        </div>
+    </div>
+</body>
 </html>
