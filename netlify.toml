@@ -1,7 +1,17 @@
 [build]
   publish = "."
+  command = "echo 'No build required'"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
