@@ -17,7 +17,7 @@ exports.handler = async (event) => {
     
     // If not in uploads, check resources
     if (!fs.existsSync(filePath)) {
-      filePath = path.join(process.cwd(), 'public', 'resources', filename);
+      filePath = path.join(process.cwd(), 'resources', filename);
     }
     
     if (!fs.existsSync(filePath)) {
@@ -34,7 +34,7 @@ exports.handler = async (event) => {
       statusCode: 200,
       headers: {
         'Content-Type': 'application/octet-stream',
-        'Content-Disposition': `attachment; filename="${filename}"`,
+        'Content-Disposition': \`attachment; filename="\${filename}"\`,
         'Content-Length': fileStats.size,
         'Access-Control-Allow-Origin': '*'
       },

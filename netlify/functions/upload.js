@@ -1,9 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const { parse } = require('querystring');
 
 exports.handler = async (event) => {
-  // Only allow POST requests
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
@@ -13,15 +11,13 @@ exports.handler = async (event) => {
 
   try {
     const body = JSON.parse(event.body);
-    const { filename, content, category } = body;
+    const { filename, content } = body;
     
-    // Create uploads directory if it doesn't exist
     const uploadDir = path.join(process.cwd(), 'uploads');
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
     
-    // Save file
     const filePath = path.join(uploadDir, filename);
     fs.writeFileSync(filePath, Buffer.from(content, 'base64'));
     

@@ -4,7 +4,7 @@ const path = require('path');
 exports.handler = async (event) => {
   try {
     const uploadDir = path.join(process.cwd(), 'uploads');
-    const resourceDir = path.join(process.cwd(), 'public', 'resources');
+    const resourceDir = path.join(process.cwd(), 'resources');
     
     let files = [];
     
