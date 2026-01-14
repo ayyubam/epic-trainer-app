@@ -1,0 +1,17 @@
+{
+  "name": "epic-emr-trainer-assistant",
+  "version": "1.0.0",
+  "description": "Epic EMR Trainer Assistant Application",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"No tests specified\" && exit 0",
+    "build": "echo \"Build complete\""
+  },
+  "keywords": ["epic", "emr", "trainer", "healthcare"],
+  "author": "Epic Trainer Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
