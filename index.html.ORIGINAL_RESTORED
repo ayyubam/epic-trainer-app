@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -87,7 +88,7 @@
                         <span>2.4 MB</span>
                     </div>
                     <p>Complete guide to new features and changes in Epic 2023 version.</p>
-                    <button class="btn btn-primary" onclick="downloadFile('Epic-2023-Upgrade-Guide.pdf')"><i class="fas fa-download"></i> Download</button>
+                    <button class="btn btn-primary"><i class="fas fa-download"></i> Download</button>
                     <button class="btn btn-outline save-btn" data-id="doc-001" data-type="resource" data-premium="true"><i class="fas fa-bookmark"></i> Save</button>
                 </div>
                 
@@ -101,7 +102,7 @@
                         <span>15:32 min</span>
                     </div>
                     <p>Step-by-step guide to setting up and using the Epic playground environment.</p>
-                    <button class="btn btn-primary" onclick="playVideo('/resources/playground-navigation.mp4')"><i class="fas fa-play-circle"></i> Watch</button>
+                    <button class="btn btn-primary"><i class="fas fa-play-circle"></i> Watch</button>
                     <button class="btn btn-outline save-btn" data-id="doc-002" data-type="resource" data-premium="true"><i class="fas fa-bookmark"></i> Save</button>
                 </div>
             </div>
@@ -112,19 +113,7 @@
             <h2>Hospital Systems</h2>
             <p>Comprehensive database of hospital Epic implementations</p>
             
-            
-            <div class="section-actions" style="margin-bottom: 20px;">
-                <button class="btn btn-primary" onclick="showHospitalUploadModal()">
-                    <i class="fas fa-upload"></i> Upload Hospital Data
-                </button>
-                <button class="btn btn-success" onclick="exportAllHospitals()">
-                    <i class="fas fa-download"></i> Export Hospital Database
-                </button>
-                <button class="btn btn-info" onclick="showHospitalTemplate()">
-                    <i class="fas fa-file-excel"></i> Download Template
-                </button>
-            </div>
-        <div class="search-container">
+            <div class="search-container">
                 <i class="fas fa-search search-icon"></i>
                 <input type="text" class="search-box" placeholder="Search hospital systems...">
             </div>
@@ -169,7 +158,7 @@
                         <span>5.2 MB</span>
                     </div>
                     <p>Complete guide to Epic fundamentals for new trainers.</p>
-                    <button class="btn btn-primary" onclick="downloadFile('Epic-2023-Upgrade-Guide.pdf')"><i class="fas fa-download"></i> Download</button>
+                    <button class="btn btn-primary"><i class="fas fa-download"></i> Download</button>
                     <button class="btn btn-outline save-btn" data-id="res-001" data-type="resource" data-premium="true"><i class="fas fa-bookmark"></i> Save</button>
                 </div>
                 
@@ -183,7 +172,7 @@
                         <span>22:15 min</span>
                     </div>
                     <p>Detailed walkthrough of MyChart features and patient communication tools.</p>
-                    <button class="btn btn-primary" onclick="playVideo('/resources/mychart-tutorial.mp4')"><i class="fas fa-play-circle"></i> Watch</button>
+                    <button class="btn btn-primary"><i class="fas fa-play-circle"></i> Watch</button>
                     <button class="btn btn-outline save-btn" data-id="res-002" data-type="resource" data-premium="true"><i class="fas fa-bookmark"></i> Save</button>
                 </div>
                 
@@ -197,7 +186,7 @@
                         <span>3.7 MB</span>
                     </div>
                     <p>Collection of customizable clinical documentation templates.</p>
-                    <button class="btn btn-primary" onclick="downloadFile('Epic-Fundamentals-Guide.pdf')"><i class="fas fa-download"></i> Download</button>
+                    <button class="btn btn-primary"><i class="fas fa-download"></i> Download</button>
                     <button class="btn btn-outline save-btn" data-id="res-003" data-type="resource" data-premium="true"><i class="fas fa-bookmark"></i> Save</button>
                 </div>
                 
@@ -211,7 +200,7 @@
                         <span>4.1 MB</span>
                     </div>
                     <p>Creating and customizing reports in Epic.</p>
-                    <button class="btn btn-primary" onclick="downloadFile('Clinical-Documentation-Templates.zip')"><i class="fas fa-download"></i> Download</button>
+                    <button class="btn btn-primary"><i class="fas fa-download"></i> Download</button>
                     <button class="btn btn-outline save-btn" data-id="res-004" data-type="resource" data-premium="true"><i class="fas fa-bookmark"></i> Save</button>
                 </div>
             </div>
@@ -492,7 +481,7 @@
             </div>
             <h4>Go-Live Checklist</h4>
             <p>120-item comprehensive checklist with timelines</p>
-            <button class="btn btn-primary" onclick="downloadFile('Go-Live-Checklist.xlsx')"><i class="fas fa-download"></i> Download Excel</button>
+            <button class="btn btn-primary"><i class="fas fa-download"></i> Download Excel</button>
         </div>
         
         <div class="resource-card">
@@ -501,7 +490,7 @@
             </div>
             <h4>Command Center Guide</h4>
             <p>Step-by-step setup guide with floor plans</p>
-            <button class="btn btn-primary" onclick="downloadFile('Command-Center-Guide.pdf')"><i class="fas fa-download"></i> Download PDF</button>
+            <button class="btn btn-primary"><i class="fas fa-download"></i> Download PDF</button>
         </div>
         
         <div class="resource-card">
@@ -510,7 +499,7 @@
             </div>
             <h4>Staffing Calculator</h4>
             <p>Interactive tool to calculate support needs</p>
-            <button class="btn btn-primary" onclick="downloadFile('Staffing-Calculator.xlsx')"><i class="fas fa-download"></i> Download Tool</button>
+            <button class="btn btn-primary"><i class="fas fa-external-link-alt"></i> Open Tool</button>
         </div>
         
         <div class="resource-card">
@@ -519,7 +508,7 @@
             </div>
             <h4>Metrics Dashboard</h4>
             <p>Template for tracking go-live performance</p>
-            <button class="btn btn-primary" onclick="downloadFile('Metrics-Dashboard-Template.xlsx')"><i class="fas fa-download"></i> Download Template</button>
+            <button class="btn btn-primary"><i class="fas fa-download"></i> Download Template</button>
         </div>
     </div>
 </section>
@@ -1821,284 +1810,7 @@ function initApp() {
         }, 3000);
     }
 
-    
-// ==================== ACTUAL UPLOAD/DOWNLOAD FUNCTIONS ====================
-
-// Upload resource function
-async function uploadFile(file, metadata) {
-    showNotification('Uploading file...', 'info');
-    
-    try {
-        const reader = new FileReader();
-        
-        return new Promise((resolve, reject) => {
-            reader.onload = async function(e) {
-                try {
-                    const base64Content = e.target.result.split(',')[1];
-                    
-                    const response = await fetch('/.netlify/functions/upload', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            filename: metadata.filename || file.name,
-                            content: base64Content,
-                            category: metadata.category || 'resource',
-                            title: metadata.title || file.name,
-                            description: metadata.description || '',
-                            tags: metadata.tags || []
-                        })
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                        showNotification('File uploaded successfully!', 'success');
-                        resolve(result);
-                    } else {
-                        showNotification('Upload failed: ' + result.error, 'error');
-                        reject(result);
-                    }
-                } catch (error) {
-                    showNotification('Upload error: ' + error.message, 'error');
-                    reject(error);
-                }
-            };
-            
-            reader.onerror = function(error) {
-                showNotification('Error reading file: ' + error, 'error');
-                reject(error);
-            };
-            
-            reader.readAsDataURL(file);
-        });
-    } catch (error) {
-        showNotification('Upload failed: ' + error.message, 'error');
-        throw error;
-    }
-}
-
-// Download file function
-async function downloadFile(filename) {
-    try {
-        showNotification('Preparing download...', 'info');
-        
-        const response = await fetch(`/.netlify/functions/download?filename=${encodeURIComponent(filename)}`);
-        
-        if (!response.ok) {
-            throw new Error('Download failed');
-        }
-        
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-        
-        showNotification('Download started!', 'success');
-    } catch (error) {
-        showNotification('Download failed: ' + error.message, 'error');
-    }
-}
-
-// List all files
-async function listFiles() {
-    try {
-        const response = await fetch('/.netlify/functions/list-files');
-        const result = await response.json();
-        
-        if (result.success) {
-            return result.files;
-        }
-        return [];
-    } catch (error) {
-        console.error('Error listing files:', error);
-        return [];
-    }
-}
-
-// Upload hospital data
-async function uploadHospitalData(data) {
-    try {
-        const response = await fetch('/.netlify/functions/upload', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                filename: `hospital-data-${Date.now()}.json`,
-                content: btoa(JSON.stringify(data, null, 2)),
-                category: 'hospital-data'
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            showNotification('Hospital data uploaded successfully!', 'success');
-            return result;
-        } else {
-            showNotification('Upload failed: ' + result.error, 'error');
-            return null;
-        }
-    } catch (error) {
-        showNotification('Upload error: ' + error.message, 'error');
-        return null;
-    }
-}
-
-// Export all hospitals as JSON
-function exportAllHospitals() {
-    try {
-        const dataStr = JSON.stringify(hospitals, null, 2);
-        const dataBlob = new Blob([dataStr], { type: 'application/json' });
-        const url = window.URL.createObjectURL(dataBlob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `epic-hospitals-${new Date().toISOString().split('T')[0]}.json`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-        
-        showNotification('Hospital database exported!', 'success');
-    } catch (error) {
-        showNotification('Export failed: ' + error.message, 'error');
-    }
-}
-
-// Download hospital template
-function showHospitalTemplate() {
-    const template = {
-        name: "Hospital Name",
-        version: "Epic 2023",
-        modules: ["Module1", "Module2"],
-        notes: "Hospital description",
-        goLiveDate: "2024-01-01",
-        epicTeamSize: 50,
-        trainingRooms: 10,
-        supportModel: "24/7 Support",
-        specialtyAreas: ["Cardiology", "Oncology"],
-        contact: {
-            name: "Contact Person",
-            email: "contact@hospital.org",
-            phone: "(555) 123-4567",
-            role: "Epic Lead"
-        },
-        stats: {
-            usersTrained: 1000,
-            goLiveSuccess: 95,
-            supportTickets: 50,
-            avgResolutionTime: "2 hours"
-        }
-    };
-    
-    const dataStr = JSON.stringify(template, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = window.URL.createObjectURL(dataBlob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'hospital-template.json';
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-    
-    showNotification('Hospital template downloaded!', 'success');
-}
-
-// Video player functionality
-function playVideo(videoUrl) {
-    // Create video modal
-    const videoModal = document.createElement('div');
-    videoModal.className = 'video-modal';
-    videoModal.innerHTML = `
-        <div class="video-modal-content">
-            <button class="close-video">&times;</button>
-            <video controls autoplay style="width: 100%; max-width: 800px;">
-                <source src="${videoUrl}" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-        </div>
-    `;
-    
-    document.body.appendChild(videoModal);
-    videoModal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.8);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10000;
-    `;
-    
-    videoModal.querySelector('.close-video').onclick = () => {
-        document.body.removeChild(videoModal);
-    };
-}
-
-// Initialize file upload handling
-function initFileUpload() {
-    const fileInput = document.getElementById('file-input');
-    const startUploadBtn = document.getElementById('start-upload-btn');
-    
-    if (fileInput && startUploadBtn) {
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                startUploadBtn.disabled = false;
-            }
-        });
-        
-        startUploadBtn.addEventListener('click', async () => {
-            if (fileInput.files.length === 0) {
-                showNotification('Please select a file first', 'warning');
-                return;
-            }
-            
-            const file = fileInput.files[0];
-            const title = document.getElementById('doc-title').value || file.name;
-            const description = document.getElementById('doc-description').value || '';
-            const category = document.getElementById('doc-category').value || 'resource';
-            
-            try {
-                startUploadBtn.innerHTML = '<i class=\"fas fa-spinner fa-spin\"></i> Uploading...';
-                startUploadBtn.disabled = true;
-                
-                await uploadFile(file, {
-                    filename: file.name,
-                    title: title,
-                    description: description,
-                    category: category
-                });
-                
-                // Reset form
-                fileInput.value = '';
-                document.getElementById('doc-title').value = '';
-                document.getElementById('doc-description').value = '';
-                document.getElementById('file-info').style.display = 'none';
-                document.getElementById('upload-modal').classList.remove('active');
-                
-                startUploadBtn.innerHTML = '<i class=\"fas fa-upload\"></i> Upload Document';
-                startUploadBtn.disabled = false;
-            } catch (error) {
-                startUploadBtn.innerHTML = '<i class=\"fas fa-upload\"></i> Upload Document';
-                startUploadBtn.disabled = false;
-            }
-        });
-    }
-}
-
-// ==================== END ACTUAL UPLOAD/DOWNLOAD FUNCTIONS ====================
-// ==================== INITIALIZE APP ====================
+    // ==================== INITIALIZE APP ====================
     document.addEventListener('DOMContentLoaded', function() {
         console.log('DOM loaded, initializing app...');
         initApp();
@@ -2612,32 +2324,5 @@ document.addEventListener('DOMContentLoaded', function() {
             <span style="font-size: 10px;">AI Features</span>
         </a>
     </div>
-<!-- COMPLETE MEDIA MANAGEMENT SYSTEM -->
-    <!-- Simple Upload/Download Modals -->
-    <div class="modal-overlay" id="hospital-upload-modal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 10000;">
-        <div class="modal" style="background: white; padding: 20px; border-radius: 10px; max-width: 500px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 style="margin: 0;"><i class="fas fa-hospital"></i> Upload Hospital Data</h3>
-                <button onclick="document.getElementById('hospital-upload-modal').style.display = 'none'" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
-            </div>
-            <p>Upload hospital data in JSON or CSV format.</p>
-            <button class="btn btn-primary" onclick="showNotification('Hospital upload would start here'); document.getElementById('hospital-upload-modal').style.display = 'none'" style="width: 100%; padding: 10px;">
-                <i class="fas fa-upload"></i> Upload File
-            </button>
-        </div>
-    </div>
-    
-    <div class="modal-overlay" id="golive-upload-modal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 10000;">
-        <div class="modal" style="background: white; padding: 20px; border-radius: 10px; max-width: 500px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 style="margin: 0;"><i class="fas fa-file-upload"></i> Upload Go-Live Document</h3>
-                <button onclick="document.getElementById('golive-upload-modal').style.display = 'none'" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
-            </div>
-            <p>Upload Go-Live checklists, plans, or templates.</p>
-            <button class="btn btn-primary" onclick="showNotification('Go-Live upload would start here'); document.getElementById('golive-upload-modal').style.display = 'none'" style="width: 100%; padding: 10px;">
-                <i class="fas fa-upload"></i> Upload Document
-            </button>
-        </div>
-    </div>
-</body>
+<!-- COMPLETE MEDIA MANAGEMENT SYSTEM --></body>
 </html>
