@@ -1,0 +1,2676 @@
+    <script src="test-openai-setup.js"></script>
+    <script src="test-openai-setup.js"></script>
+    <script src="fixed-openai.js"></script>
+    <script src="ai-faq-integration.js"></script></body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epic EMR Trainer Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-hospital-user"></i>
+                <span>Epic EMR Trainer Assistant</span>
+            </div>
+            <div class="user-actions">
+                <div class="premium-badge" id="premium-status">
+                    <i class="fas fa-crown"></i>
+                    <span>Free Plan</span>
+                </div>
+                <button id="login-btn" class="btn btn-primary"><i class="fas fa-user"></i> Trainer Login</button>
+            </div>
+        </div>
+    </header>
+    
+    <nav>
+        <ul class="nav-tabs">
+            <li><a href="#dashboard" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="#hospitals" class="nav-link"><i class="fas fa-hospital"></i> Hospital Systems</a></li>
+            <li><a href="#playground" class="nav-link"><i class="fas fa-gamepad"></i> Playground Navigation</a></li>
+            <li><a href="#resources" class="nav-link"><i class="fas fa-book"></i> Resources</a></li>
+            <li><a href="#faq" class="nav-link"><i class="fas fa-question-circle"></i> FAQ</a></li>
+            <li><a href="#go-live" class="nav-link"><i class="fas fa-rocket"></i> Go-Live Support</a></li>
+            <li><a href="#profile" class="nav-link"><i class="fas fa-user"></i> My Profile</a></li>
+            <li><a href="#premium" class="nav-link"><i class="fas fa-crown"></i> Premium</a></li>
+        </ul>
+    </nav>
+    
+    <main>
+        <!-- Dashboard Tab -->
+        <section id="dashboard" class="tab-content active">
+            <h2>Welcome, Epic Trainer</h2>
+            <p class="subtitle">Your central hub for Epic EMR training resources</p>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-box" placeholder="Search across all hospitals, resources, and FAQs...">
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fas fa-hospital"></i>
+                    <h3 id="hospital-count">6</h3>
+                    <p>Hospital Systems</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>156</h3>
+                    <p>Training Resources</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-question-circle"></i>
+                    <h3 id="faq-count">12</h3>
+                    <p>Answered FAQs</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-sync-alt"></i>
+                    <h3>6</h3>
+                    <p>System Updates This Month</p>
+                </div>
+            </div>
+            
+            <h3>Recently Added Hospitals</h3>
+            <div class="hospital-grid" id="dashboard-hospitals">
+                <!-- Hospitals will be dynamically rendered here -->
+            </div>
+            
+            <h3>Recent Resources</h3>
+            <div class="resource-grid">
+                <div class="resource-card">
+                    <div class="premium-lock" title="Premium feature">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>Epic 2023 Upgrade Guide</h3>
+                    <div class="resource-meta">
+                        <span>PDF Document</span>
+                        <span>2.4 MB</span>
+                    </div>
+                    <p>Complete guide to new features and changes in Epic 2023 version.</p>
+                    <button class="btn btn-primary" onclick="downloadFile('Epic-2023-Upgrade-Guide.pdf')"><i class="fas fa-download"></i> Download</button>
+                    <button class="btn btn-outline save-btn" data-id="doc-001" data-type="resource" data-premium="true"><i class="fas fa-bookmark"></i> Save</button>
+                </div>
+                
+                <div class="resource-card">
+                    <div class="premium-lock" title="Premium feature">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>Playground Navigation Video</h3>
+                    <div class="resource-meta">
+                        <span>Video Tutorial</span>
+                        <span>15:32 min</span>
+                    </div>
+                    <p>Step-by-step guide to setting up and using the Epic playground environment.</p>
+                    <button class="btn btn-primary" onclick="playVideo('/resources/playground-navigation.mp4')"><i class="fas fa-play-circle"></i> Watch</button>
+                    <button class="btn btn-outline save-btn" data-id="doc-002" data-type="resource" data-premium="true"><i class="fas fa-bookmark"></i> Save</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Hospitals Tab -->
+        <section id="hospitals" class="tab-content">
+            <h2>Hospital Systems</h2>
+            <p>Comprehensive database of hospital Epic implementations</p>
+            
+            
+            <div class="section-actions" style="margin-bottom: 20px;">
+                <button class="btn btn-primary" onclick="showHospitalUploadModal()">
+                    <i class="fas fa-upload"></i> Upload Hospital Data
+                </button>
+                <button class="btn btn-success" onclick="exportAllHospitals()">
+                    <i class="fas fa-download"></i> Export Hospital Database
+                </button>
+                <button class="btn btn-info" onclick="showHospitalTemplate()">
+                    <i class="fas fa-file-excel"></i> Download Template
+                </button>
+            </div>
+        <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-box" placeholder="Search hospital systems...">
+            </div>
+            
+            <div class="hospital-grid" id="hospital-list">
+                <!-- Hospitals will be dynamically rendered here -->
+            </div>
+        </section>
+        
+        <!-- Playground Navigation Tab -->
+        <section id="playground" class="tab-content">
+            <h2>Epic Playground Navigation</h2>
+            <p>Guidance for using the Epic training environments</p>
+            
+            <div class="faq-container">
+
+    <div class="search-section" id="faq-search">
+        <div class="search-box-container">
+            <input type="text" placeholder="Ask AI anything about Epic..." class="search-box">
+            <button class="search-btn">
+                <i class="fas fa-search"></i> Search with AI
+            </button>
+        </div>
+        <div class="search-tips">
+            <p><i class="fas fa-lightbulb"></i> <strong>AI Tip:</strong> Ask questions like "How to configure SmartPhrases?" or "Playground access requirements"</p>
+        </div>
+    </div>
+                <!-- FAQs will be dynamically rendered here -->
+            </div>
+        </section>
+        
+        <!-- Resources Tab -->
+        <section id="resources" class="tab-content">
+            <h2>Epic Resources</h2>
+            <p>Training materials, guides, and documentation</p>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-box" placeholder="Search resources...">
+            </div>
+            
+            <button class="btn btn-primary" id="upload-resource-btn"><i class="fas fa-upload"></i> Upload New Resource</button>
+            <button class="btn btn-success" onclick="openSimulator()" style="margin-left: 10px;">
+                <i class="fas fa-laptop-medical"></i> Training Simulator
+            </button>            
+            <div class="resource-grid">
+                <div class="resource-card">
+                    <div class="premium-lock" title="Premium feature">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>Epic Fundamentals Training Guide</h3>
+                    <div class="resource-meta">
+                        <span>PDF Document</span>
+                        <span>5.2 MB</span>
+                    </div>
+                    <p>Complete guide to Epic fundamentals for new trainers.</p>
+                    <button class="btn btn-primary" onclick="downloadFile('Epic-2023-Upgrade-Guide.pdf')"><i class="fas fa-download"></i> Download</button>
+                    <button class="btn btn-outline save-btn" data-id="res-001" data-type="resource" data-premium="true"><i class="fas fa-bookmark"></i> Save</button>
+                </div>
+                
+                <div class="resource-card">
+                    <div class="premium-lock" title="Premium feature">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>MyChart Patient Portal Tutorial</h3>
+                    <div class="resource-meta">
+                        <span>Video</span>
+                        <span>22:15 min</span>
+                    </div>
+                    <p>Detailed walkthrough of MyChart features and patient communication tools.</p>
+                    <button class="btn btn-primary" onclick="playVideo('/resources/mychart-tutorial.mp4')"><i class="fas fa-play-circle"></i> Watch</button>
+                    <button class="btn btn-outline save-btn" data-id="res-002" data-type="resource" data-premium="true"><i class="fas fa-bookmark"></i> Save</button>
+                </div>
+                
+                <div class="resource-card">
+                    <div class="premium-lock" title="Premium feature">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>Clinical Documentation Templates</h3>
+                    <div class="resource-meta">
+                        <span>ZIP File</span>
+                        <span>3.7 MB</span>
+                    </div>
+                    <p>Collection of customizable clinical documentation templates.</p>
+                    <button class="btn btn-primary" onclick="downloadFile('Epic-Fundamentals-Guide.pdf')"><i class="fas fa-download"></i> Download</button>
+                    <button class="btn btn-outline save-btn" data-id="res-003" data-type="resource" data-premium="true"><i class="fas fa-bookmark"></i> Save</button>
+                </div>
+                
+                <div class="resource-card">
+                    <div class="premium-lock" title="Premium feature">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>Reporting Workbench Guide</h3>
+                    <div class="resource-meta">
+                        <span>PDF Document</span>
+                        <span>4.1 MB</span>
+                    </div>
+                    <p>Creating and customizing reports in Epic.</p>
+                    <button class="btn btn-primary" onclick="downloadFile('Clinical-Documentation-Templates.zip')"><i class="fas fa-download"></i> Download</button>
+                    <button class="btn btn-outline save-btn" data-id="res-004" data-type="resource" data-premium="true"><i class="fas fa-bookmark"></i> Save</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- FAQ Tab -->
+        <section id="faq" class="tab-content">
+            <h2>Frequently Asked Questions</h2>
+            <p>Find answers to common Epic navigation questions</p>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-box" placeholder="Search FAQs...">
+            </div>
+            
+            <div class="faq-container" id="faq-list">
+
+    <div class="search-section" id="faq-search">
+        <div class="search-box-container">
+            <input type="text" placeholder="Ask AI anything about Epic..." class="search-box">
+            <button class="search-btn">
+                <i class="fas fa-search"></i> Search with AI
+            </button>
+        </div>
+        <div class="search-tips">
+            <p><i class="fas fa-lightbulb"></i> <strong>AI Tip:</strong> Ask questions like "How to configure SmartPhrases?" or "Playground access requirements"</p>
+        </div>
+    </div>
+                <!-- FAQs will be dynamically rendered here -->
+            </div>
+        </section>
+        
+        <!-- Enhanced Go-Live Support Section -->
+<section id="go-live" class="tab-content">
+    <div class="go-live-header">
+        <h2><i class="fas fa-rocket"></i> Epic Go-Live Command Center</h2>
+        <p class="subtitle">Complete toolkit for successful Epic implementations</p>
+    </div>
+    
+    <!-- Live Status Dashboard -->
+    <div class="live-status-dashboard">
+        <h3><i class="fas fa-broadcast-tower"></i> Live System Status</h3>
+        <div class="status-grid">
+            <div class="status-card status-operational">
+                <div class="status-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="status-info">
+                    <h4>EPIC EHR System</h4>
+                    <p>Operational - All modules online</p>
+                    <small>Last updated: Just now</small>
+                </div>
+            </div>
+            <div class="status-card status-warning">
+                <div class="status-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="status-info">
+                    <h4>Billing Module</h4>
+                    <p>Scheduled maintenance: 10-11 AM</p>
+                    <small>Impact: Medium</small>
+                </div>
+            </div>
+            <div class="status-card status-operational">
+                <div class="status-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="status-info">
+                    <h4>Patient Portal</h4>
+                    <p>Operational - Normal response times</p>
+                    <small>Users online: 2,457</small>
+                </div>
+            </div>
+            <div class="status-card status-operational">
+                <div class="status-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="status-info">
+                    <h4>Support Center</h4>
+                    <p>24/7 Active - All teams staffed</p>
+                    <small>Calls in queue: 3</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Go-Live Phases -->
+    <h3><i class="fas fa-project-diagram"></i> Go-Live Implementation Phases</h3>
+    <div class="phase-timeline">
+        <div class="phase-phase">
+            <div class="phase-number">1</div>
+            <div class="phase-content">
+                <h4><i class="fas fa-clipboard-check"></i> Preparation (D-30 to D-7)</h4>
+                <ul>
+                    <li><strong>Command Center Setup:</strong> Physical space, technology, staffing</li>
+                    <li><strong>Training Completion:</strong> 100% of end-users trained</li>
+                    <li><strong>System Validation:</strong> Full dress rehearsal</li>
+                    <li><strong>Communication Plan:</strong> Stakeholder updates ready</li>
+                </ul>
+                <button class="btn btn-primary phase-btn"><i class="fas fa-download"></i> Download Checklist</button>
+            </div>
+        </div>
+        
+        <div class="phase-phase">
+            <div class="phase-number">2</div>
+            <div class="phase-content">
+                <h4><i class="fas fa-bullhorn"></i> Go-Live Day (D-0)</h4>
+                <ul>
+                    <li><strong>Command Center Active:</strong> 24/7 monitoring begins</li>
+                    <li><strong>Real-time Issue Tracking:</strong> Live dashboard updates</li>
+                    <li><strong>Leadership Updates:</strong> Hourly briefings</li>
+                    <li><strong>At-the-Elbow Support:</strong> All clinical areas covered</li>
+                </ul>
+                <button class="btn btn-primary phase-btn"><i class="fas fa-tv"></i> View Live Dashboard</button>
+            </div>
+        </div>
+        
+        <div class="phase-phase">
+            <div class="phase-number">3</div>
+            <div class="phase-content">
+                <h4><i class="fas fa-headset"></i> Hypercare (D+1 to D+14)</h4>
+                <ul>
+                    <li><strong>Intensive Support:</strong> 24/7 coverage continues</li>
+                    <li><strong>Issue Resolution:</strong> Priority 1 within 1 hour</li>
+                    <li><strong>Performance Monitoring:</strong> System metrics tracked</li>
+                    <li><strong>User Feedback:</strong> Daily satisfaction surveys</li>
+                </ul>
+                <button class="btn btn-primary phase-btn"><i class="fas fa-chart-line"></i> View Metrics</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Go-Live FAQ Section -->
+    <h3><i class="fas fa-question-circle"></i> Go-Live Frequently Asked Questions</h3>
+    <div class="faq-grid">
+        <div class="faq-category">
+            <h4><i class="fas fa-users"></i> Staffing & Planning</h4>
+            <div class="faq-item">
+                <div class="faq-question">How many support staff do we need? <span>+</span></div>
+                <div class="faq-answer">
+                    <p><strong>Industry standard ratios:</strong></p>
+                    <ul>
+                        <li><strong>Tier 1 (At-the-elbow):</strong> 1:50 (2 per 100 users)</li>
+                        <li><strong>Tier 2 (Command Center):</strong> 1:100 (1 per 100 users)</li>
+                        <li><strong>Tier 3 (Analyst/Builder):</strong> 1:200 (0.5 per 100 users)</li>
+                    </ul>
+                    <p><em>Note:</em> Increase ratios for ED, OR, ICU (1:25 recommended).</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">What's the command center setup checklist? <span>+</span></div>
+                <div class="faq-answer">
+                    <p><strong>Essential Command Center Requirements:</strong></p>
+                    <ul>
+                        <li><strong>Physical Space:</strong> Large room with multiple work areas</li>
+                        <li><strong>Technology:</strong> Multiple large displays, dedicated phones</li>
+                        <li><strong>Staffing:</strong> Clear roles, shift schedules, escalation paths</li>
+                        <li><strong>Communication:</strong> Direct lines to leadership, status boards</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="faq-category">
+            <h4><i class="fas fa-chart-line"></i> Metrics & Monitoring</h4>
+            <div class="faq-item">
+                <div class="faq-question">What metrics should we track during go-live? <span>+</span></div>
+                <div class="faq-answer">
+                    <p><strong>Critical Go-Live Metrics:</strong></p>
+                    <ul>
+                        <li><strong>Ticket Volume:</strong> Total and by priority level</li>
+                        <li><strong>Resolution Time:</strong> Average time to close tickets</li>
+                        <li><strong>First Call Resolution:</strong> Percentage resolved at Tier 1</li>
+                        <li><strong>System Performance:</strong> Downtime, response times</li>
+                        <li><strong>User Satisfaction:</strong> Real-time feedback scores</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">What's the difference between Hypercare and Sustainment? <span>+</span></div>
+                <div class="faq-answer">
+                    <p><strong>Hypercare (Days 1-14):</strong></p>
+                    <ul>
+                        <li>24/7 support coverage</li>
+                        <li>At-the-elbow support in all areas</li>
+                        <li>Leadership updates every 2-4 hours</li>
+                        <li>Focus: Immediate issue resolution</li>
+                    </ul>
+                    <p><strong>Sustainment (Day 15+):</strong></p>
+                    <ul>
+                        <li>Normal business hours support</li>
+                        <li>Scheduled optimization sessions</li>
+                        <li>Monthly metrics reporting</li>
+                        <li>Focus: Optimization and training</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="faq-category">
+            <h4><i class="fas fa-user-md"></i> Clinical Support</h4>
+            <div class="faq-item">
+                <div class="faq-question">How do we handle physician resistance? <span>+</span></div>
+                <div class="faq-answer">
+                    <p><strong>Physician Engagement Strategies:</strong></p>
+                    <ul>
+                        <li><strong>Physician Champions:</strong> Identify and empower early adopters</li>
+                        <li><strong>Specialty Training:</strong> Custom sessions for each department</li>
+                        <li><strong>Just-in-Time Support:</strong> Trainers available in clinical areas</li>
+                        <li><strong>Efficiency Tools:</strong> Highlight SmartPhrases, SmartTools</li>
+                        <li><strong>Quick Wins:</strong> Demonstrate immediate benefits in Week 1</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">What are critical success factors for ED/OR/ICU? <span>+</span></div>
+                <div class="faq-answer">
+                    <p><strong>High-Acacity Area Requirements:</strong></p>
+                    <ul>
+                        <li><strong>Higher Staffing Ratios:</strong> 1:25 for ED/OR/ICU</li>
+                        <li><strong>Specialized Training:</strong> Scenario-based for emergencies</li>
+                        <li><strong>Downtime Procedures:</strong> Clear paper backup processes</li>
+                        <li><strong>Physician Super Users:</strong> Dedicated physician support</li>
+                        <li><strong>Real-time Monitoring:</strong> Constant system performance checks</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Support Contacts -->
+    <div class="support-contacts">
+        <h3><i class="fas fa-headset"></i> 24/7 Support Contacts</h3>
+        <div class="contact-grid">
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-phone-alt"></i>
+                </div>
+                <div class="contact-info">
+                    <h4>Command Center</h4>
+                    <p class="contact-number">(555) 123-4567</p>
+                    <p class="contact-hours">24/7 - Priority 1-3 Issues</p>
+                </div>
+            </div>
+            
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <div class="contact-info">
+                    <h4>Physician Support</h4>
+                    <p class="contact-number">(555) 234-5678</p>
+                    <p class="contact-hours">6 AM - 10 PM Daily</p>
+                </div>
+            </div>
+            
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-user-nurse"></i>
+                </div>
+                <div class="contact-info">
+                    <h4>Nursing Support</h4>
+                    <p class="contact-number">(555) 345-6789</p>
+                    <p class="contact-hours">24/7 - All Units</p>
+                </div>
+            </div>
+            
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-clinic-medical"></i>
+                </div>
+                <div class="contact-info">
+                    <h4>Ambulatory Support</h4>
+                    <p class="contact-number">(555) 456-7890</p>
+                    <p class="contact-hours">7 AM - 7 PM Weekdays</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Resources -->
+    <h3><i class="fas fa-download"></i> Quick Resources</h3>
+    <div class="resource-grid">
+        <div class="resource-card">
+            <div class="resource-icon">
+                <i class="fas fa-clipboard-list"></i>
+            </div>
+            <h4>Go-Live Checklist</h4>
+            <p>120-item comprehensive checklist with timelines</p>
+            <button class="btn btn-primary" onclick="downloadFile('Go-Live-Checklist.xlsx')"><i class="fas fa-download"></i> Download Excel</button>
+        </div>
+        
+        <div class="resource-card">
+            <div class="resource-icon">
+                <i class="fas fa-building"></i>
+            </div>
+            <h4>Command Center Guide</h4>
+            <p>Step-by-step setup guide with floor plans</p>
+            <button class="btn btn-primary" onclick="downloadFile('Command-Center-Guide.pdf')"><i class="fas fa-download"></i> Download PDF</button>
+        </div>
+        
+        <div class="resource-card">
+            <div class="resource-icon">
+                <i class="fas fa-calculator"></i>
+            </div>
+            <h4>Staffing Calculator</h4>
+            <p>Interactive tool to calculate support needs</p>
+            <button class="btn btn-primary" onclick="downloadFile('Staffing-Calculator.xlsx')"><i class="fas fa-download"></i> Download Tool</button>
+        </div>
+        
+        <div class="resource-card">
+            <div class="resource-icon">
+                <i class="fas fa-chart-bar"></i>
+            </div>
+            <h4>Metrics Dashboard</h4>
+            <p>Template for tracking go-live performance</p>
+            <button class="btn btn-primary" onclick="downloadFile('Metrics-Dashboard-Template.xlsx')"><i class="fas fa-download"></i> Download Template</button>
+        </div>
+    </div>
+</section>
+
+        <!-- Profile Tab -->
+        <section id="profile" class="tab-content">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div>
+                    <h2>John Smith</h2>
+                    <p>Epic Certified Trainer</p>
+                    <p>Mercy General Hospital</p>
+                    <div class="premium-badge">
+                        <i class="fas fa-crown"></i>
+                        <span>Free Plan</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="premium-upgrade">
+                <h2><i class="fas fa-crown"></i> Upgrade to Premium</h2>
+                <p>Unlock the ability to save hospitals, resources, and FAQs to your personal profile</p>
+                <button class="btn btn-premium pulse" id="upgrade-btn"><i class="fas fa-star"></i> Upgrade Now</button>
+                <button class="btn btn-info" onclick="openStaffingCalculator()" style="margin-left: 10px;">
+                    <i class="fas fa-calculator"></i> Staffing Calculator
+                </button>                
+                <div class="premium-features">
+                    <div class="premium-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Save hospitals to your profile</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Save resources and documentation</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Save FAQ answers for quick reference</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Add personal notes to saved items</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Access your saved content from any device</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Organize content with custom categories</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="profile-tabs">
+                <div class="profile-tab active" data-tab="saved">Saved Content</div>
+                <div class="profile-tab" data-tab="uploads">My Uploads</div>
+                <div class="profile-tab" data-tab="questions">My Questions</div>
+                <div class="profile-tab" data-tab="settings">Settings</div>
+            </div>
+            
+            <div class="profile-content">
+                <div class="profile-tab-content active" id="saved-tab">
+                    <div class="premium-upgrade">
+                        <h2><i class="fas fa-lock"></i> Premium Feature</h2>
+                        <p>Upgrade to Premium to save hospitals, resources, and FAQs to your personal profile</p>
+                        <button class="btn btn-premium" id="upgrade-btn-2"><i class="fas fa-crown"></i> Upgrade to Premium</button>
+                    </div>
+                </div>
+                
+                <div class="profile-tab-content" id="uploads-tab">
+                    <h3>My Uploaded Resources</h3>
+                    <p>You haven't uploaded any resources yet.</p>
+                    <button class="btn btn-primary" id="upload-from-profile-btn"><i class="fas fa-upload"></i> Upload Your First Resource</button>
+                </div>
+                
+                <div class="profile-tab-content" id="questions-tab">
+                    <h3>My Questions</h3>
+                    <p>You haven't asked any questions yet.</p>
+                </div>
+                
+                <div class="profile-tab-content" id="settings-tab">
+                    <h3>Account Settings</h3>
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" class="form-control" id="name" value="John Smith">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" class="form-control" id="email" value="john.smith@mercygeneral.org">
+                    </div>
+                    <div class="form-group">
+                        <label for="hospital">Primary Hospital</label>
+                        <select class="form-control" id="hospital">
+                            <option value="mercy">Mercy General Hospital</option>
+                            <option value="mayo">Mayo Clinic</option>
+                            <option value="hopkins">Johns Hopkins Hospital</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="certification">Epic Certification</label>
+                        <input type="text" class="form-control" id="certification" value="Epic Physician Trainer Certified">
+                    </div>
+                    <button class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Premium Tab -->
+        <section id="premium" class="tab-content">
+            <h2><i class="fas fa-crown"></i> Epic Trainer Premium</h2>
+            <p class="subtitle">Upgrade your experience with powerful profile features</p>
+            
+            <div class="premium-upgrade">
+                <h2>Unlock Premium Features</h2>
+                <p>Get access to personalized profile features designed for Epic trainers</p>
+                
+                <div class="premium-features">
+                    <div class="premium-feature">
+                        <i class="fas fa-bookmark"></i>
+                        <span>Save hospitals, resources, and FAQs to your profile</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-sticky-note"></i>
+                        <span>Add personal notes to saved content</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-folder"></i>
+                        <span>Organize content with custom categories</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>Access your profile from any device</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-search"></i>
+                        <span>Save search history and preferences</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-cloud-download-alt"></i>
+                        <span>Download resources for offline access</span>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>Choose Your Plan</h3>
+            <div class="pricing-plans">
+                <div class="pricing-plan">
+                    <h4>Free</h4>
+                    <div class="plan-price">$0<span>/month</span></div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Access to all hospitals</li>
+                        <li><i class="fas fa-check"></i> Browse resources</li>
+                        <li><i class="fas fa-check"></i> Read FAQs</li>
+                        <li><i class="fas fa-times"></i> <span class="text-muted">Save to profile</span></li>
+                        <li><i class="fas fa-times"></i> <span class="text-muted">Personal notes</span></li>
+                        <li><i class="fas fa-times"></i> <span class="text-muted">Offline access</span></li>
+                    </ul>
+                    <button class="btn btn-outline" disabled>Current Plan</button>
+                </div>
+                
+                <div class="pricing-plan popular">
+                    <div class="popular-badge">MOST POPULAR</div>
+                    <h4>Premium Monthly</h4>
+                    <div class="plan-price">$9.99<span>/month</span></div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Everything in Free</li>
+                        <li><i class="fas fa-check"></i> Save unlimited items</li>
+                        <li><i class="fas fa-check"></i> Add personal notes</li>
+                        <li><i class="fas fa-check"></i> Organize with categories</li>
+                        <li><i class="fas fa-check"></i> Search history</li>
+                        <li><i class="fas fa-check"></i> Offline access</li>
+                    </ul>
+                    <button class="btn btn-premium"><i class="fas fa-crown"></i> Upgrade Now</button>
+                </div>
+                
+                <div class="pricing-plan">
+                    <h4>Premium Annual</h4>
+                    <div class="plan-price">$99.99<span>/year</span></div>
+                    <div class="small">Save $20 compared to monthly</div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Everything in Free</li>
+                        <li><i class="fas fa-check"></i> Save unlimited items</li>
+                        <li><i class="fas fa-check"></i> Add personal notes</li>
+                        <li><i class="fas fa-check"></i> Organize with categories</li>
+                        <li><i class="fas fa-check"></i> Search history</li>
+                        <li><i class="fas fa-check"></i> Offline access</li>
+                    </ul>
+                    <button class="btn btn-premium"><i class="fas fa-crown"></i> Upgrade Now</button>
+                </div>
+            </div>
+            
+            <div class="premium-upgrade">
+                <h2>Frequently Asked Questions</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question">What payment methods do you accept? <span>+</span></div>
+                    <div class="faq-answer">
+                        <p>We accept all major credit cards, PayPal, and Apple Pay for your convenience.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Can I cancel my subscription anytime? <span>+</span></div>
+                    <div class="faq-answer">
+                        <p>Yes, you can cancel your subscription at any time. Your premium features will remain active until the end of your billing period.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Will I lose my saved data if I cancel? <span>+</span></div>
+                    <div class="faq-answer">
+                        <p>Your saved data will be preserved for 6 months after cancellation. If you resubscribe within that time, you'll regain access to all your saved content.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Is there a free trial? <span>+</span></div>
+                    <div class="faq-answer">
+                        <p>Yes, we offer a 7-day free trial for new premium subscribers. No credit card required to start the trial.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>Epic EMR Trainer Assistant | For training purposes only</p>
+        <p>This application is not affiliated with Epic Systems Corporation</p>
+        <p>© 2023 Epic EMR Trainer Assistant. All rights reserved.</p>
+    </footer>
+
+    <!-- MODALS GO HERE (NOT BEFORE <body>) -->
+    <!-- Upload Resource Modal -->
+    <div class="modal-overlay" id="upload-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Upload Epic Documentation</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            
+            <div class="file-upload" id="file-upload-area">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Click to select a file or drag and drop here</p>
+                <p class="small">Maximum file size: 50MB</p>
+                <input type="file" id="file-input" style="display: none;">
+            </div>
+            
+            <div id="file-info" style="display: none;">
+                <h4>Selected file: <span id="file-name"></span></h4>
+                <p>Size: <span id="file-size"></span></p>
+            </div>
+            
+            <div class="form-group">
+                <label for="doc-title">Document Title</label>
+                <input type="text" class="form-control" id="doc-title" placeholder="Enter a descriptive title">
+            </div>
+            
+            <div class="form-group">
+                <label for="doc-description">Description</label>
+                <textarea class="form-control" id="doc-description" placeholder="Describe what this document contains"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="doc-category">Category</label>
+                <select class="form-control" id="doc-category">
+                    <option value="">Select a category</option>
+                    <option value="user-guide">User Guide</option>
+                    <option value="training-manual">Training Manual</option>
+                    <option value="release-notes">Release Notes</option>
+                    <option value="cheat-sheet">Cheat Sheet</option>
+                    <option value="presentation">Presentation</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="doc-tags">Tags (comma separated)</label>
+                <input type="text" class="form-control" id="doc-tags" placeholder="e.g., billing, clinical, reports">
+            </div>
+            
+            <div class="form-group">
+                <label for="doc-hospital">Related Hospital (optional)</label>
+                <select class="form-control" id="doc-hospital">
+                    <option value="">Select a hospital</option>
+                    <option value="mercy">Mercy General Hospital</option>
+                    <option value="mayo">Mayo Clinic</option>
+                    <option value="hopkins">Johns Hopkins Hospital</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="checkbox">
+                    <input type="checkbox" id="doc-public"> Make this document public for all users
+                </label>
+            </div>
+            
+            <button class="btn btn-primary" id="start-upload-btn" disabled><i class="fas fa-upload"></i> Upload Document</button>
+        </div>
+    </div>
+    
+    <!-- Upgrade Modal -->
+    <div class="modal-overlay" id="upgrade-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-crown"></i> Upgrade to Premium</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            
+            <div class="premium-upgrade">
+                <h3>Start Your 7-Day Free Trial</h3>
+                <p>Get immediate access to all premium features</p>
+                
+                <div class="plan-price">$9.99<span>/month after trial</span></div>
+                
+                <div class="premium-features">
+                    <div class="premium-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Save hospitals to your profile</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Save resources and documentation</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Save FAQ answers for quick reference</span>
+                    </div>
+                    <div class="premium-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Add personal notes to saved items</span>
+                    </div>
+                </div>
+                
+                <button class="btn btn-premium" id="start-trial-btn"><i class="fas fa-play-circle"></i> Start Free Trial</button>
+                <p class="small">No credit card required. Cancel anytime.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ==================== API URL HELPER ====================
+    function getApiUrl(endpoint) {
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            return `http://localhost:3000/${endpoint}`;
+        }
+        return `/.netlify/functions/${endpoint}`;
+    }
+    
+    // ==================== ORIGINAL APP CORE ====================
+    const userState = {
+        isPremium: false,
+        savedItems: [],
+        currentUser: null
+    };
+
+    // Sample data - MAKE SURE THIS IS DEFINED
+        // Sample data - COMPLETE VERSION
+    const hospitals = [
+    { 
+        id: 1, 
+        name: "Mayo Clinic", 
+        version: "Epic 2022", 
+        modules: ["Radiant", "Beaker", "OpTime", "Research", "Cadence", "Prelude"], 
+        notes: "Uses special billing modules and research functionality. Strong focus on oncology and cardiology.",
+        lastUpdated: "2023-10-15",
+        goLiveDate: "2022-06-15",
+        epicTeamSize: 58,
+        trainingRooms: 12,
+        supportModel: "24/7 Tier 1-3 with specialty pods",
+        specialtyAreas: ["Oncology", "Cardiology", "Transplant", "Neurology"],
+        contact: {
+            name: "Dr. Sarah Johnson",
+            email: "sjohnson@mayoclinic.org",
+            phone: "(555) 123-4567",
+            role: "Epic Principal Trainer"
+        },
+        epicContacts: [
+            { role: "Principal Trainer", name: "Sarah Johnson", email: "sjohnson@mayoclinic.org", phone: "(555) 123-4567" },
+            { role: "Analyst Lead", name: "Michael Roberts", email: "mroberts@mayoclinic.org", phone: "(555) 123-4568" },
+            { role: "Physician Builder", name: "Dr. James Wilson", email: "jwilson@mayoclinic.org", phone: "(555) 123-4569" }
+        ],
+        stats: {
+            usersTrained: 1250,
+            goLiveSuccess: 98,
+            supportTickets: 45,
+            avgResolutionTime: "2.3 hours"
+        }
+    },
+    { 
+        id: 2, 
+        name: "Johns Hopkins Hospital", 
+        version: "Epic 2023", 
+        modules: ["Care Everywhere", "MyChart", "Healthy Planet", "Research", "Cupid"], 
+        notes: "Research-focused customization with specialized modules. Early adopter of new Epic features.",
+        lastUpdated: "2023-11-05",
+        goLiveDate: "2023-03-22",
+        epicTeamSize: 42,
+        trainingRooms: 8,
+        supportModel: "Dedicated specialty support teams",
+        specialtyAreas: ["Research", "Pediatrics", "Genomics", "Telemedicine"],
+        contact: {
+            name: "Michael Chen",
+            email: "mchen@jh.edu",
+            phone: "(555) 234-5678",
+            role: "Epic Training Director"
+        },
+        epicContacts: [
+            { role: "Training Director", name: "Michael Chen", email: "mchen@jh.edu", phone: "(555) 234-5678" },
+            { role: "Research Lead", name: "Dr. Amanda Lee", email: "alee@jh.edu", phone: "(555) 234-5679" },
+            { role: "Clinical Informatics", name: "Robert Kim", email: "rkim@jh.edu", phone: "(555) 234-5680" }
+        ],
+        stats: {
+            usersTrained: 980,
+            goLiveSuccess: 96,
+            supportTickets: 32,
+            avgResolutionTime: "3.1 hours"
+        }
+    },
+    { 
+        id: 3, 
+        name: "Massachusetts General Hospital", 
+        version: "Epic 2022", 
+        modules: ["Cadence", "Prelude", "Grand Central", "Beaker", "Radiant"], 
+        notes: "Integrated with Partners healthcare system. Strong emphasis on patient portal implementation.",
+        lastUpdated: "2023-09-22",
+        goLiveDate: "2021-11-30",
+        epicTeamSize: 67,
+        trainingRooms: 15,
+        supportModel: "Hub-and-spoke with central command",
+        specialtyAreas: ["Emergency Medicine", "Psychiatry", "Rheumatology", "Orthopedics"],
+        contact: {
+            name: "Emily Rodriguez",
+            email: "erodriguez@mgh.harvard.edu",
+            phone: "(555) 345-6789",
+            role: "Epic Program Manager"
+        },
+        epicContacts: [
+            { role: "Program Manager", name: "Emily Rodriguez", email: "erodriguez@mgh.harvard.edu", phone: "(555) 345-6789" },
+            { role: "Emergency Med Lead", name: "Dr. David Park", email: "dpark@mgh.harvard.edu", phone: "(555) 345-6790" },
+            { role: "MyChart Specialist", name: "Jennifer Wong", email: "jwong@mgh.harvard.edu", phone: "(555) 345-6791" }
+        ],
+        stats: {
+            usersTrained: 2100,
+            goLiveSuccess: 99,
+            supportTickets: 67,
+            avgResolutionTime: "1.8 hours"
+        }
+    },
+    { 
+        id: 4, 
+        name: "Cleveland Clinic", 
+        version: "Epic 2023", 
+        modules: ["Hyperspace", "Cupid", "Bones", "MyChart", "Healthy Planet"], 
+        notes: "Cardiology specialty focus with custom modules. Strong telemedicine integration.",
+        lastUpdated: "2023-11-12",
+        goLiveDate: "2023-01-10",
+        epicTeamSize: 53,
+        trainingRooms: 10,
+        supportModel: "Cardiology-focused tiered support",
+        specialtyAreas: ["Cardiology", "Cardiac Surgery", "Vascular", "Tele-ICU"],
+        contact: {
+            name: "Robert Williams",
+            email: "rwilliams@clevelandclinic.org",
+            phone: "(555) 456-7890",
+            role: "Cardiology Epic Lead"
+        },
+        epicContacts: [
+            { role: "Cardiology Lead", name: "Robert Williams", email: "rwilliams@clevelandclinic.org", phone: "(555) 456-7890" },
+            { role: "Surgery Analyst", name: "Dr. Thomas Brown", email: "tbrown@clevelandclinic.org", phone: "(555) 456-7891" },
+            { role: "Telemedicine Lead", name: "Susan Davis", email: "sdavis@clevelandclinic.org", phone: "(555) 456-7892" }
+        ],
+        stats: {
+            usersTrained: 1450,
+            goLiveSuccess: 97,
+            supportTickets: 41,
+            avgResolutionTime: "2.5 hours"
+        }
+    },
+    { 
+        id: 5, 
+        name: "UCSF Medical Center", 
+        version: "Epic 2022", 
+        modules: ["Beaker", "Willow", "Phoenix", "Radiant", "Care Everywhere"], 
+        notes: "Academic medical center configuration with research emphasis. Strong pediatric specialization.",
+        lastUpdated: "2023-08-30",
+        goLiveDate: "2022-04-18",
+        epicTeamSize: 49,
+        trainingRooms: 9,
+        supportModel: "Academic research integrated support",
+        specialtyAreas: ["Pediatrics", "Neonatology", "Cancer Research", "Infectious Disease"],
+        contact: {
+            name: "Jennifer Lee",
+            email: "jlee@ucsf.edu",
+            phone: "(555) 567-8901",
+            role: "Academic Epic Director"
+        },
+        epicContacts: [
+            { role: "Academic Director", name: "Jennifer Lee", email: "jlee@ucsf.edu", phone: "(555) 567-8901" },
+            { role: "Research Coordinator", name: "Dr. Mark Taylor", email: "mtaylor@ucsf.edu", phone: "(555) 567-8902" },
+            { role: "Pediatrics Lead", name: "Lisa Martinez", email: "lmartinez@ucsf.edu", phone: "(555) 567-8903" }
+        ],
+        stats: {
+            usersTrained: 1100,
+            goLiveSuccess: 95,
+            supportTickets: 38,
+            avgResolutionTime: "2.8 hours"
+        }
+    },
+    { 
+        id: 6, 
+        name: "NewYork-Presbyterian Hospital", 
+        version: "Epic 2023", 
+        modules: ["Healthy Planet", "MyChart", "Care Companion", "Cadence", "Prelude"], 
+        notes: "Large multi-campus system with unified Epic implementation. Strong population health focus.",
+        lastUpdated: "2023-10-28",
+        goLiveDate: "2023-02-14",
+        epicTeamSize: 72,
+        trainingRooms: 18,
+        supportModel: "Multi-campus command center model",
+        specialtyAreas: ["Population Health", "Multispecialty", "Ambulatory Care", "Behavioral Health"],
+        contact: {
+            name: "David Kim",
+            email: "dkim@nyp.org",
+            phone: "(555) 678-9012",
+            role: "Enterprise Epic Manager"
+        },
+        epicContacts: [
+            { role: "Enterprise Manager", name: "David Kim", email: "dkim@nyp.org", phone: "(555) 678-9012" },
+            { role: "Population Health Lead", name: "Dr. Rachel Green", email: "rgreen@nyp.org", phone: "(555) 678-9013" },
+            { role: "Ambulatory Director", name: "Kevin White", email: "kwhite@nyp.org", phone: "(555) 678-9014" }
+        ],
+        stats: {
+            usersTrained: 2800,
+            goLiveSuccess: 99,
+            supportTickets: 89,
+            avgResolutionTime: "2.1 hours"
+        }
+    }
+];
+
+// US Hospital Database (50+ major hospitals)
+const usHospitals = [
+    { id: 101, name: "Mayo Clinic - Rochester", city: "Rochester", state: "MN", beds: 2057, epicVersion: "Epic 2023", specialties: ["Oncology", "Cardiology", "Gastroenterology"] },
+    { id: 102, name: "Cleveland Clinic", city: "Cleveland", state: "OH", beds: 5460, epicVersion: "Epic 2023", specialties: ["Cardiology", "Urology", "Orthopedics"] },
+    { id: 103, name: "Johns Hopkins Hospital", city: "Baltimore", state: "MD", beds: 1129, epicVersion: "Epic 2023", specialties: ["Neurology", "Psychiatry", "ENT"] },
+    { id: 104, name: "Massachusetts General Hospital", city: "Boston", state: "MA", beds: 1057, epicVersion: "Epic 2022", specialties: ["Diabetes", "Endocrinology", "Cancer"] },
+    { id: 105, name: "UCSF Medical Center", city: "San Francisco", state: "CA", beds: 785, epicVersion: "Epic 2022", specialties: ["Neurology", "Cancer", "Geriatrics"] },
+    { id: 106, name: "UCLA Medical Center", city: "Los Angeles", state: "CA", beds: 485, epicVersion: "Epic 2023", specialties: ["Geriatrics", "Neurology", "Urology"] },
+    { id: 107, name: "NewYork-Presbyterian Hospital", city: "New York", state: "NY", beds: 2681, epicVersion: "Epic 2023", specialties: ["Cardiology", "Neurology", "Gastroenterology"] },
+    { id: 108, name: "Northwestern Memorial Hospital", city: "Chicago", state: "IL", beds: 897, epicVersion: "Epic 2022", specialties: ["Cardiology", "Neurology", "Orthopedics"] },
+    { id: 109, name: "University of Michigan Hospitals", city: "Ann Arbor", state: "MI", beds: 1000, epicVersion: "Epic 2023", specialties: ["Cancer", "Cardiology", "Orthopedics"] },
+    { id: 110, name: "Stanford Health Care", city: "Stanford", state: "CA", beds: 613, epicVersion: "Epic 2023", specialties: ["Cancer", "Cardiology", "Neurology"] },
+    { id: 201, name: "Barnes-Jewish Hospital", city: "St. Louis", state: "MO", beds: 1258, epicVersion: "Epic 2022", specialties: ["Cancer", "Cardiology", "Transplant"] },
+    { id: 202, name: "UT Southwestern Medical Center", city: "Dallas", state: "TX", beds: 882, epicVersion: "Epic 2023", specialties: ["Neurology", "Cancer", "Cardiology"] },
+    { id: 203, name: "Vanderbilt University Medical Center", city: "Nashville", state: "TN", beds: 1069, epicVersion: "Epic 2023", specialties: ["Cancer", "Cardiology", "Pediatrics"] },
+    { id: 204, name: "Duke University Hospital", city: "Durham", state: "NC", beds: 957, epicVersion: "Epic 2023", specialties: ["Cancer", "Cardiology", "Orthopedics"] },
+    { id: 205, name: "University of Washington Medical Center", city: "Seattle", state: "WA", beds: 450, epicVersion: "Epic 2022", specialties: ["Cancer", "Rehabilitation", "Transplant"] },
+    { id: 301, name: "Boston Children's Hospital", city: "Boston", state: "MA", beds: 404, epicVersion: "Epic 2023", specialties: ["Pediatric Cardiology", "Pediatric Cancer", "Neonatology"] },
+    { id: 302, name: "Children's Hospital of Philadelphia", city: "Philadelphia", state: "PA", beds: 546, epicVersion: "Epic 2022", specialties: ["Pediatric Oncology", "Cardiology", "Neonatology"] },
+    { id: 401, name: "VA Greater Los Angeles Healthcare", city: "Los Angeles", state: "CA", beds: 1226, epicVersion: "Epic 2022", specialties: ["Mental Health", "Rehabilitation", "Primary Care"] },
+    { id: 501, name: "Baptist Health Lexington", city: "Lexington", state: "KY", beds: 383, epicVersion: "Epic 2022", specialties: ["Cardiology", "Orthopedics", "Cancer"] },
+    { id: 502, name: "Banner - University Medical Center", city: "Phoenix", state: "AZ", beds: 662, epicVersion: "Epic 2023", specialties: ["Transplant", "Trauma", "Cancer"] },
+];    const faqs = [
+        { 
+            id: 1,
+            question: "How do I access the Epic Playground?", 
+            answer: "Access to the Epic Playground varies by organization. Typically, you need to connect through your organization's VPN and use a specific URL provided by your Epic team. Some organizations require additional authentication steps or special permissions granted by your Epic coordinator.",
+            category: "Access",
+            helpfulCount: 24
+        },
+        { 
+            id: 2,
+            question: "What's the difference between Hyperspace and Hyperdrive?", 
+            answer: "Hyperspace is the traditional Epic interface, while Hyperdrive is the newer, web-based version that offers improved performance and customization options. Hyperdrive allows for faster navigation, better mobile compatibility, and more personalized workspace configurations. Most organizations are transitioning to Hyperdrive, but some modules may still require Hyperspace.",
+            category: "Navigation",
+            helpfulCount: 31
+        },
+        { 
+            id: 3,
+            question: "How often does Epic release updates?", 
+            answer: "Epic typically releases major updates once a year, with smaller updates and patches throughout the year. Organizations can choose when to implement these updates, but most follow a regular schedule. Major updates usually occur in the spring or fall, with preview environments available 3-4 months before the production upgrade.",
+            category: "Updates",
+            helpfulCount: 18
+        },
+        { 
+            id: 4,
+            question: "How can I customize training for different specialties?", 
+            answer: "Epic allows trainers to create specialized training profiles, build custom training environments, and use the Training Wheels feature to guide users through workflows. You can create specialty-specific patient scenarios, develop custom learning paths, and utilize the role-based access configurations to simulate real clinical environments for each specialty.",
+            category: "Training",
+            helpfulCount: 29
+        },
+        { 
+            id: 5,
+            question: "How do I get access to Epic UserWeb?", 
+            answer: "Access to Epic UserWeb is typically provided by your organization's Epic coordinator. You'll need to complete required training and request access through proper channels. Most organizations have a process for requesting UserWeb access that may include completing security training, signing access agreements, and having a legitimate business need for the resource.",
+            category: "Access",
+            helpfulCount: 15
+        },
+        { 
+            id: 6,
+            question: "What's the best way to train physicians on Epic?", 
+            answer: "Physician training works best when it's specialty-specific, concise, and focused on workflow efficiency. Use real clinical scenarios, emphasize time-saving features like SmartTools and SmartPhrases, and provide just-in-time training resources. Many organizations find success with a combination of classroom training, one-on-one coaching, and specialty-specific tip sheets.",
+            category: "Training",
+            helpfulCount: 42
+        },
+        { 
+            id: 7,
+            question: "What are the critical Go-Live support phases?", 
+            answer: "Epic Go-Live typically follows these phases:<br><br><strong>1) Command Center Setup (Day -30):</strong> Physical setup, staffing, equipment<br><strong>2) Dress Rehearsal (Day -7):</strong> Full system test with simulated patients<br><strong>3) Go-Live Day (Day 0):</strong> Live support begins, real patients<br><strong>4) Hypercare (Days 1-14):</strong> 24/7 intensive support<br><strong>5) Sustainment (Day 15+):</strong> Transition to normal operations",
+            category: "Go-Live",
+            helpfulCount: 0
+        },
+        { 
+            id: 8,
+            question: "How many support staff are needed per 100 users?", 
+            answer: "Industry standard staffing ratios for Epic Go-Live:<br><br><strong>Tier 1 (At-the-elbow):</strong> 1:50 ratio (2 staff for 100 users)<br><strong>Tier 2 (Command Center):</strong> 1:100 ratio (1 staff for 100 users)<br><strong>Tier 3 (Analyst/Builder):</strong> 1:200 ratio (0.5 staff for 100 users)<br><br><em>Note:</em> These ratios increase for complex specialties like ED, OR, and ICU.",
+            category: "Staffing",
+            helpfulCount: 0
+        },
+        { 
+            id: 9,
+            question: "What metrics should we track during Go-Live?", 
+            answer: "Critical Go-Live metrics to monitor:<br><br>• <strong>Ticket Volume:</strong> Total and by priority<br>• <strong>Resolution Time:</strong> Average time to close tickets<br>• <strong>First Call Resolution:</strong> Percentage resolved at Tier 1<br>• <strong>User Satisfaction:</strong> Real-time feedback scores<br>• <strong>System Performance:</strong> Downtime, response times<br>• <strong>Clinical Impact:</strong> Patient safety issues<br><br>Track these on a live dashboard visible to leadership.",
+            category: "Metrics",
+            helpfulCount: 0
+        },
+        { 
+            id: 10,
+            question: "How do we handle physician resistance during Go-Live?", 
+            answer: "Strategies for physician adoption:<br><br>1. <strong>Physician Champions:</strong> Identify and empower early adopters<br>2. <strong>Specialty-Specific Training:</strong> Customize for each department<br>3. <strong>Just-in-Time Support:</strong> Have trainers in clinical areas<br>4. <strong>Efficiency Tools:</strong> Emphasize time-saving features (SmartPhrases, SmartTools)<br>5. <strong>Leadership Engagement:</strong> Involve department chairs in planning<br>6. <strong>Quick Wins:</strong> Highlight immediate benefits in first week",
+            category: "Change Management",
+            helpfulCount: 0
+        },
+        { 
+            id: 11,
+            question: "What's the difference between Hypercare and Sustainment?", 
+            answer: "<strong>Hypercare (Days 1-14):</strong><br>• 24/7 support coverage<br>• At-the-elbow support in all clinical areas<br>• Command Center with real-time monitoring<br>• Leadership updates every 2-4 hours<br>• Focus: Immediate issue resolution, patient safety<br><br><strong>Sustainment (Day 15+):</strong><br>• Normal business hours support<br>• Help desk with escalation paths<br>• Scheduled optimization sessions<br>• Monthly metrics reporting<br>• Focus: Optimization, training new users",
+            category: "Support Models",
+            helpfulCount: 0
+        },
+        { 
+            id: 12,
+            question: "How do we prepare the Command Center?", 
+            answer: "Command Center setup checklist:<br><br><strong>Physical Space:</strong><br>• Large room with multiple work areas<br>• Whiteboards/wall monitors for status<br>• Quiet rooms for sensitive calls<br>• Refreshment area for staff<br><br><strong>Technology:</strong><br>• Dedicated phones and headsets<br>• Multiple large-screen displays<br>• Real-time dashboard software<br>• Secure Wi-Fi and network<br><br><strong>Staffing:</strong><br>• Clear roles and responsibilities<br>• Shift schedules posted<br>• Escalation paths defined<br>• Leadership presence",
+            category: "Command Center",
+            helpfulCount: 0
+        }
+    ];
+
+    // ==================== FIXED TAB NAVIGATION ====================
+    // Update the createHospitalCard function to include go-live info
+function createHospitalCard(hospital) {
+    const card = document.createElement('div');
+    card.className = 'hospital-card enhanced';
+    card.innerHTML = `
+        <div class="hospital-badge ${hospital.stats.goLiveSuccess >= 95 ? 'success' : 'warning'}">
+            <i class="fas fa-${hospital.stats.goLiveSuccess >= 95 ? 'check-circle' : 'exclamation-triangle'}"></i>
+            ${hospital.stats.goLiveSuccess}% Success
+        </div>
+        
+        <div class="premium-lock" title="Premium feature">
+            <i class="fas fa-lock"></i>
+        </div>
+        
+        <h3><i class="fas fa-hospital"></i> ${hospital.name}</h3>
+        
+        <div class="hospital-meta">
+            <span><i class="fas fa-code-branch"></i> ${hospital.version}</span>
+            <span><i class="fas fa-calendar-alt"></i> Live: ${hospital.goLiveDate}</span>
+            <span><i class="fas fa-users"></i> Team: ${hospital.epicTeamSize}</span>
+        </div>
+        
+        <p class="hospital-description">${hospital.notes}</p>
+        
+        <div class="hospital-stats">
+            <div class="stat-item">
+                <div class="stat-label">Users Trained</div>
+                <div class="stat-value">${hospital.stats.usersTrained.toLocaleString()}</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Avg Resolution</div>
+                <div class="stat-value">${hospital.stats.avgResolutionTime}</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Open Tickets</div>
+                <div class="stat-value">${hospital.stats.supportTickets}</div>
+            </div>
+        </div>
+        
+        <div class="module-list">
+            ${hospital.modules.map(module => `<span class="module-tag">${module}</span>`).join('')}
+        </div>
+        
+        <div class="specialty-areas">
+            <strong><i class="fas fa-stethoscope"></i> Specialties:</strong>
+            ${hospital.specialtyAreas.map(area => `<span class="specialty-tag">${area}</span>`).join('')}
+        </div>
+        
+        <div class="hospital-contact">
+            <div class="contact-header">
+                <i class="fas fa-user-tie"></i>
+                <strong>Epic Team Contacts</strong>
+            </div>
+            ${hospital.epicContacts.map(contact => `
+                <div class="contact-person">
+                    <span class="contact-role">${contact.role}:</span>
+                    <span class="contact-name">${contact.name}</span>
+                    <span class="contact-phone">${contact.phone}</span>
+                </div>
+            `).join('')}
+        </div>
+        
+        <div class="hospital-actions">
+            <button class="btn btn-primary" onclick="viewHospitalDetails(${hospital.id})">
+                <i class="fas fa-eye"></i> View Details
+            </button>
+            <button class="btn btn-outline save-btn" data-id="hosp-${hospital.id}" data-type="hospital" data-premium="true">
+                <i class="fas fa-bookmark"></i> Save Hospital
+            </button>
+            <button class="btn btn-info" onclick="showGoLiveTips(${hospital.id})">
+                <i class="fas fa-lightbulb"></i> Go-Live Tips
+            </button>
+        </div>
+        
+        <div class="support-model">
+            <strong><i class="fas fa-headset"></i> Support Model:</strong> ${hospital.supportModel}
+        </div>
+    `;
+    return card;
+}
+
+// Function to view hospital details
+function viewHospitalDetails(hospitalId) {
+    const hospital = hospitals.find(h => h.id === hospitalId);
+    if (hospital) {
+        alert(`Hospital Details: ${hospital.name}\n\n` +
+              `Version: ${hospital.version}\n` +
+              `Go-Live Date: ${hospital.goLiveDate}\n` +
+              `Team Size: ${hospital.epicTeamSize}\n` +
+              `Training Rooms: ${hospital.trainingRooms}\n` +
+              `Success Rate: ${hospital.stats.goLiveSuccess}%\n` +
+              `Users Trained: ${hospital.stats.usersTrained.toLocaleString()}\n` +
+              `Support Model: ${hospital.supportModel}\n\n` +
+              `Primary Contact: ${hospital.contact.name}\n` +
+              `Email: ${hospital.contact.email}\n` +
+              `Phone: ${hospital.contact.phone}`);
+    }
+}
+
+// Function to show go-live tips
+function showGoLiveTips(hospitalId) {
+    const hospital = hospitals.find(h => h.id === hospitalId);
+    if (hospital) {
+        const tips = [
+            `🚀 ${hospital.name} successfully implemented Epic with a ${hospital.stats.goLiveSuccess}% success rate.`,
+            `📊 Key metric: Average resolution time was ${hospital.stats.avgResolutionTime}.`,
+            `👥 Staffing model: ${hospital.supportModel}`,
+            `🎯 Training approach: ${hospital.trainingRooms} dedicated training rooms with specialty-focused sessions.`,
+            `💡 Pro tip: ${hospital.specialtyAreas[0]} department required additional at-the-elbow support (1:25 ratio).`,
+            `📈 Success factor: Weekly leadership briefings and real-time dashboard updates.`
+        ].join('\n\n');
+        
+        alert(`Go-Live Success Tips for ${hospital.name}:\n\n${tips}`);
+    }
+}
+
+// Update the renderHospitals function
+function renderHospitals() {
+    const hospitalList = document.getElementById('hospital-list');
+    const dashboardHospitals = document.getElementById('dashboard-hospitals');
+    
+    if (hospitalList) {
+        hospitalList.innerHTML = '<div class="hospital-filters">' +
+            '<button class="filter-btn active" data-filter="all">All Hospitals</button>' +
+            '<button class="filter-btn" data-filter="high-success">High Success (>95%)</button>' +
+            '<button class="filter-btn" data-filter="recent">Recent Go-Lives</button>' +
+            '<button class="filter-btn" data-filter="large-team">Large Teams</button>' +
+            '</div><div class="hospital-cards-container"></div>';
+        
+        const container = hospitalList.querySelector('.hospital-cards-container');
+        hospitals.forEach(hospital => {
+            container.appendChild(createHospitalCard(hospital));
+        });
+        
+        // Add filter functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                filterHospitals(this.dataset.filter);
+            });
+        });
+    }
+    
+    if (dashboardHospitals) {
+        dashboardHospitals.innerHTML = '';
+        // Show top 3 hospitals by success rate
+        const topHospitals = [...hospitals]
+            .sort((a, b) => b.stats.goLiveSuccess - a.stats.goLiveSuccess)
+            .slice(0, 3);
+        
+        topHospitals.forEach(hospital => {
+            dashboardHospitals.appendChild(createHospitalCard(hospital));
+        });
+    }
+    
+    document.querySelectorAll('.save-btn').forEach(button => {
+        button.addEventListener('click', handleSaveItem);
+    });
+}
+
+// Filter hospitals function
+function filterHospitals(filter) {
+    const container = document.querySelector('.hospital-cards-container');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    let filteredHospitals = [...hospitals];
+    
+    switch(filter) {
+        case 'high-success':
+            filteredHospitals = filteredHospitals.filter(h => h.stats.goLiveSuccess >= 95);
+            break;
+        case 'recent':
+            // Filter for go-lives in last 2 years
+            filteredHospitals = filteredHospitals.filter(h => {
+                const goLiveDate = new Date(h.goLiveDate);
+                const twoYearsAgo = new Date();
+                twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
+                return goLiveDate > twoYearsAgo;
+            });
+            break;
+        case 'large-team':
+            filteredHospitals = filteredHospitals.filter(h => h.epicTeamSize >= 50);
+            break;
+    }
+    
+    filteredHospitals.forEach(hospital => {
+        container.appendChild(createHospitalCard(hospital));
+    });
+    
+    document.querySelectorAll('.save-btn').forEach(button => {
+        button.addEventListener('click', handleSaveItem);
+    });
+}
+
+
+function initApp() {
+        console.log('Initializing app...');
+        
+        // Set up navigation
+        const navLinks = document.querySelectorAll('.nav-link');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+                console.log('Clicked tab:', targetId);
+                
+                // Update active tab
+                navLinks.forEach(navLink => navLink.classList.remove('active'));
+                link.classList.add('active');
+                
+                // Show target content
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.classList.add('active');
+                    console.log('Showing tab:', targetId);
+                    
+                    // If it's the go-live section, update stats
+                    if (targetId === 'go-live') {
+                        updateGoLiveStats();
+                    }
+                } else {
+                    console.error('Tab content not found:', targetId);
+                }
+            });
+        });
+        
+        // Initialize dashboard stats
+        document.getElementById('hospital-count').textContent = hospitals.length;
+        document.getElementById('faq-count').textContent = faqs.length;
+        
+        // Render hospitals and FAQs
+        renderHospitals();
+        renderFAQs();
+        
+        // Update Go-Live stats
+        updateGoLiveStats();
+        
+        // Set up search functionality
+        initSearchFunctionality();
+        
+        // Profile tabs
+        const profileTabs = document.querySelectorAll('.profile-tab');
+        const profileTabContents = document.querySelectorAll('.profile-tab-content');
+        
+        profileTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                
+                // Update active tab
+                profileTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Show target content
+                profileTabContents.forEach(content => content.classList.remove('active'));
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+        
+        // Save button handlers
+        document.querySelectorAll('.save-btn').forEach(button => {
+            button.addEventListener('click', handleSaveItem);
+        });
+        
+        // Upload modal
+        const uploadResourceBtn = document.getElementById('upload-resource-btn');
+        const uploadFromProfileBtn = document.getElementById('upload-from-profile-btn');
+        const modalCloseBtns = document.querySelectorAll('.modal-close');
+        
+        if (uploadResourceBtn) {
+            uploadResourceBtn.addEventListener('click', () => {
+                document.getElementById('upload-modal').classList.add('active');
+            });
+        }
+        
+        if (uploadFromProfileBtn) {
+            uploadFromProfileBtn.addEventListener('click', () => {
+                document.getElementById('upload-modal').classList.add('active');
+            });
+        }
+        
+        modalCloseBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('upload-modal').classList.remove('active');
+                document.getElementById('upgrade-modal').classList.remove('active');
+            });
+        });
+        
+        // File upload handling
+        const fileUploadArea = document.getElementById('file-upload-area');
+        const fileInput = document.getElementById('file-input');
+        const startUploadBtn = document.getElementById('start-upload-btn');
+        
+        if (fileUploadArea && fileInput) {
+            fileUploadArea.addEventListener('click', () => fileInput.click());
+            
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    const file = e.target.files[0];
+                    const fileName = document.getElementById('file-name');
+                    const fileSize = document.getElementById('file-size');
+                    const fileInfo = document.getElementById('file-info');
+                    
+                    if (fileName) fileName.textContent = file.name;
+                    if (fileSize) fileSize.textContent = formatFileSize(file.size);
+                    if (fileInfo) fileInfo.style.display = 'block';
+                }
+            });
+        }
+        
+        if (startUploadBtn) {
+            startUploadBtn.addEventListener('click', () => {
+                startUploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+                startUploadBtn.disabled = true;
+                
+                setTimeout(() => {
+                    showNotification('Document uploaded successfully!');
+                    document.getElementById('upload-modal').classList.remove('active');
+                    startUploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Document';
+                    startUploadBtn.disabled = false;
+                }, 2000);
+            });
+        }
+        
+        // Upgrade buttons
+        const upgradeButtons = document.querySelectorAll('#upgrade-btn, #upgrade-btn-2');
+        const startTrialBtn = document.getElementById('start-trial-btn');
+        
+        upgradeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                document.getElementById('upgrade-modal').classList.add('active');
+            });
+        });
+        
+        if (startTrialBtn) {
+            startTrialBtn.addEventListener('click', () => {
+                startTrialBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                
+                setTimeout(() => {
+                    userState.isPremium = true;
+                    const premiumBadge = document.getElementById('premium-status');
+                    if (premiumBadge) {
+                        premiumBadge.innerHTML = '<i class="fas fa-crown"></i> Premium Member';
+                        premiumBadge.style.background = 'linear-gradient(135deg, var(--premium-gold), var(--premium-dark))';
+                    }
+                    showNotification('Welcome to Premium! You now have access to all profile features.');
+                    document.getElementById('upgrade-modal').classList.remove('active');
+                    startTrialBtn.innerHTML = '<i class="fas fa-play-circle"></i> Start Free Trial';
+                }, 1500);
+            });
+        }
+        
+        console.log('App initialized successfully');
+    }
+
+    function updateGoLiveStats() {
+        console.log('Updating Go-Live stats...');
+        const totalEpicTeam = hospitals.reduce((sum, hospital) => sum + hospital.epicTeamSize, 0);
+        const totalUsersTrained = hospitals.reduce((sum, hospital) => sum + hospital.stats.usersTrained, 0);
+        const avgSuccessRate = (hospitals.reduce((sum, hospital) => sum + hospital.stats.goLiveSuccess, 0) / hospitals.length).toFixed(1);
+        
+        const statsHTML = `
+            <div class="stat-card">
+                <i class="fas fa-hospital"></i>
+                <h3>${hospitals.length}</h3>
+                <p>Hospital Systems</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-users"></i>
+                <h3>${totalEpicTeam}</h3>
+                <p>Total Epic Team Members</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-chart-line"></i>
+                <h3>${avgSuccessRate}%</h3>
+                <p>Average Success Rate</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-graduation-cap"></i>
+                <h3>${totalUsersTrained.toLocaleString()}</h3>
+                <p>Users Trained</p>
+            </div>
+        `;
+        
+        const statsContainer = document.getElementById('go-live-stats');
+        if (statsContainer) {
+            statsContainer.innerHTML = statsHTML;
+            console.log('Go-Live stats updated');
+        } else {
+            console.error('Go-Live stats container not found!');
+        }
+    }
+
+    function renderHospitals() {
+        const hospitalList = document.getElementById('hospital-list');
+        const dashboardHospitals = document.getElementById('dashboard-hospitals');
+        
+        if (hospitalList) {
+            hospitalList.innerHTML = '';
+            hospitals.forEach(hospital => {
+                hospitalList.appendChild(createHospitalCard(hospital));
+            });
+        }
+        
+        if (dashboardHospitals) {
+            dashboardHospitals.innerHTML = '';
+            hospitals.slice(0, 2).forEach(hospital => {
+                dashboardHospitals.appendChild(createHospitalCard(hospital));
+            });
+        }
+        
+        document.querySelectorAll('.save-btn').forEach(button => {
+            button.addEventListener('click', handleSaveItem);
+        });
+    }
+
+    function createHospitalCard(hospital) {
+        const card = document.createElement('div');
+        card.className = 'hospital-card';
+        card.innerHTML = `
+            <div class="premium-lock" title="Premium feature">
+                <i class="fas fa-lock"></i>
+            </div>
+            <h3><i class="fas fa-hospital"></i> ${hospital.name}</h3>
+            <div class="hospital-meta">
+                <span><i class="fas fa-code-branch"></i> ${hospital.version}</span>
+                <span><i class="fas fa-calendar-alt"></i> Go-Live: ${hospital.goLiveDate}</span>
+                <span><i class="fas fa-users"></i> Team: ${hospital.epicTeamSize}</span>
+            </div>
+            <p>${hospital.notes}</p>
+            <div class="module-list">
+                ${hospital.modules.map(module => `<span class="module-tag">${module}</span>`).join('')}
+            </div>
+            <div class="hospital-contact">
+                <p><strong><i class="fas fa-user-tie"></i> ${hospital.contact.role}:</strong> ${hospital.contact.name}</p>
+                <p><strong><i class="fas fa-envelope"></i> Email:</strong> ${hospital.contact.email}</p>
+                <p><strong><i class="fas fa-phone"></i> Phone:</strong> ${hospital.contact.phone}</p>
+                <p><strong><i class="fas fa-chalkboard-teacher"></i> Training Rooms:</strong> ${hospital.trainingRooms}</p>
+                <p><strong><i class="fas fa-chart-line"></i> Success Rate:</strong> ${hospital.stats.goLiveSuccess}%</p>
+            </div>
+            <button class="btn btn-primary">View Details</button>
+            <button class="btn btn-outline save-btn" data-id="hosp-${hospital.id}" data-type="hospital" data-premium="true">
+                <i class="fas fa-bookmark"></i> Save
+            </button>
+        `;
+        return card;
+    }
+
+    function renderFAQs() {
+        const faqContainer = document.querySelector('.faq-container');
+        const faqList = document.getElementById('faq-list');
+        
+        if (faqContainer) {
+            faqContainer.innerHTML = '';
+            faqs.forEach(faq => {
+                faqContainer.appendChild(createFAQItem(faq));
+            });
+        }
+        
+        if (faqList) {
+            faqList.innerHTML = '';
+            faqs.forEach(faq => {
+                faqList.appendChild(createFAQItem(faq));
+            });
+        }
+        
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', function() {
+                const answer = this.nextElementSibling;
+                answer.classList.toggle('active');
+                this.querySelector('span').textContent = answer.classList.contains('active') ? '-' : '+';
+            });
+        });
+        
+        document.querySelectorAll('.save-btn').forEach(button => {
+            button.addEventListener('click', handleSaveItem);
+        });
+    }
+
+    function createFAQItem(faq) {
+        const faqItem = document.createElement('div');
+        faqItem.className = 'faq-item';
+        faqItem.innerHTML = `
+            <div class="faq-question">${faq.question} <span>+</span></div>
+            <div class="faq-answer">
+                <p>${faq.answer}</p>
+                <div class="faq-meta">
+                    <span class="faq-category">${faq.category}</span>
+                    <span class="faq-helpful">${faq.helpfulCount} people found this helpful</span>
+                </div>
+                <button class="btn btn-outline save-btn" data-id="faq-${faq.id}" data-type="faq" data-premium="true">
+                    <i class="fas fa-bookmark"></i> Save this answer
+                </button>
+            </div>
+        `;
+        return faqItem;
+    }
+
+    function handleSaveItem(e) {
+        const button = e.currentTarget;
+        const isPremiumFeature = button.getAttribute('data-premium') === 'true';
+        
+        if (isPremiumFeature && !userState.isPremium) {
+            showNotification('Upgrade to Premium to save items', 'warning');
+            return;
+        }
+        
+        const itemId = button.getAttribute('data-id');
+        const itemType = button.getAttribute('data-type');
+        
+        if (button.classList.contains('saved')) {
+            button.classList.remove('saved');
+            button.innerHTML = '<i class="fas fa-bookmark"></i> Save';
+            removeFromSavedItems(itemId);
+            showNotification('Item removed from your saved content.');
+        } else {
+            button.classList.add('saved');
+            button.innerHTML = '<i class="fas fa-check"></i> Saved';
+            addToSavedItems(itemId, itemType);
+            showNotification('Item saved to your profile!');
+        }
+    }
+
+    function initSearchFunctionality() {
+        const searchBoxes = document.querySelectorAll('.search-box');
+        
+        searchBoxes.forEach(box => {
+            box.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const tabId = e.target.closest('.tab-content')?.id || '';
+                
+                if (tabId === 'hospitals') {
+                    filterHospitals(searchTerm);
+                } else if (tabId === 'faq') {
+                    filterFAQs(searchTerm);
+                } else if (tabId === 'resources') {
+                    filterResources(searchTerm);
+                } else if (tabId === 'dashboard') {
+                    filterAllContent(searchTerm);
+                }
+            });
+        });
+    }
+
+    function filterHospitals(searchTerm) {
+        const hospitalCards = document.querySelectorAll('#hospital-list .hospital-card');
+        
+        hospitalCards.forEach(card => {
+            const hospitalName = card.querySelector('h3').textContent.toLowerCase();
+            const hospitalDetails = card.textContent.toLowerCase();
+            
+            if (hospitalName.includes(searchTerm) || hospitalDetails.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function filterFAQs(searchTerm) {
+        const faqItems = document.querySelectorAll('.faq-item');
+        
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question').textContent.toLowerCase();
+            const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+            
+            if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    function filterResources(searchTerm) {
+        const resourceCards = document.querySelectorAll('.resource-card');
+        
+        resourceCards.forEach(card => {
+            const title = card.querySelector('h3').textContent.toLowerCase();
+            const description = card.textContent.toLowerCase();
+            
+            if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function filterAllContent(searchTerm) {
+        const allContent = document.querySelectorAll('.hospital-card, .resource-card, .faq-item');
+        
+        allContent.forEach(item => {
+            const contentText = item.textContent.toLowerCase();
+            
+            if (contentText.includes(searchTerm)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function addToSavedItems(itemId, itemType) {
+        userState.savedItems.push({
+            id: itemId,
+            type: itemType,
+            savedAt: new Date()
+        });
+    }
+
+    function removeFromSavedItems(itemId) {
+        userState.savedItems = userState.savedItems.filter(item => item.id !== itemId);
+    }
+
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.style.backgroundColor = type === 'success' ? 'var(--success)' : 
+                                           type === 'warning' ? 'var(--warning)' : 
+                                           type === 'error' ? 'var(--danger)' : 
+                                           type === 'info' ? 'var(--info)' :
+                                           'var(--epic-purple)';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 3000);
+    }
+
+    
+// ==================== ACTUAL UPLOAD/DOWNLOAD FUNCTIONS ====================
+
+// Upload resource function
+async function uploadFile(file, metadata) {
+    showNotification('Uploading file...', 'info');
+    
+    try {
+        const reader = new FileReader();
+        
+        return new Promise((resolve, reject) => {
+            reader.onload = async function(e) {
+                try {
+                    const base64Content = e.target.result.split(',')[1];
+                    
+                    const response = await fetch('/.netlify/functions/upload', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            filename: metadata.filename || file.name,
+                            content: base64Content,
+                            category: metadata.category || 'resource',
+                            title: metadata.title || file.name,
+                            description: metadata.description || '',
+                            tags: metadata.tags || []
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showNotification('File uploaded successfully!', 'success');
+                        resolve(result);
+                    } else {
+                        showNotification('Upload failed: ' + result.error, 'error');
+                        reject(result);
+                    }
+                } catch (error) {
+                    showNotification('Upload error: ' + error.message, 'error');
+                    reject(error);
+                }
+            };
+            
+            reader.onerror = function(error) {
+                showNotification('Error reading file: ' + error, 'error');
+                reject(error);
+            };
+            
+            reader.readAsDataURL(file);
+        });
+    } catch (error) {
+        showNotification('Upload failed: ' + error.message, 'error');
+        throw error;
+    }
+}
+
+// Download file function
+async function downloadFile(filename) {
+    try {
+        showNotification('Preparing download...', 'info');
+        
+        const response = await fetch(`/.netlify/functions/download?filename=${encodeURIComponent(filename)}`);
+        
+        if (!response.ok) {
+            throw new Error('Download failed');
+        }
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        showNotification('Download started!', 'success');
+    } catch (error) {
+        showNotification('Download failed: ' + error.message, 'error');
+    }
+}
+
+// List all files
+async function listFiles() {
+    try {
+        const response = await fetch('/.netlify/functions/list-files');
+        const result = await response.json();
+        
+        if (result.success) {
+            return result.files;
+        }
+        return [];
+    } catch (error) {
+        console.error('Error listing files:', error);
+        return [];
+    }
+}
+
+// Upload hospital data
+async function uploadHospitalData(data) {
+    try {
+        const response = await fetch('/.netlify/functions/upload', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                filename: `hospital-data-${Date.now()}.json`,
+                content: btoa(JSON.stringify(data, null, 2)),
+                category: 'hospital-data'
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification('Hospital data uploaded successfully!', 'success');
+            return result;
+        } else {
+            showNotification('Upload failed: ' + result.error, 'error');
+            return null;
+        }
+    } catch (error) {
+        showNotification('Upload error: ' + error.message, 'error');
+        return null;
+    }
+}
+
+// Export all hospitals as JSON
+function exportAllHospitals() {
+    try {
+        const dataStr = JSON.stringify(hospitals, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = window.URL.createObjectURL(dataBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `epic-hospitals-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        showNotification('Hospital database exported!', 'success');
+    } catch (error) {
+        showNotification('Export failed: ' + error.message, 'error');
+    }
+}
+
+// Download hospital template
+function showHospitalTemplate() {
+    const template = {
+        name: "Hospital Name",
+        version: "Epic 2023",
+        modules: ["Module1", "Module2"],
+        notes: "Hospital description",
+        goLiveDate: "2024-01-01",
+        epicTeamSize: 50,
+        trainingRooms: 10,
+        supportModel: "24/7 Support",
+        specialtyAreas: ["Cardiology", "Oncology"],
+        contact: {
+            name: "Contact Person",
+            email: "contact@hospital.org",
+            phone: "(555) 123-4567",
+            role: "Epic Lead"
+        },
+        stats: {
+            usersTrained: 1000,
+            goLiveSuccess: 95,
+            supportTickets: 50,
+            avgResolutionTime: "2 hours"
+        }
+    };
+    
+    const dataStr = JSON.stringify(template, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = window.URL.createObjectURL(dataBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'hospital-template.json';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    
+    showNotification('Hospital template downloaded!', 'success');
+}
+
+// Video player functionality
+function playVideo(videoUrl) {
+    // Create video modal
+    const videoModal = document.createElement('div');
+    videoModal.className = 'video-modal';
+    videoModal.innerHTML = `
+        <div class="video-modal-content">
+            <button class="close-video">&times;</button>
+            <video controls autoplay style="width: 100%; max-width: 800px;">
+                <source src="${videoUrl}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    `;
+    
+    document.body.appendChild(videoModal);
+    videoModal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+    `;
+    
+    videoModal.querySelector('.close-video').onclick = () => {
+        document.body.removeChild(videoModal);
+    };
+}
+
+// Initialize file upload handling
+function initFileUpload() {
+    const fileInput = document.getElementById('file-input');
+    const startUploadBtn = document.getElementById('start-upload-btn');
+    
+    if (fileInput && startUploadBtn) {
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                startUploadBtn.disabled = false;
+            }
+        });
+        
+        startUploadBtn.addEventListener('click', async () => {
+            if (fileInput.files.length === 0) {
+                showNotification('Please select a file first', 'warning');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const title = document.getElementById('doc-title').value || file.name;
+            const description = document.getElementById('doc-description').value || '';
+            const category = document.getElementById('doc-category').value || 'resource';
+            
+            try {
+                startUploadBtn.innerHTML = '<i class=\"fas fa-spinner fa-spin\"></i> Uploading...';
+                startUploadBtn.disabled = true;
+                
+                await uploadFile(file, {
+                    filename: file.name,
+                    title: title,
+                    description: description,
+                    category: category
+                });
+                
+                // Reset form
+                fileInput.value = '';
+                document.getElementById('doc-title').value = '';
+                document.getElementById('doc-description').value = '';
+                document.getElementById('file-info').style.display = 'none';
+                document.getElementById('upload-modal').classList.remove('active');
+                
+                startUploadBtn.innerHTML = '<i class=\"fas fa-upload\"></i> Upload Document';
+                startUploadBtn.disabled = false;
+            } catch (error) {
+                startUploadBtn.innerHTML = '<i class=\"fas fa-upload\"></i> Upload Document';
+                startUploadBtn.disabled = false;
+            }
+        });
+    }
+}
+
+// ==================== END ACTUAL UPLOAD/DOWNLOAD FUNCTIONS ====================
+// ==================== INITIALIZE APP ====================
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, initializing app...');
+        initApp();
+    });
+// ==================== AI ASSISTANT ====================
+function showAIAssistant() {
+    // Create AI modal if it doesn't exist
+    if (!document.getElementById('ai-assistant-modal')) {
+        const modalHTML = `
+            <div id="ai-assistant-modal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 10001; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+                <div style="background: white; border-radius: 15px; width: 90%; max-width: 600px; max-height: 80vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                    <div style="background: linear-gradient(135deg, #4B286D, #7B52AB); color: white; padding: 20px 25px; display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-robot"></i> Epic AI Assistant
+                        </h3>
+                        <button onclick="closeAIAssistant()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer; padding: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">×</button>
+                    </div>
+                    
+                    <div id="ai-chat-container" style="flex: 1; padding: 20px; overflow-y: auto; min-height: 400px; max-height: 500px; background: #f8f9fa;">
+                        <div class="ai-message ai">
+                            <div class="ai-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="ai-content">
+                                <p>Hello! I'm your Epic AI Assistant. I can help you with:</p>
+                                <ul>
+                                    <li>Go-Live planning and checklists</li>
+                                    <li>Training strategies and resources</li>
+                                    <li>Hospital implementation best practices</li>
+                                    <li>Support staffing calculations</li>
+                                    <li>FAQ answers and troubleshooting</li>
+                                </ul>
+                                <p>What would you like to know about Epic implementations?</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 20px; border-top: 1px solid #dee2e6; background: white;">
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                            <button onclick="askAIQuick('What are the critical go-live success factors?')" class="ai-quick-btn">
+                                <i class="fas fa-rocket"></i> Go-Live Tips
+                            </button>
+                            <button onclick="askAIQuick('How many support staff do I need?')" class="ai-quick-btn">
+                                <i class="fas fa-users"></i> Staff Planning
+                            </button>
+                            <button onclick="askAIQuick('What training resources are available?')" class="ai-quick-btn">
+                                <i class="fas fa-book"></i> Training Resources
+                            </button>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="ai-question-input" placeholder="Ask about Epic implementations..." style="flex: 1; padding: 12px 15px; border: 1px solid #dee2e6; border-radius: 8px; font-size: 14px;">
+                            <button onclick="askAIQuestion()" style="padding: 12px 25px; background: linear-gradient(135deg, #4B286D, #7B52AB); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-paper-plane"></i> Ask
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <style>
+                .ai-message {
+                    display: flex;
+                    gap: 15px;
+                    margin-bottom: 20px;
+                }
+                
+                .ai-message.ai {
+                    flex-direction: row;
+                }
+                
+                .ai-message.user {
+                    flex-direction: row-reverse;
+                }
+                
+                .ai-avatar {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                }
+                
+                .ai-message.ai .ai-avatar {
+                    background: linear-gradient(135deg, #4B286D, #7B52AB);
+                    color: white;
+                }
+                
+                .ai-message.user .ai-avatar {
+                    background: #28a745;
+                    color: white;
+                }
+                
+                .ai-content {
+                    background: white;
+                    padding: 15px;
+                    border-radius: 12px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                    max-width: 80%;
+                }
+                
+                .ai-message.ai .ai-content {
+                    border-top-left-radius: 0;
+                }
+                
+                .ai-message.user .ai-content {
+                    border-top-right-radius: 0;
+                    background: #e3f2fd;
+                }
+                
+                .ai-content p {
+                    margin: 0 0 10px 0;
+                }
+                
+                .ai-content ul {
+                    margin: 10px 0;
+                    padding-left: 20px;
+                }
+                
+                .ai-content li {
+                    margin-bottom: 5px;
+                }
+                
+                .ai-quick-btn {
+                    padding: 10px 15px;
+                    background: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    border-radius: 6px;
+                    color: #4B286D;
+                    cursor: pointer;
+                    font-size: 12px;
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                    transition: all 0.3s;
+                }
+                
+                .ai-quick-btn:hover {
+                    background: #4B286D;
+                    color: white;
+                    border-color: #4B286D;
+                }
+            </style>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }
+    
+    document.getElementById('ai-assistant-modal').style.display = 'flex';
+    document.getElementById('ai-question-input').focus();
+}
+
+function closeAIAssistant() {
+    document.getElementById('ai-assistant-modal').style.display = 'none';
+}
+
+function askAIQuestion() {
+    const input = document.getElementById('ai-question-input');
+    const question = input.value.trim();
+    
+    if (!question) {
+        showNotification('Please enter a question', 'warning');
+        return;
+    }
+    
+    addAIMessage('user', question);
+    input.value = '';
+    
+    // Simulate AI thinking
+    setTimeout(() => {
+        const answer = generateAIAnswer(question);
+        addAIMessage('ai', answer);
+    }, 800);
+}
+
+function askAIQuick(question) {
+    document.getElementById('ai-question-input').value = question;
+    askAIQuestion();
+}
+
+function addAIMessage(sender, content) {
+    const container = document.getElementById('ai-chat-container');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `ai-message ${sender}`;
+    
+    const avatar = sender === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+    const avatarClass = sender === 'user' ? 'user' : 'ai';
+    
+    messageDiv.innerHTML = `
+        <div class="ai-avatar ${avatarClass}">
+            ${avatar}
+        </div>
+        <div class="ai-content">
+            ${content}
+        </div>
+    `;
+    
+    container.appendChild(messageDiv);
+    container.scrollTop = container.scrollHeight;
+}
+
+function generateAIAnswer(question) {
+    const q = question.toLowerCase();
+    
+    if (q.includes('go-live') || q.includes('success factor') || q.includes('critical')) {
+        return `<p><strong>Critical Go-Live Success Factors:</strong></p>
+                <ul>
+                    <li><strong>Executive Sponsorship:</strong> Active leadership engagement</li>
+                    <li><strong>Comprehensive Training:</strong> 100% of end-users trained before go-live</li>
+                    <li><strong>Adequate Staffing:</strong> 1:50 at-the-elbow support ratio</li>
+                    <li><strong>Clear Communication:</strong> Hourly leadership updates during go-live</li>
+                    <li><strong>Real-time Monitoring:</strong> Live dashboard with key metrics</li>
+                    <li><strong>Physician Engagement:</strong> Physician champions in each specialty</li>
+                </ul>
+                <p><em>Pro Tip:</em> Conduct a full dress rehearsal 7 days before go-live.</p>`;
+    }
+    else if (q.includes('staff') || q.includes('support') || q.includes('ratio')) {
+        return `<p><strong>Epic Go-Live Staffing Recommendations:</strong></p>
+                <ul>
+                    <li><strong>Tier 1 (At-the-elbow):</strong> 1:50 ratio (2 per 100 users)</li>
+                    <li><strong>Tier 2 (Command Center):</strong> 1:100 ratio (1 per 100 users)</li>
+                    <strong>Tier 3 (Analyst/Builder):</strong> 1:200 ratio (0.5 per 100 users)</li>
+                </ul>
+                <p><strong>Specialty Area Adjustments:</strong></p>
+                <ul>
+                    <li><strong>ED/OR/ICU:</strong> Increase to 1:25 ratio</li>
+                    <li><strong>Inpatient Units:</strong> 1:40 ratio recommended</li>
+                    <li><strong>Ambulatory:</strong> 1:75 ratio typically sufficient</li>
+                </ul>
+                <p>Use the Staffing Calculator in the Go-Live section for precise calculations.</p>`;
+    }
+    else if (q.includes('train') || q.includes('resource')) {
+        return `<p><strong>Essential Epic Training Resources:</strong></p>
+                <ul>
+                    <li><strong>Fundamentals Training:</strong> 8-hour classroom or virtual sessions</li>
+                    <li><strong>Playground Access:</strong> Hands-on practice environment</li>
+                    <li><strong>Specialty-Specific Materials:</strong> Department-focused scenarios</li>
+                    <li><strong>Quick Reference Guides:</strong> One-page workflow summaries</li>
+                    <li><strong>Video Tutorials:</strong> On-demand procedural videos</li>
+                </ul>
+                <p><strong>Training Success Metrics:</strong></p>
+                <ul>
+                    <li>100% attendance for required training</li>
+                    <li>85%+ proficiency scores on assessments</li>
+                    <li>95%+ satisfaction ratings</li>
+                    <li>Post-training competency validation</li>
+                </ul>`;
+    }
+    else if (q.includes('command center') || q.includes('setup')) {
+        return `<p><strong>Command Center Setup Requirements:</strong></p>
+                <ul>
+                    <li><strong>Physical Space:</strong> Large room (min 1000 sq ft) with multiple work zones</li>
+                    <strong>Technology:</strong> Multiple large displays, dedicated phones, reliable Wi-Fi</li>
+                    <li><strong>Staffing:</strong> Clear roles (Lead, Coordinator, Communicator, Scribe)</li>
+                    <li><strong>Communication:</strong> Direct lines to hospital leadership, status boards</li>
+                    <li><strong>Tools:</strong> Real-time dashboard, ticket tracking system, communication platform</li>
+                </ul>
+                <p>Download the complete Command Center Setup Guide from the Go-Live Resources section.</p>`;
+    }
+    else {
+        return `<p>I can help you with various Epic implementation topics. Try asking about:</p>
+                <ul>
+                    <li><strong>Go-Live Planning:</strong> "What are the critical success factors?"</li>
+                    <strong>Staffing:</strong> "How many support staff do I need?"</li>
+                    <li><strong>Training:</strong> "What training resources are available?"</li>
+                    <li><strong>Metrics:</strong> "What should we track during go-live?"</li>
+                    <li><strong>Physician Engagement:</strong> "How do we get physicians on board?"</li>
+                </ul>
+                <p>You can also use the quick buttons above for common questions.</p>`;
+    }
+}
+
+// ==================== LOGIN SYSTEM ====================
+function showLoginModal() {
+    // Create login modal if it doesn't exist
+    if (!document.getElementById('login-modal')) {
+        const modalHTML = `
+            <div class="modal-overlay" id="login-modal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 10000;">
+                <div class="modal" style="background: white; border-radius: 10px; padding: 30px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="margin: 0; color: #4B286D;">
+                            <i class="fas fa-user-circle"></i> Epic Trainer Login
+                        </h2>
+                        <button onclick="closeLoginModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #6c757d; padding: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">×</button>
+                    </div>
+                    
+                    <div style="padding: 10px;">
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="login-email" style="display: block; margin-bottom: 8px; font-weight: 600; color: #495057;">Email Address</label>
+                            <input type="email" id="login-email" placeholder="trainer@hospital.org" style="width: 100%; padding: 12px 15px; border: 1px solid #dee2e6; border-radius: 6px; font-size: 14px;">
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 25px;">
+                            <label for="login-password" style="display: block; margin-bottom: 8px; font-weight: 600; color: #495057;">Password</label>
+                            <input type="password" id="login-password" placeholder="Enter your password" style="width: 100%; padding: 12px 15px; border: 1px solid #dee2e6; border-radius: 6px; font-size: 14px;">
+                        </div>
+                        
+                        <button onclick="performLogin()" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #4B286D, #7B52AB); color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px;">
+                            <i class="fas fa-sign-in-alt"></i> Login to Epic Trainer
+                        </button>
+                        
+                        <div style="text-align: center; padding: 15px; background: #f8f9fa; border-radius: 6px; margin-bottom: 15px;">
+                            <p style="margin: 0; font-size: 13px; color: #6c757d;">
+                                <strong>Demo Access Available</strong><br>
+                                Use: <code>demo@epictrainer.org</code> / <code>epicdemo123</code>
+                            </p>
+                        </div>
+                        
+                        <div style="text-align: center;">
+                            <button onclick="showDemoLogin()" style="background: none; border: none; color: #4B286D; cursor: pointer; font-size: 14px; padding: 10px;">
+                                <i class="fas fa-magic"></i> Quick Demo Login
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }
+    
+    document.getElementById('login-modal').style.display = 'flex';
+    document.getElementById('login-email').focus();
+}
+
+function closeLoginModal() {
+    document.getElementById('login-modal').style.display = 'none';
+}
+
+function showDemoLogin() {
+    document.getElementById('login-email').value = 'demo@epictrainer.org';
+    document.getElementById('login-password').value = 'epicdemo123';
+    performLogin();
+}
+
+function performLogin() {
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    
+    // For demo purposes, accept any login
+    // In production, you would validate against a backend
+    userState.currentUser = {
+        id: 'user-' + Date.now(),
+        email: email,
+        name: email.split('@')[0].replace('.', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+        hospital: email.includes('mayo') ? 'Mayo Clinic' : 
+                 email.includes('hopkins') ? 'Johns Hopkins Hospital' :
+                 email.includes('mercy') ? 'Mercy General Hospital' : 'Demo Hospital',
+        isPremium: true,
+        role: 'Epic Certified Trainer',
+        avatar: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(email.split('@')[0]) + '&background=4B286D&color=fff'
+    };
+    userState.isPremium = true;
+    
+    // Update UI
+    const loginBtn = document.getElementById('login-btn');
+    if (loginBtn) {
+        loginBtn.innerHTML = `<i class="fas fa-user"></i> ${userState.currentUser.name}`;
+        loginBtn.onclick = () => {
+            if (confirm('Are you sure you want to logout?')) {
+                userState.currentUser = null;
+                userState.isPremium = false;
+                loginBtn.innerHTML = '<i class="fas fa-user"></i> Trainer Login';
+                loginBtn.onclick = showLoginModal;
+                showNotification('Logged out successfully', 'info');
+                
+                // Reset premium badge
+                const premiumBadge = document.getElementById('premium-status');
+                if (premiumBadge) {
+                    premiumBadge.innerHTML = '<i class="fas fa-crown"></i> Free Plan';
+                    premiumBadge.style.background = '';
+                }
+            }
+        };
+    }
+    
+    // Update premium badge
+    const premiumBadge = document.getElementById('premium-status');
+    if (premiumBadge) {
+        premiumBadge.innerHTML = '<i class="fas fa-crown"></i> Premium Member';
+        premiumBadge.style.background = 'linear-gradient(135deg, #FFD700, #D4AF37)';
+    }
+    
+    closeLoginModal();
+    showNotification(`Welcome back, ${userState.currentUser.name}! Premium features unlocked.`, 'success');
+    
+    // Update profile section if visible
+    updateProfileSection();
+}
+
+// ==================== NOTIFICATION SYSTEM ====================
+function showNotification(message, type = 'info') {
+    // Remove existing notifications
+    const existing = document.querySelectorAll('.epic-notification');
+    existing.forEach(n => n.remove());
+    
+    const notification = document.createElement('div');
+    notification.className = 'epic-notification';
+    notification.setAttribute('data-type', type);
+    
+    const icons = {
+        success: 'fas fa-check-circle',
+        error: 'fas fa-exclamation-circle',
+        warning: 'fas fa-exclamation-triangle',
+        info: 'fas fa-info-circle'
+    };
+    
+    const colors = {
+        success: '#28a745',
+        error: '#dc3545',
+        warning: '#ffc107',
+        info: '#17a2b8'
+    };
+    
+    notification.innerHTML = `
+        <div class="notification-content" style="display: flex; align-items: center; gap: 15px;">
+            <i class="${icons[type] || icons.info}" style="font-size: 20px;"></i>
+            <span>${message}</span>
+        </div>
+        <button onclick="this.parentElement.remove()" style="background: none; border: none; color: inherit; cursor: pointer; padding: 0; font-size: 18px;">×</button>
+    `;
+    
+    Object.assign(notification.style, {
+        position: 'fixed',
+        top: '20px',
+        right: '20px',
+        background: colors[type] || colors.info,
+        color: 'white',
+        padding: '15px 20px',
+        borderRadius: '8px',
+        boxShadow: '0 5px 15px rgba(0,0,0,0.2)',
+        zIndex: '10000',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '20px',
+        minWidth: '300px',
+        maxWidth: '400px',
+        animation: 'slideInRight 0.3s ease, fadeOut 0.3s ease 2.7s forwards'
+    });
+    
+    // Add animation styles if not present
+    if (!document.querySelector('#notification-styles')) {
+        const style = document.createElement('style');
+        style.id = 'notification-styles';
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 3000);
+}
+
+// ==================== INITIALIZE EVERYTHING ====================
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing enhanced Epic Trainer...');
+    
+    // Fix the AI button
+    const aiButton = document.querySelector('#ai-features-button');
+    if (aiButton) {
+        // Remove any existing links
+        const link = aiButton.querySelector('a');
+        if (link) {
+            link.removeAttribute('href');
+            link.style.cursor = 'pointer';
+            link.onclick = showAIAssistant;
+        } else {
+            aiButton.onclick = showAIAssistant;
+        }
+    }
+    
+    // Fix login button
+    const loginBtn = document.getElementById('login-btn');
+    if (loginBtn && !loginBtn.onclick) {
+        loginBtn.onclick = showLoginModal;
+    }
+    
+    // Initialize enhanced hospital rendering
+    if (typeof renderHospitals === 'function') {
+        setTimeout(renderHospitals, 100);
+    }
+    
+    // Update Go-Live stats if needed
+    if (typeof updateGoLiveStats === 'function') {
+        setTimeout(updateGoLiveStats, 100);
+    }
+    
+    console.log('Enhanced Epic Trainer initialized!');
+});
+</script>
+    
+    <!-- Only keep one AI chat button -->
+    <div id="ai-features-button" style="position: fixed; bottom: 100px; right: 30px; width: 70px; height: 70px; background: linear-gradient(135deg, #FFD700, #D4AF37); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 25px rgba(0,0,0,0.3); z-index: 9999; transition: all 0.3s ease; animation: pulse 2s infinite;">
+        <a href="ai-features.html" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; text-decoration: none; color: #333; font-weight: bold; flex-direction: column;">
+            <i class="fas fa-robot" style="font-size: 24px; margin-bottom: 5px;"></i>
+            <span style="font-size: 10px;">AI Features</span>
+        </a>
+    </div>
+<!-- COMPLETE MEDIA MANAGEMENT SYSTEM -->
+    <!-- Simple Upload/Download Modals -->
+    <div class="modal-overlay" id="hospital-upload-modal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 10000;">
+        <div class="modal" style="background: white; padding: 20px; border-radius: 10px; max-width: 500px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0;"><i class="fas fa-hospital"></i> Upload Hospital Data</h3>
+                <button onclick="document.getElementById('hospital-upload-modal').style.display = 'none'" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+            </div>
+            <p>Upload hospital data in JSON or CSV format.</p>
+            <button class="btn btn-primary" onclick="showNotification('Hospital upload would start here'); document.getElementById('hospital-upload-modal').style.display = 'none'" style="width: 100%; padding: 10px;">
+                <i class="fas fa-upload"></i> Upload File
+            </button>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="golive-upload-modal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 10000;">
+        <div class="modal" style="background: white; padding: 20px; border-radius: 10px; max-width: 500px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0;"><i class="fas fa-file-upload"></i> Upload Go-Live Document</h3>
+                <button onclick="document.getElementById('golive-upload-modal').style.display = 'none'" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+            </div>
+            <p>Upload Go-Live checklists, plans, or templates.</p>
+            <button class="btn btn-primary" onclick="showNotification('Go-Live upload would start here'); document.getElementById('golive-upload-modal').style.display = 'none'" style="width: 100%; padding: 10px;">
+                <i class="fas fa-upload"></i> Upload Document
+            </button>
+        </div>
+    </div>
+    <script src="ai-faq-integration.js"></script>
+    <script src="test-openai-setup.js"></script>
+    <script src="test-openai-setup.js"></script>
+    <script src="fixed-openai.js"></script>
+    <script src="ai-faq-integration.js"></script></body>
+</html>
