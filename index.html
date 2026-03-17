@@ -16,276 +16,256 @@
             --success: #28a745;
             --warning: #ffc107;
             --danger: #dc3545;
-            --info: #17a2b8;
             --premium-gold: #FFD700;
             --premium-dark: #D4AF37;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         body { background-color: var(--epic-gray); color: var(--text-dark); line-height: 1.6; }
 
-        /* Header */
-        header { background: linear-gradient(135deg, var(--epic-purple), var(--epic-light-purple)); color: var(--text-light); padding: 1rem; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        .header-content { display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto; }
-        .logo { display: flex; align-items: center; font-size: 1.5rem; font-weight: bold; }
-        .logo i { margin-right: 10px; font-size: 1.8rem; }
-        .user-actions { display: flex; align-items: center; gap: 1rem; }
-        .premium-badge { background: linear-gradient(135deg, var(--premium-gold), var(--premium-dark)); color: #333; padding: 0.5rem 1rem; border-radius: 20px; font-weight: bold; display: flex; align-items: center; gap: 0.5rem; }
+        header { background: linear-gradient(135deg, var(--epic-purple), var(--epic-light-purple)); color: #fff; padding: 1rem; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .header-content { display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto; flex-wrap: wrap; gap: 0.5rem; }
+        .logo { display: flex; align-items: center; font-size: 1.4rem; font-weight: bold; }
+        .logo i { margin-right: 10px; font-size: 1.7rem; }
+        .user-actions { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+        .premium-badge { background: linear-gradient(135deg, var(--premium-gold), var(--premium-dark)); color: #333; padding: 0.4rem 0.9rem; border-radius: 20px; font-weight: bold; display: flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; }
+        #user-greeting { color: #fff; font-size: 0.9rem; display: none; align-items: center; gap: 0.4rem; }
+        #user-greeting.visible { display: flex; }
 
-        /* Navigation */
-        nav { background-color: var(--epic-light-purple); padding: 0.5rem; position: sticky; top: 68px; z-index: 99; }
-        .nav-tabs { display: flex; list-style: none; max-width: 1400px; margin: 0 auto; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        .nav-tabs li { margin-right: 1.5rem; }
-        .nav-tabs a { color: var(--text-light); text-decoration: none; padding: 0.5rem 1rem; display: block; white-space: nowrap; border-radius: 20px; transition: background-color 0.3s; }
+        nav { background-color: var(--epic-light-purple); padding: 0.5rem; position: sticky; top: 60px; z-index: 99; }
+        .nav-tabs { display: flex; list-style: none; max-width: 1400px; margin: 0 auto; overflow-x: auto; -webkit-overflow-scrolling: touch; gap: 0.25rem; }
+        .nav-tabs a { color: #fff; text-decoration: none; padding: 0.4rem 0.9rem; display: block; white-space: nowrap; border-radius: 20px; transition: background 0.2s; font-size: 0.9rem; }
         .nav-tabs a.active, .nav-tabs a:hover { background-color: var(--epic-purple); }
 
-        /* Main */
         main { max-width: 1400px; margin: 0 auto; padding: 2rem 1rem; }
-        .tab-content { display: none; animation: fadeIn 0.5s; }
+        .tab-content { display: none; animation: fadeIn 0.4s; }
         .tab-content.active { display: block; }
+        .subtitle { color: #666; margin-bottom: 1.5rem; display: block; }
 
-        /* Stats */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
         .stat-card { background: white; border-radius: 10px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
         .stat-card i { font-size: 2.5rem; margin-bottom: 1rem; color: var(--epic-light-purple); }
-        .stat-card h3 { font-size: 2rem; margin-bottom: 0.5rem; color: var(--epic-purple); }
+        .stat-card h3 { font-size: 2rem; color: var(--epic-purple); }
 
-        /* Search */
         .search-container { margin-bottom: 2rem; position: relative; }
-        .search-box { width: 100%; padding: 1rem 1rem 1rem 3rem; border: 1px solid #ddd; border-radius: 50px; font-size: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .search-box { width: 100%; padding: 0.9rem 1rem 0.9rem 3rem; border: 1px solid #ddd; border-radius: 50px; font-size: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.08); }
         .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #777; }
 
-        /* Cards */
-        .hospital-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-        .hospital-card { background: white; border-radius: 10px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.3s; position: relative; }
-        .hospital-card:hover { transform: translateY(-5px); }
-        .hospital-card h3 { color: var(--epic-purple); margin-bottom: 0.5rem; display: flex; align-items: center; }
-        .hospital-card h3 i { margin-right: 10px; }
-        .hospital-meta { display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 0.9rem; color: #666; }
-        .module-list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
-        .module-tag { background-color: var(--epic-lighter-purple); color: var(--epic-purple); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; }
-        .premium-lock { position: absolute; top: 1rem; right: 1rem; color: var(--premium-gold); font-size: 1.2rem; }
-        .hospital-contact { margin: 1rem 0; padding: 0.5rem; background-color: var(--epic-lighter-purple); border-radius: 5px; }
+        .hospital-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .hospital-card { background: white; border-radius: 10px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s; position: relative; }
+        .hospital-card:hover { transform: translateY(-4px); }
+        .hospital-card h3 { color: var(--epic-purple); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .hospital-meta { display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.85rem; color: #666; }
+        .module-list { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+        .module-tag { background: var(--epic-lighter-purple); color: var(--epic-purple); padding: 0.2rem 0.7rem; border-radius: 20px; font-size: 0.78rem; }
+        .hospital-contact { margin: 0.75rem 0; padding: 0.5rem; background: var(--epic-lighter-purple); border-radius: 5px; font-size: 0.85rem; }
+        .card-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
 
-        /* FAQ */
-        .faq-item { margin-bottom: 1rem; background: white; border-radius: 10px; padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .faq-question { font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; user-select: none; }
-        .faq-answer { margin-top: 0.5rem; padding: 0.5rem; display: none; border-top: 1px solid #eee; }
+        .resource-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+        .resource-card { background: white; border-radius: 10px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s; position: relative; }
+        .resource-card:hover { transform: translateY(-4px); }
+        .resource-card h3 { color: var(--epic-purple); margin-bottom: 0.75rem; font-size: 1rem; }
+        .resource-meta { display: flex; justify-content: space-between; color: #666; font-size: 0.85rem; margin-bottom: 0.75rem; }
+
+        .faq-item { margin-bottom: 1rem; background: white; border-radius: 10px; padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+        .faq-question { font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 0.4rem; user-select: none; }
+        .faq-answer { display: none; padding: 0.75rem 0.4rem 0.4rem; border-top: 1px solid #eee; margin-top: 0.5rem; }
         .faq-answer.active { display: block; }
-        .faq-meta { display: flex; justify-content: space-between; margin-top: 1rem; font-size: 0.8rem; color: #666; }
-        .faq-category { background-color: var(--epic-lighter-purple); color: var(--epic-purple); padding: 0.2rem 0.5rem; border-radius: 3px; }
+        .faq-meta { display: flex; justify-content: space-between; margin-top: 0.75rem; font-size: 0.8rem; color: #666; }
+        .faq-category { background: var(--epic-lighter-purple); color: var(--epic-purple); padding: 0.15rem 0.5rem; border-radius: 3px; }
 
-        /* Resources */
-        .resource-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
-        .resource-card { background: white; border-radius: 10px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.3s; position: relative; }
-        .resource-card:hover { transform: translateY(-5px); }
-        .resource-card h3 { color: var(--epic-purple); margin-bottom: 1rem; }
-        .resource-meta { display: flex; justify-content: space-between; color: #666; font-size: 0.9rem; margin-bottom: 1rem; }
-
-        /* Buttons */
-        .btn { padding: 0.8rem 1.5rem; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; transition: background-color 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
-        .btn-primary { background-color: var(--epic-purple); color: white; }
-        .btn-primary:hover { background-color: var(--epic-light-purple); }
-        .btn-success { background-color: var(--success); color: white; }
-        .btn-outline { background-color: transparent; border: 1px solid var(--epic-purple); color: var(--epic-purple); }
-        .btn-outline:hover { background-color: var(--epic-lighter-purple); }
+        .btn { padding: 0.65rem 1.2rem; border: none; border-radius: 6px; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; }
+        .btn-primary { background: var(--epic-purple); color: white; }
+        .btn-primary:hover { background: var(--epic-light-purple); }
+        .btn-outline { background: transparent; border: 1.5px solid var(--epic-purple); color: var(--epic-purple); }
+        .btn-outline:hover { background: var(--epic-lighter-purple); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
         .btn-premium { background: linear-gradient(135deg, var(--premium-gold), var(--premium-dark)); color: #333; font-weight: bold; }
         .btn-premium:hover { opacity: 0.9; }
-        .btn-danger { background-color: var(--danger); color: white; }
-        .btn.saved { background-color: var(--success); color: white; border-color: var(--success); }
+        .btn.saved { background: var(--success); color: white; border-color: var(--success); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Forms */
-        .form-group { margin-bottom: 1.5rem; }
-        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
-        .form-control { width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem; }
-        textarea.form-control { min-height: 120px; resize: vertical; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; margin-bottom: 0.4rem; font-weight: 600; font-size: 0.9rem; }
+        .form-control { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; font-size: 0.95rem; }
+        .form-control:focus { outline: none; border-color: var(--epic-light-purple); }
+        textarea.form-control { min-height: 100px; resize: vertical; }
+        .form-error { color: var(--danger); font-size: 0.82rem; margin-top: 0.3rem; display: none; }
+        .form-error.show { display: block; }
 
-        /* Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
         .modal-overlay.active { display: flex; }
-        .modal { background: white; border-radius: 10px; padding: 2rem; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+        .modal { background: white; border-radius: 12px; padding: 2rem; width: 90%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #333; }
+        .modal-header h2 { font-size: 1.2rem; color: var(--epic-purple); }
+        .modal-close { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #666; }
         .modal-close:hover { color: var(--danger); }
 
-        /* File Upload */
-        .file-upload { border: 2px dashed #ccc; border-radius: 5px; padding: 2rem; text-align: center; margin-bottom: 1.5rem; cursor: pointer; transition: border-color 0.3s; }
+        .auth-tabs { display: flex; border-bottom: 2px solid #eee; margin-bottom: 1.5rem; }
+        .auth-tab { flex: 1; text-align: center; padding: 0.75rem; cursor: pointer; font-weight: 600; color: #888; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+        .auth-tab.active { color: var(--epic-purple); border-bottom-color: var(--epic-purple); }
+        .auth-form { display: none; }
+        .auth-form.active { display: block; }
+
+        .file-upload { border: 2px dashed #ccc; border-radius: 8px; padding: 2rem; text-align: center; cursor: pointer; transition: border-color 0.2s; margin-bottom: 1rem; }
         .file-upload:hover, .file-upload.drag-over { border-color: var(--epic-purple); }
-        .file-upload i { font-size: 3rem; color: #ccc; margin-bottom: 1rem; display: block; }
+        .file-upload i { font-size: 2.5rem; color: #ccc; margin-bottom: 0.75rem; display: block; }
         .file-upload:hover i { color: var(--epic-purple); }
 
-        /* Profile */
-        .profile-header { display: flex; align-items: center; margin-bottom: 2rem; }
-        .profile-avatar { width: 100px; height: 100px; border-radius: 50%; background-color: var(--epic-light-purple); display: flex; align-items: center; justify-content: center; color: white; font-size: 2.5rem; margin-right: 1.5rem; flex-shrink: 0; }
+        .profile-header { display: flex; align-items: center; margin-bottom: 2rem; gap: 1.5rem; }
+        .profile-avatar { width: 90px; height: 90px; border-radius: 50%; background: var(--epic-light-purple); display: flex; align-items: center; justify-content: center; color: white; font-size: 2.2rem; flex-shrink: 0; }
         .profile-tabs { display: flex; border-bottom: 1px solid #ddd; margin-bottom: 2rem; overflow-x: auto; }
-        .profile-tab { padding: 1rem 1.5rem; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; }
+        .profile-tab { padding: 0.85rem 1.3rem; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; font-size: 0.9rem; }
         .profile-tab.active { border-bottom-color: var(--epic-purple); color: var(--epic-purple); font-weight: bold; }
         .profile-tab-content { display: none; }
         .profile-tab-content.active { display: block; }
-        .saved-items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
-        .saved-item-card { background: white; border-radius: 10px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; }
-        .saved-item-actions { position: absolute; top: 1rem; right: 1rem; }
+        .saved-items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+        .saved-item-card { background: white; border-radius: 10px; padding: 1.25rem; box-shadow: 0 3px 6px rgba(0,0,0,0.08); position: relative; }
 
-        /* Premium */
-        .premium-upgrade { background: linear-gradient(135deg, #f6f0c4, #d4d3dd); border-radius: 10px; padding: 2rem; margin: 2rem 0; text-align: center; border: 2px solid var(--premium-gold); }
-        .premium-upgrade h2 { color: #333; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
-        .premium-features { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 2rem 0; text-align: left; }
-        .premium-feature { display: flex; align-items: center; gap: 0.5rem; }
+        .premium-upgrade { background: linear-gradient(135deg, #f6f0c4, #d4d3dd); border-radius: 10px; padding: 2rem; margin: 1.5rem 0; text-align: center; border: 2px solid var(--premium-gold); }
+        .premium-upgrade h2 { color: #333; margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 1.2rem; }
+        .premium-features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; margin: 1.5rem 0; text-align: left; }
+        .premium-feature { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; }
         .premium-feature i { color: var(--premium-dark); }
-        .pricing-plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
-        .pricing-plan { background: white; border-radius: 10px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; position: relative; overflow: hidden; }
-        .pricing-plan.popular { border: 2px solid var(--premium-gold); transform: scale(1.05); }
-        .popular-badge { position: absolute; top: 0; right: 0; background: var(--premium-gold); color: #333; padding: 0.5rem 1rem; font-weight: bold; font-size: 0.8rem; }
-        .plan-price { font-size: 2.5rem; font-weight: bold; margin: 1rem 0; color: var(--epic-purple); }
-        .plan-price span { font-size: 1rem; }
-        .plan-features { list-style: none; margin: 1.5rem 0; }
-        .plan-features li { padding: 0.5rem 0; border-bottom: 1px solid #eee; }
+        .pricing-plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.5rem; margin: 1.5rem 0; }
+        .pricing-plan { background: white; border-radius: 10px; padding: 1.75rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; position: relative; overflow: hidden; }
+        .pricing-plan.popular { border: 2px solid var(--premium-gold); transform: scale(1.04); }
+        .popular-badge { position: absolute; top: 0; right: 0; background: var(--premium-gold); color: #333; padding: 0.4rem 0.9rem; font-weight: bold; font-size: 0.78rem; }
+        .plan-price { font-size: 2.2rem; font-weight: bold; margin: 0.75rem 0; color: var(--epic-purple); }
+        .plan-price span { font-size: 0.9rem; }
+        .plan-features { list-style: none; margin: 1.25rem 0; }
+        .plan-features li { padding: 0.4rem 0; border-bottom: 1px solid #eee; font-size: 0.88rem; }
 
-        /* Footer */
-        footer { background-color: var(--epic-purple); color: var(--text-light); text-align: center; padding: 2rem; margin-top: 3rem; }
-
-        /* Animations */
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        .pulse { animation: pulse 2s infinite; }
-        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
-        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        /* Notification */
-        .notification { position: fixed; bottom: 20px; right: 20px; background: var(--epic-purple); color: white; padding: 1rem 1.5rem; border-radius: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 2000; animation: slideIn 0.3s ease; }
+        .notification { position: fixed; bottom: 20px; right: 20px; background: var(--epic-purple); color: white; padding: 0.9rem 1.4rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 3000; animation: slideUp 0.3s ease; font-size: 0.9rem; max-width: 320px; }
         .notification.success { background: var(--success); }
         .notification.error { background: var(--danger); }
 
-        /* Toggle Switch */
-        .toggle-switch { position: relative; display: inline-block; width: 60px; height: 30px; }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 30px; }
-        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--epic-purple); }
-        input:checked + .slider:before { transform: translateX(30px); }
-        .preference-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: white; border-radius: 5px; margin-bottom: 1rem; }
+        .uploaded-file-item { display: flex; align-items: center; gap: 0.8rem; background: white; padding: 0.8rem 1rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); margin-bottom: 0.75rem; }
+        .uploaded-file-item i { color: var(--epic-light-purple); font-size: 1.3rem; flex-shrink: 0; }
+        .uploaded-file-meta { flex: 1; }
+        .uploaded-file-meta strong { display: block; font-size: 0.92rem; }
+        .uploaded-file-meta small { color: #888; font-size: 0.78rem; }
 
-        /* ===== AI CHAT PANEL ===== */
-        #ai-fab {
-            position: fixed; bottom: 24px; right: 24px;
-            background: linear-gradient(135deg, var(--epic-purple), var(--epic-light-purple));
-            color: white; width: 60px; height: 60px; border-radius: 50%; border: none;
-            cursor: pointer; box-shadow: 0 4px 16px rgba(75,40,109,0.45);
-            font-size: 1.5rem; z-index: 1200;
-            display: flex; align-items: center; justify-content: center;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        #ai-fab:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(75,40,109,0.55); }
-
-        #ai-panel {
-            position: fixed; bottom: 96px; right: 24px;
-            width: 380px; max-width: calc(100vw - 48px);
-            background: white; border-radius: 16px;
-            box-shadow: 0 8px 40px rgba(0,0,0,0.2);
-            z-index: 1200; display: none; flex-direction: column;
-            max-height: 560px; overflow: hidden;
-            animation: slideIn 0.25s ease;
-        }
-        #ai-panel.open { display: flex; }
-
-        .ai-panel-header {
-            background: linear-gradient(135deg, var(--epic-purple), var(--epic-light-purple));
-            color: white; padding: 1rem 1.2rem;
-            display: flex; justify-content: space-between; align-items: center;
-            border-radius: 16px 16px 0 0;
-        }
-        .ai-panel-header h3 { margin: 0; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-        .ai-panel-header .ai-close { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; padding: 0; }
-
-        #ai-messages {
-            flex: 1; overflow-y: auto; padding: 1rem;
-            display: flex; flex-direction: column; gap: 0.75rem;
-            min-height: 200px;
-        }
-        .ai-msg { max-width: 85%; padding: 0.7rem 1rem; border-radius: 12px; font-size: 0.9rem; line-height: 1.5; word-break: break-word; }
-        .ai-msg.user { background: var(--epic-lighter-purple); color: var(--text-dark); align-self: flex-end; border-bottom-right-radius: 4px; }
-        .ai-msg.assistant { background: #f0f0f0; color: var(--text-dark); align-self: flex-start; border-bottom-left-radius: 4px; }
+        #ai-fab { position: fixed; bottom: 24px; right: 24px; background: linear-gradient(135deg, var(--epic-purple), var(--epic-light-purple)); color: white; width: 58px; height: 58px; border-radius: 50%; border: none; cursor: pointer; box-shadow: 0 4px 16px rgba(75,40,109,0.5); font-size: 1.4rem; z-index: 1200; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
+        #ai-fab:hover { transform: scale(1.1); }
+        #ai-panel { position: fixed; bottom: 94px; right: 24px; width: 380px; max-width: calc(100vw - 48px); background: white; border-radius: 16px; box-shadow: 0 8px 40px rgba(0,0,0,0.2); z-index: 1200; display: none; flex-direction: column; max-height: 560px; overflow: hidden; }
+        #ai-panel.open { display: flex; animation: slideUp 0.25s ease; }
+        .ai-panel-header { background: linear-gradient(135deg, var(--epic-purple), var(--epic-light-purple)); color: white; padding: 1rem 1.2rem; display: flex; justify-content: space-between; align-items: center; border-radius: 16px 16px 0 0; }
+        .ai-panel-header h3 { margin: 0; font-size: 0.92rem; display: flex; align-items: center; gap: 0.5rem; }
+        .ai-status { font-size: 0.72rem; opacity: 0.85; background: rgba(255,255,255,0.2); padding: 0.15rem 0.5rem; border-radius: 20px; }
+        #ai-close-btn { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; }
+        #ai-messages { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; min-height: 200px; }
+        .ai-msg { max-width: 88%; padding: 0.7rem 1rem; border-radius: 12px; font-size: 0.88rem; line-height: 1.55; word-break: break-word; }
+        .ai-msg.user { background: var(--epic-lighter-purple); align-self: flex-end; border-bottom-right-radius: 4px; }
+        .ai-msg.assistant { background: #f0f0f0; align-self: flex-start; border-bottom-left-radius: 4px; }
         .ai-msg.thinking { color: #888; font-style: italic; }
-        .ai-msg a { color: var(--epic-light-purple); }
-        .ai-msg pre { background: #eee; padding: 0.5rem; border-radius: 4px; overflow-x: auto; font-size: 0.8rem; }
-
-        .ai-input-row {
-            padding: 0.8rem; border-top: 1px solid #eee;
-            display: flex; gap: 0.5rem; align-items: flex-end;
-        }
-        #ai-input {
-            flex: 1; border: 1px solid #ddd; border-radius: 8px;
-            padding: 0.6rem 0.8rem; font-size: 0.9rem; resize: none;
-            max-height: 100px; min-height: 38px; outline: none;
-            font-family: inherit; line-height: 1.4;
-        }
+        .ai-msg code { background: #e8e8e8; padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.82rem; }
+        .ai-input-row { padding: 0.75rem; border-top: 1px solid #eee; display: flex; gap: 0.5rem; align-items: flex-end; }
+        #ai-input { flex: 1; border: 1.5px solid #ddd; border-radius: 8px; padding: 0.6rem 0.8rem; font-size: 0.88rem; resize: none; max-height: 100px; min-height: 38px; outline: none; font-family: inherit; line-height: 1.4; }
         #ai-input:focus { border-color: var(--epic-light-purple); }
-        #ai-send {
-            background: var(--epic-purple); color: white; border: none;
-            border-radius: 8px; padding: 0.6rem 0.9rem; cursor: pointer;
-            font-size: 1rem; transition: background 0.2s; flex-shrink: 0;
-        }
+        #ai-send { background: var(--epic-purple); color: white; border: none; border-radius: 8px; padding: 0.6rem 0.9rem; cursor: pointer; font-size: 1rem; flex-shrink: 0; }
         #ai-send:hover { background: var(--epic-light-purple); }
         #ai-send:disabled { background: #ccc; cursor: not-allowed; }
-
-        /* AI Save button */
-        .ai-save-btn {
-            font-size: 0.78rem; padding: 0.3rem 0.7rem; margin-top: 0.4rem;
-            background: var(--epic-lighter-purple); color: var(--epic-purple);
-            border: 1px solid var(--epic-light-purple); border-radius: 20px;
-            cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem;
-        }
+        .ai-save-btn { font-size: 0.76rem; padding: 0.25rem 0.65rem; margin-top: 0.4rem; background: var(--epic-lighter-purple); color: var(--epic-purple); border: 1px solid var(--epic-light-purple); border-radius: 20px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem; }
         .ai-save-btn:hover { background: var(--epic-light-purple); color: white; }
 
-        /* Uploaded files list */
-        .uploaded-file-item {
-            display: flex; align-items: center; gap: 0.8rem;
-            background: white; padding: 0.8rem 1rem; border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.08); margin-bottom: 0.75rem;
-        }
-        .uploaded-file-item i { color: var(--epic-light-purple); font-size: 1.3rem; }
-        .uploaded-file-meta { flex: 1; }
-        .uploaded-file-meta strong { display: block; font-size: 0.95rem; }
-        .uploaded-file-meta small { color: #888; font-size: 0.8rem; }
-        .uploaded-file-item .btn-danger { padding: 0.4rem 0.7rem; font-size: 0.8rem; }
+        .empty-state { text-align: center; padding: 3rem; color: #aaa; }
+        .empty-state i { font-size: 2.5rem; margin-bottom: 1rem; color: #ddd; display: block; }
+        .small { font-size: 0.82rem; color: #888; }
 
-        /* Responsive */
+        footer { background: var(--epic-purple); color: white; text-align: center; padding: 2rem; margin-top: 3rem; font-size: 0.88rem; line-height: 2; }
+
+        @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+        @keyframes pulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.05); } }
+        .pulse { animation: pulse 2s infinite; }
+
+        /* Login Gate */
+        #login-gate { position: fixed; inset: 0; background: rgba(75,40,109,0.97); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        .gate-box { background: white; border-radius: 16px; padding: 2.5rem; width: 90%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .gate-logo { text-align: center; margin-bottom: 1.5rem; }
+        .gate-logo i { font-size: 3rem; color: var(--epic-light-purple); }
+        .gate-logo h2 { color: var(--epic-purple); margin-top: 0.5rem; }
+        .gate-logo p { color: #666; font-size: 0.88rem; margin-top: 0.4rem; }
+
         @media (max-width: 768px) {
             .hospital-grid, .resource-grid, .saved-items-grid, .pricing-plans { grid-template-columns: 1fr; }
             .header-content { flex-direction: column; text-align: center; }
-            .logo { margin-bottom: 1rem; }
-            .stats-grid, .premium-features { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .premium-features { grid-template-columns: 1fr; }
             .profile-header { flex-direction: column; text-align: center; }
-            .profile-avatar { margin-right: 0; margin-bottom: 1rem; }
             .pricing-plan.popular { transform: none; }
-            #ai-panel { width: calc(100vw - 32px); right: 16px; bottom: 88px; }
+            #ai-panel { width: calc(100vw - 32px); right: 16px; }
             #ai-fab { right: 16px; bottom: 16px; }
         }
-
-        h2 .subtitle, .subtitle { color: #666; margin-bottom: 1.5rem; display: block; }
-        .small { font-size: 0.85rem; color: #777; }
-        .mt-2 { margin-top: 1rem; }
-        .mb-2 { margin-bottom: 1rem; }
-        .gap-2 { gap: 0.5rem; }
-        .text-center { text-align: center; }
-        .empty-state { text-align: center; padding: 3rem; color: #888; }
-        .empty-state i { font-size: 3rem; margin-bottom: 1rem; color: #ccc; }
     </style>
 </head>
 <body>
 
+<!-- LOGIN GATE -->
+<div id="login-gate">
+    <div class="gate-box">
+        <div class="gate-logo">
+            <i class="fas fa-hospital-user"></i>
+            <h2>Epic EMR Trainer</h2>
+            <p>Sign in or create an account to continue</p>
+        </div>
+        <div class="auth-tabs">
+            <div class="auth-tab active" data-auth="signin">Sign In</div>
+            <div class="auth-tab" data-auth="signup">Create Account</div>
+        </div>
+        <!-- SIGN IN -->
+        <div class="auth-form active" id="signin-form">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" class="form-control" id="si-email" placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" class="form-control" id="si-password" placeholder="Your password">
+            </div>
+            <div class="form-error" id="si-error">Invalid email or password.</div>
+            <button class="btn btn-primary" id="si-btn" style="width:100%;margin-top:0.5rem;padding:0.85rem;">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
+            <p class="small" style="text-align:center;margin-top:1rem;">New user? Switch to Create Account above.</p>
+        </div>
+        <!-- SIGN UP -->
+        <div class="auth-form" id="signup-form">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" class="form-control" id="su-name" placeholder="Your full name">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" class="form-control" id="su-email" placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+                <label>Primary Hospital</label>
+                <input type="text" class="form-control" id="su-hospital" placeholder="e.g. Mercy General Hospital">
+            </div>
+            <div class="form-group">
+                <label>Password <span class="small">(min 6 characters)</span></label>
+                <input type="password" class="form-control" id="su-password" placeholder="Create a password">
+            </div>
+            <div class="form-error" id="su-error">Please fill all fields. Password min 6 chars.</div>
+            <button class="btn btn-primary" id="su-btn" style="width:100%;margin-top:0.5rem;padding:0.85rem;">
+                <i class="fas fa-user-plus"></i> Create Account
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- HEADER -->
 <header>
     <div class="header-content">
-        <div class="logo">
-            <i class="fas fa-hospital-user"></i>
-            <span>Epic EMR Trainer Assistant</span>
-        </div>
+        <div class="logo"><i class="fas fa-hospital-user"></i><span>Epic EMR Trainer Assistant</span></div>
         <div class="user-actions">
-            <div class="premium-badge" id="premium-status">
-                <i class="fas fa-crown"></i>
-                <span id="plan-label">Free Plan</span>
-            </div>
-            <button id="login-btn" class="btn btn-primary"><i class="fas fa-user"></i> Trainer Login</button>
+            <div class="premium-badge" id="premium-status"><i class="fas fa-crown"></i><span id="plan-label">Free Plan</span></div>
+            <div id="user-greeting"><i class="fas fa-user-circle"></i><span id="greeting-name">Trainer</span></div>
+            <button id="logout-btn" class="btn" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);font-size:0.85rem;padding:0.4rem 0.9rem;">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
         </div>
     </div>
 </header>
@@ -293,7 +273,7 @@
 <nav>
     <ul class="nav-tabs">
         <li><a href="#dashboard" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a></li>
-        <li><a href="#hospitals" class="nav-link"><i class="fas fa-hospital"></i> Hospital Systems</a></li>
+        <li><a href="#hospitals" class="nav-link"><i class="fas fa-hospital"></i> Hospitals</a></li>
         <li><a href="#playground" class="nav-link"><i class="fas fa-gamepad"></i> Playground</a></li>
         <li><a href="#resources" class="nav-link"><i class="fas fa-book"></i> Resources</a></li>
         <li><a href="#faq" class="nav-link"><i class="fas fa-question-circle"></i> FAQ</a></li>
@@ -303,90 +283,65 @@
 </nav>
 
 <main>
-    <!-- Dashboard -->
     <section id="dashboard" class="tab-content active">
-        <h2>Welcome, Epic Trainer</h2>
+        <h2>Welcome, <span id="dashboard-name">Trainer</span></h2>
         <p class="subtitle">Your central hub for Epic EMR training resources</p>
-        <div class="search-container">
-            <i class="fas fa-search search-icon"></i>
-            <input type="text" class="search-box" id="dash-search" placeholder="Search across all hospitals, resources, and FAQs...">
-        </div>
+        <div class="search-container"><i class="fas fa-search search-icon"></i><input type="text" class="search-box" id="dash-search" placeholder="Search hospitals, resources, and FAQs..."></div>
         <div class="stats-grid">
             <div class="stat-card"><i class="fas fa-hospital"></i><h3>24</h3><p>Hospital Systems</p></div>
             <div class="stat-card"><i class="fas fa-file-alt"></i><h3 id="stat-resources">6</h3><p>Training Resources</p></div>
             <div class="stat-card"><i class="fas fa-question-circle"></i><h3>89</h3><p>Answered FAQs</p></div>
-            <div class="stat-card"><i class="fas fa-sync-alt"></i><h3>6</h3><p>System Updates This Month</p></div>
+            <div class="stat-card"><i class="fas fa-bookmark"></i><h3 id="stat-saved">0</h3><p>Saved Items</p></div>
         </div>
-        <h3>Recently Added Hospitals</h3>
+        <h3 style="margin-bottom:1rem;">Recently Added Hospitals</h3>
         <div class="hospital-grid" id="dashboard-hospitals"></div>
-        <h3>Recent Resources</h3>
+        <h3 style="margin:1.5rem 0 1rem;">Recent Resources</h3>
         <div class="resource-grid" id="dashboard-resources"></div>
     </section>
 
-    <!-- Hospitals -->
     <section id="hospitals" class="tab-content">
         <h2>Hospital Systems</h2>
         <p class="subtitle">Comprehensive database of hospital Epic implementations</p>
-        <div class="search-container">
-            <i class="fas fa-search search-icon"></i>
-            <input type="text" class="search-box" id="hospital-search" placeholder="Search hospital systems...">
-        </div>
+        <div class="search-container"><i class="fas fa-search search-icon"></i><input type="text" class="search-box" id="hospital-search" placeholder="Search hospitals..."></div>
         <div class="hospital-grid" id="hospital-list"></div>
     </section>
 
-    <!-- Playground -->
     <section id="playground" class="tab-content">
         <h2>Epic Playground Navigation</h2>
         <p class="subtitle">Guidance for using the Epic training environments</p>
-        <div class="faq-container" id="playground-faqs"></div>
+        <div id="playground-faqs"></div>
     </section>
 
-    <!-- Resources -->
     <section id="resources" class="tab-content">
         <h2>Epic Resources</h2>
         <p class="subtitle">Training materials, guides, and documentation</p>
-        <div class="search-container">
-            <i class="fas fa-search search-icon"></i>
-            <input type="text" class="search-box" id="resource-search" placeholder="Search resources...">
-        </div>
-        <div style="margin-bottom:1.5rem;">
-            <button class="btn btn-primary" id="upload-resource-btn"><i class="fas fa-upload"></i> Upload New Resource</button>
-        </div>
+        <div class="search-container"><i class="fas fa-search search-icon"></i><input type="text" class="search-box" id="resource-search" placeholder="Search resources..."></div>
+        <div style="margin-bottom:1.5rem;"><button class="btn btn-primary" id="upload-resource-btn"><i class="fas fa-upload"></i> Upload New Resource</button></div>
         <div class="resource-grid" id="resource-list"></div>
     </section>
 
-    <!-- FAQ -->
     <section id="faq" class="tab-content">
         <h2>Frequently Asked Questions</h2>
         <p class="subtitle">Find answers to common Epic navigation questions</p>
-        <div class="search-container">
-            <i class="fas fa-search search-icon"></i>
-            <input type="text" class="search-box" id="faq-search" placeholder="Search FAQs...">
-        </div>
-        <div class="faq-container" id="faq-list"></div>
+        <div class="search-container"><i class="fas fa-search search-icon"></i><input type="text" class="search-box" id="faq-search" placeholder="Search FAQs..."></div>
+        <div id="faq-list"></div>
     </section>
 
-    <!-- Profile -->
     <section id="profile" class="tab-content">
         <div class="profile-header">
             <div class="profile-avatar"><i class="fas fa-user"></i></div>
             <div>
-                <h2 id="profile-name-display">John Smith</h2>
+                <h2 id="profile-name-display">Trainer</h2>
                 <p>Epic Certified Trainer</p>
-                <p id="profile-hospital-display">Mercy General Hospital</p>
-                <div class="premium-badge" id="profile-badge">
-                    <i class="fas fa-crown"></i>
-                    <span id="profile-plan-label">Free Plan</span>
-                </div>
+                <p id="profile-hospital-display" style="color:#666;font-size:0.9rem;"></p>
+                <div class="premium-badge" style="margin-top:0.5rem;display:inline-flex;" id="profile-badge"><i class="fas fa-crown"></i><span id="profile-plan-label">Free Plan</span></div>
             </div>
         </div>
-
         <div class="premium-upgrade" id="profile-upgrade-banner">
             <h2><i class="fas fa-crown"></i> Upgrade to Premium</h2>
-            <p>Unlock the ability to save hospitals, resources, and FAQs to your personal profile</p>
-            <button class="btn btn-premium pulse upgrade-trigger"><i class="fas fa-star"></i> Upgrade Now</button>
+            <p>Unlock unlimited saves, notes, and offline access</p>
+            <button class="btn btn-premium pulse upgrade-trigger" style="margin-top:1rem;"><i class="fas fa-star"></i> Upgrade Now</button>
         </div>
-
         <div class="profile-tabs">
             <div class="profile-tab active" data-tab="saved">Saved Content</div>
             <div class="profile-tab" data-tab="uploads">My Uploads</div>
@@ -394,154 +349,65 @@
             <div class="profile-tab" data-tab="questions">My Questions</div>
             <div class="profile-tab" data-tab="settings">Settings</div>
         </div>
-
-        <div class="profile-content">
-            <div class="profile-tab-content active" id="saved-tab">
-                <div id="saved-items-container">
-                    <div class="empty-state">
-                        <i class="fas fa-bookmark"></i>
-                        <p>No saved items yet. Browse hospitals, resources, and FAQs and click Save to add them here.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="profile-tab-content" id="uploads-tab">
-                <h3 style="margin-bottom:1rem;">My Uploaded Files</h3>
-                <div id="uploaded-files-list">
-                    <div class="empty-state">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <p>You haven't uploaded any files yet.</p>
-                    </div>
-                </div>
-                <div style="margin-top:1rem;">
-                    <button class="btn btn-primary" id="upload-from-profile-btn"><i class="fas fa-upload"></i> Upload a File</button>
-                </div>
-            </div>
-
-            <div class="profile-tab-content" id="ai-saved-tab">
-                <h3 style="margin-bottom:1rem;">Saved AI Responses</h3>
-                <div id="ai-saved-list">
-                    <div class="empty-state">
-                        <i class="fas fa-robot"></i>
-                        <p>No saved AI responses yet. Use the AI Trainer chat and click "Save Response" to store useful answers here.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="profile-tab-content" id="questions-tab">
-                <h3 style="margin-bottom:1rem;">My Questions</h3>
-                <div id="my-questions-list">
-                    <div class="empty-state">
-                        <i class="fas fa-question-circle"></i>
-                        <p>You haven't asked any questions yet. Questions you ask the AI Trainer will appear here.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="profile-tab-content" id="settings-tab">
-                <h3 style="margin-bottom:1.5rem;">Account Settings</h3>
-                <div class="form-group">
-                    <label for="name">Full Name</label>
-                    <input type="text" class="form-control" id="name" value="John Smith">
-                </div>
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" class="form-control" id="email" value="john.smith@mercygeneral.org">
-                </div>
-                <div class="form-group">
-                    <label for="hospital-select">Primary Hospital</label>
-                    <select class="form-control" id="hospital-select">
-                        <option value="Mercy General Hospital">Mercy General Hospital</option>
-                        <option value="Mayo Clinic">Mayo Clinic</option>
-                        <option value="Johns Hopkins Hospital">Johns Hopkins Hospital</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="certification">Epic Certification</label>
-                    <input type="text" class="form-control" id="certification" value="Epic Physician Trainer Certified">
-                </div>
-                <button class="btn btn-primary" id="save-settings-btn"><i class="fas fa-save"></i> Save Changes</button>
-            </div>
+        <div id="saved-tab" class="profile-tab-content active">
+            <div id="saved-items-container"><div class="empty-state"><i class="fas fa-bookmark"></i><p>Nothing saved yet. Browse and click Save on any hospital, resource, or FAQ.</p></div></div>
+        </div>
+        <div id="uploads-tab" class="profile-tab-content">
+            <h3 style="margin-bottom:1rem;">My Uploaded Files</h3>
+            <div id="uploaded-files-list"><div class="empty-state"><i class="fas fa-cloud-upload-alt"></i><p>No uploads yet.</p></div></div>
+            <button class="btn btn-primary" id="upload-from-profile-btn" style="margin-top:1rem;"><i class="fas fa-upload"></i> Upload a File</button>
+        </div>
+        <div id="ai-saved-tab" class="profile-tab-content">
+            <h3 style="margin-bottom:1rem;">Saved AI Responses</h3>
+            <div id="ai-saved-list"><div class="empty-state"><i class="fas fa-robot"></i><p>No saved AI responses yet.</p></div></div>
+        </div>
+        <div id="questions-tab" class="profile-tab-content">
+            <h3 style="margin-bottom:1rem;">My Questions</h3>
+            <div id="my-questions-list"><div class="empty-state"><i class="fas fa-question-circle"></i><p>No questions asked yet.</p></div></div>
+        </div>
+        <div id="settings-tab" class="profile-tab-content">
+            <h3 style="margin-bottom:1.5rem;">Account Settings</h3>
+            <div class="form-group"><label>Full Name</label><input type="text" class="form-control" id="set-name"></div>
+            <div class="form-group"><label>Email</label><input type="email" class="form-control" id="set-email"></div>
+            <div class="form-group"><label>Primary Hospital</label><input type="text" class="form-control" id="set-hospital"></div>
+            <div class="form-group"><label>Epic Certification</label><input type="text" class="form-control" id="set-cert"></div>
+            <button class="btn btn-primary" id="save-settings-btn"><i class="fas fa-save"></i> Save Changes</button>
         </div>
     </section>
 
-    <!-- Premium -->
     <section id="premium" class="tab-content">
         <h2><i class="fas fa-crown"></i> Epic Trainer Premium</h2>
-        <p class="subtitle">Upgrade your experience with powerful profile features</p>
+        <p class="subtitle">Upgrade your experience with powerful features</p>
         <div class="premium-upgrade">
             <h2>Unlock Premium Features</h2>
-            <p>Get access to personalized profile features designed for Epic trainers</p>
             <div class="premium-features">
-                <div class="premium-feature"><i class="fas fa-bookmark"></i><span>Save hospitals, resources, and FAQs to your profile</span></div>
+                <div class="premium-feature"><i class="fas fa-bookmark"></i><span>Save unlimited hospitals, resources &amp; FAQs</span></div>
                 <div class="premium-feature"><i class="fas fa-sticky-note"></i><span>Add personal notes to saved content</span></div>
-                <div class="premium-feature"><i class="fas fa-folder"></i><span>Organize content with custom categories</span></div>
-                <div class="premium-feature"><i class="fas fa-mobile-alt"></i><span>Access your profile from any device</span></div>
-                <div class="premium-feature"><i class="fas fa-search"></i><span>Save search history and preferences</span></div>
+                <div class="premium-feature"><i class="fas fa-folder"></i><span>Organize with custom categories</span></div>
                 <div class="premium-feature"><i class="fas fa-cloud-download-alt"></i><span>Download resources for offline access</span></div>
             </div>
         </div>
-        <h3>Choose Your Plan</h3>
+        <h3 style="margin-bottom:1rem;">Choose Your Plan</h3>
         <div class="pricing-plans">
             <div class="pricing-plan">
                 <h4>Free</h4>
-                <div class="plan-price">$0<span>/month</span></div>
-                <ul class="plan-features">
-                    <li><i class="fas fa-check"></i> Access to all hospitals</li>
-                    <li><i class="fas fa-check"></i> Browse resources</li>
-                    <li><i class="fas fa-check"></i> Read FAQs</li>
-                    <li><i class="fas fa-check"></i> AI Trainer chat</li>
-                    <li style="color:#aaa"><i class="fas fa-times"></i> Save to profile</li>
-                    <li style="color:#aaa"><i class="fas fa-times"></i> Personal notes</li>
-                </ul>
+                <div class="plan-price">$0<span>/mo</span></div>
+                <ul class="plan-features"><li>✅ All hospitals</li><li>✅ Browse resources</li><li>✅ Read FAQs</li><li>✅ AI Trainer chat</li><li style="color:#aaa">❌ Unlimited saves</li></ul>
                 <button class="btn btn-outline" disabled>Current Plan</button>
             </div>
             <div class="pricing-plan popular">
                 <div class="popular-badge">MOST POPULAR</div>
                 <h4>Premium Monthly</h4>
-                <div class="plan-price">$9.99<span>/month</span></div>
-                <ul class="plan-features">
-                    <li><i class="fas fa-check"></i> Everything in Free</li>
-                    <li><i class="fas fa-check"></i> Save unlimited items</li>
-                    <li><i class="fas fa-check"></i> Add personal notes</li>
-                    <li><i class="fas fa-check"></i> Organize with categories</li>
-                    <li><i class="fas fa-check"></i> Search history</li>
-                    <li><i class="fas fa-check"></i> Offline access</li>
-                </ul>
+                <div class="plan-price">$9.99<span>/mo</span></div>
+                <ul class="plan-features"><li>✅ Everything in Free</li><li>✅ Unlimited saves</li><li>✅ Personal notes</li><li>✅ Custom categories</li><li>✅ Offline access</li></ul>
                 <button class="btn btn-premium upgrade-trigger"><i class="fas fa-crown"></i> Upgrade Now</button>
             </div>
             <div class="pricing-plan">
                 <h4>Premium Annual</h4>
-                <div class="plan-price">$99.99<span>/year</span></div>
-                <div class="small">Save $20 compared to monthly</div>
-                <ul class="plan-features">
-                    <li><i class="fas fa-check"></i> Everything in Free</li>
-                    <li><i class="fas fa-check"></i> Save unlimited items</li>
-                    <li><i class="fas fa-check"></i> Add personal notes</li>
-                    <li><i class="fas fa-check"></i> Organize with categories</li>
-                    <li><i class="fas fa-check"></i> Search history</li>
-                    <li><i class="fas fa-check"></i> Offline access</li>
-                </ul>
+                <div class="plan-price">$99.99<span>/yr</span></div>
+                <p class="small" style="margin-bottom:0.5rem;">Save $20 vs monthly</p>
+                <ul class="plan-features"><li>✅ Everything in Premium</li><li>✅ Priority support</li><li>✅ Early access features</li></ul>
                 <button class="btn btn-premium upgrade-trigger"><i class="fas fa-crown"></i> Upgrade Now</button>
-            </div>
-        </div>
-        <div class="premium-upgrade">
-            <h2>Frequently Asked Questions</h2>
-            <div class="faq-item">
-                <div class="faq-question">What payment methods do you accept? <span>+</span></div>
-                <div class="faq-answer"><p>We accept all major credit cards, PayPal, and Apple Pay for your convenience.</p></div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question">Can I cancel my subscription anytime? <span>+</span></div>
-                <div class="faq-answer"><p>Yes, you can cancel your subscription at any time. Your premium features will remain active until the end of your billing period.</p></div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question">Will I lose my saved data if I cancel? <span>+</span></div>
-                <div class="faq-answer"><p>Your saved data will be preserved for 6 months after cancellation. If you resubscribe within that time, you'll regain access to all your saved content.</p></div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question">Is there a free trial? <span>+</span></div>
-                <div class="faq-answer"><p>Yes, we offer a 7-day free trial for new premium subscribers. No credit card required to start the trial.</p></div>
             </div>
         </div>
     </section>
@@ -550,847 +416,525 @@
 <!-- Upload Modal -->
 <div class="modal-overlay" id="upload-modal">
     <div class="modal">
-        <div class="modal-header">
-            <h2><i class="fas fa-cloud-upload-alt"></i> Upload Epic Documentation</h2>
-            <button class="modal-close" data-modal="upload-modal">&times;</button>
-        </div>
+        <div class="modal-header"><h2><i class="fas fa-cloud-upload-alt"></i> Upload Documentation</h2><button class="modal-close" data-modal="upload-modal">&times;</button></div>
         <div class="file-upload" id="file-upload-area">
             <i class="fas fa-cloud-upload-alt"></i>
-            <p>Click to select a file or drag and drop here</p>
-            <p class="small">Maximum file size: 50MB</p>
+            <p>Click to select or drag &amp; drop</p>
+            <p class="small">PDF, DOCX, PPTX, XLSX, ZIP, MP4 — max 50MB</p>
             <input type="file" id="file-input" style="display:none" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.mp4,.mov,.png,.jpg,.jpeg">
         </div>
-        <div id="file-info" style="display:none; background:#f0f0f0; padding:0.8rem; border-radius:6px; margin-bottom:1rem;">
+        <div id="file-info" style="display:none;background:#f0f0f0;padding:0.75rem;border-radius:6px;margin-bottom:1rem;">
             <strong><i class="fas fa-file"></i> <span id="file-name"></span></strong>
-            <span style="color:#888; margin-left:1rem;" id="file-size"></span>
+            <span style="color:#888;margin-left:1rem;" id="file-size-display"></span>
         </div>
+        <div class="form-group"><label>Document Title *</label><input type="text" class="form-control" id="doc-title" placeholder="Enter a descriptive title"></div>
+        <div class="form-group"><label>Description</label><textarea class="form-control" id="doc-description" placeholder="What does this document contain?"></textarea></div>
         <div class="form-group">
-            <label for="doc-title">Document Title *</label>
-            <input type="text" class="form-control" id="doc-title" placeholder="Enter a descriptive title">
+            <label>Category</label>
+            <select class="form-control" id="doc-category"><option value="">Select a category</option><option>User Guide</option><option>Training Manual</option><option>Release Notes</option><option>Cheat Sheet</option><option>Presentation</option></select>
         </div>
-        <div class="form-group">
-            <label for="doc-description">Description</label>
-            <textarea class="form-control" id="doc-description" placeholder="Describe what this document contains"></textarea>
-        </div>
-        <div class="form-group">
-            <label for="doc-category">Category</label>
-            <select class="form-control" id="doc-category">
-                <option value="">Select a category</option>
-                <option value="User Guide">User Guide</option>
-                <option value="Training Manual">Training Manual</option>
-                <option value="Release Notes">Release Notes</option>
-                <option value="Cheat Sheet">Cheat Sheet</option>
-                <option value="Presentation">Presentation</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="doc-tags">Tags (comma separated)</label>
-            <input type="text" class="form-control" id="doc-tags" placeholder="e.g., billing, clinical, reports">
-        </div>
-        <button class="btn btn-primary" id="start-upload-btn" disabled><i class="fas fa-upload"></i> Upload Document</button>
+        <div class="form-group"><label>Tags (comma separated)</label><input type="text" class="form-control" id="doc-tags" placeholder="billing, clinical, reports"></div>
+        <button class="btn btn-primary" id="start-upload-btn" disabled style="width:100%;"><i class="fas fa-upload"></i> Upload Document</button>
     </div>
 </div>
 
 <!-- Upgrade Modal -->
 <div class="modal-overlay" id="upgrade-modal">
     <div class="modal">
-        <div class="modal-header">
-            <h2><i class="fas fa-crown"></i> Upgrade to Premium</h2>
-            <button class="modal-close" data-modal="upgrade-modal">&times;</button>
-        </div>
-        <div class="premium-upgrade">
+        <div class="modal-header"><h2><i class="fas fa-crown"></i> Upgrade to Premium</h2><button class="modal-close" data-modal="upgrade-modal">&times;</button></div>
+        <div style="text-align:center;padding:1rem;">
             <h3>Start Your 7-Day Free Trial</h3>
-            <p>Get immediate access to all premium features</p>
+            <p style="color:#666;margin:0.75rem 0;">Immediate access to all premium features</p>
             <div class="plan-price">$9.99<span>/month after trial</span></div>
-            <div class="premium-features">
-                <div class="premium-feature"><i class="fas fa-check-circle"></i><span>Save hospitals to your profile</span></div>
-                <div class="premium-feature"><i class="fas fa-check-circle"></i><span>Save resources and documentation</span></div>
-                <div class="premium-feature"><i class="fas fa-check-circle"></i><span>Save FAQ answers for quick reference</span></div>
-                <div class="premium-feature"><i class="fas fa-check-circle"></i><span>Add personal notes to saved items</span></div>
+            <div class="premium-features" style="margin:1.5rem 0;">
+                <div class="premium-feature"><i class="fas fa-check-circle" style="color:var(--success);"></i><span>Save unlimited items</span></div>
+                <div class="premium-feature"><i class="fas fa-check-circle" style="color:var(--success);"></i><span>Add personal notes</span></div>
+                <div class="premium-feature"><i class="fas fa-check-circle" style="color:var(--success);"></i><span>Organize with categories</span></div>
+                <div class="premium-feature"><i class="fas fa-check-circle" style="color:var(--success);"></i><span>Offline access</span></div>
             </div>
-            <button class="btn btn-premium" id="start-trial-btn"><i class="fas fa-play-circle"></i> Start Free Trial</button>
-            <p class="small" style="margin-top:0.5rem;">No credit card required. Cancel anytime.</p>
+            <button class="btn btn-premium" id="start-trial-btn" style="width:100%;padding:1rem;font-size:1rem;"><i class="fas fa-play-circle"></i> Start Free Trial</button>
+            <p class="small" style="margin-top:0.75rem;">No credit card required. Cancel anytime.</p>
         </div>
     </div>
 </div>
 
-<!-- AI Chat Panel -->
-<button id="ai-fab" title="Ask AI Trainer">
-    <i class="fas fa-robot"></i>
-</button>
-
+<!-- AI Chat -->
+<button id="ai-fab" title="Ask AI Trainer"><i class="fas fa-robot"></i></button>
 <div id="ai-panel">
     <div class="ai-panel-header">
-        <h3><i class="fas fa-robot"></i> AI Epic Trainer</h3>
-        <button class="ai-close" id="ai-close-btn">&times;</button>
+        <h3><i class="fas fa-robot"></i> AI Epic Trainer <span class="ai-status">● Web Search On</span></h3>
+        <button id="ai-close-btn">&times;</button>
     </div>
     <div id="ai-messages">
-        <div class="ai-msg assistant">
-            Hi! I'm your AI Epic Trainer. I can answer questions about Epic EMR, search the web for the latest information, and help you find training resources. What would you like to know?
-        </div>
+        <div class="ai-msg assistant">Hi! I'm your AI Epic Trainer powered by Claude. I can search the web for the latest Epic EMR info, answer training questions, and help with workflows. What do you need?</div>
     </div>
     <div class="ai-input-row">
-        <textarea id="ai-input" placeholder="Ask anything about Epic EMR..." rows="1"></textarea>
+        <textarea id="ai-input" placeholder="Ask about Epic EMR..." rows="1"></textarea>
         <button id="ai-send"><i class="fas fa-paper-plane"></i></button>
     </div>
 </div>
 
 <footer>
     <p>Epic EMR Trainer Assistant | For training purposes only</p>
-    <p>This application is not affiliated with Epic Systems Corporation</p>
+    <p>Not affiliated with Epic Systems Corporation</p>
     <p>&copy; 2024 Epic EMR Trainer Assistant. All rights reserved.</p>
 </footer>
 
 <script>
-// =====================
-// APP STATE
-// =====================
-const STATE = {
-    isPremium: false,
-    savedItems: JSON.parse(localStorage.getItem('savedItems') || '[]'),
-    uploadedFiles: JSON.parse(localStorage.getItem('uploadedFiles') || '[]'),
-    aiSavedResponses: JSON.parse(localStorage.getItem('aiSavedResponses') || '[]'),
-    myQuestions: JSON.parse(localStorage.getItem('myQuestions') || '[]'),
-    userSettings: JSON.parse(localStorage.getItem('userSettings') || '{"name":"John Smith","email":"john.smith@mercygeneral.org","hospital":"Mercy General Hospital","certification":"Epic Physician Trainer Certified"}'),
-    aiHistory: []
-};
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+const STATE = { currentUser:null, isPremium:false, savedItems:[], uploadedFiles:[], aiSavedResponses:[], myQuestions:[], aiHistory:[] };
 
-function saveState() {
-    localStorage.setItem('savedItems', JSON.stringify(STATE.savedItems));
-    localStorage.setItem('uploadedFiles', JSON.stringify(STATE.uploadedFiles));
-    localStorage.setItem('aiSavedResponses', JSON.stringify(STATE.aiSavedResponses));
-    localStorage.setItem('myQuestions', JSON.stringify(STATE.myQuestions));
-    localStorage.setItem('userSettings', JSON.stringify(STATE.userSettings));
+function uKey(k){ return (STATE.currentUser?.email||'guest')+':'+k; }
+function load(k,d){ try{ const v=localStorage.getItem(uKey(k)); return v!==null?JSON.parse(v):d; }catch{ return d; } }
+function persist(k,v){ localStorage.setItem(uKey(k),JSON.stringify(v)); }
+function persistAll(){
+    persist('savedItems',STATE.savedItems);
+    persist('uploadedFiles',STATE.uploadedFiles);
+    persist('aiSaved',STATE.aiSavedResponses);
+    persist('myQuestions',STATE.myQuestions);
+    persist('isPremium',STATE.isPremium);
+}
+function loadUserData(){
+    STATE.savedItems       = load('savedItems',[]);
+    STATE.uploadedFiles    = load('uploadedFiles',[]);
+    STATE.aiSavedResponses = load('aiSaved',[]);
+    STATE.myQuestions      = load('myQuestions',[]);
+    STATE.isPremium        = load('isPremium',false);
 }
 
-// =====================
+// ═══════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════
+function getAccounts(){ try{ return JSON.parse(localStorage.getItem('_accounts')||'{}'); }catch{ return {}; } }
+function setAccounts(a){ localStorage.setItem('_accounts',JSON.stringify(a)); }
+
+function initAuth(){
+    // Auto-login from session
+    try{
+        const s = JSON.parse(sessionStorage.getItem('_sess'));
+        if(s?.email){ doLogin(s); return; }
+    }catch{}
+
+    // Auth tab switching
+    document.querySelectorAll('.auth-tab').forEach(t=>{
+        t.addEventListener('click',()=>{
+            document.querySelectorAll('.auth-tab').forEach(x=>x.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(x=>x.classList.remove('active'));
+            t.classList.add('active');
+            document.getElementById(t.dataset.auth+'-form').classList.add('active');
+        });
+    });
+
+    // Enter key support
+    ['si-email','si-password'].forEach(id=>{ document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('si-btn').click(); }); });
+    ['su-name','su-email','su-hospital','su-password'].forEach(id=>{ document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('su-btn').click(); }); });
+
+    document.getElementById('si-btn').addEventListener('click',()=>{
+        const email    = document.getElementById('si-email').value.trim().toLowerCase();
+        const password = document.getElementById('si-password').value;
+        const errEl    = document.getElementById('si-error');
+        errEl.classList.remove('show');
+        if(!email||!password){ errEl.textContent='Please enter email and password.'; errEl.classList.add('show'); return; }
+        const accounts = getAccounts();
+        if(!accounts[email]||accounts[email].password!==password){ errEl.textContent='Invalid email or password.'; errEl.classList.add('show'); return; }
+        doLogin(accounts[email]);
+    });
+
+    document.getElementById('su-btn').addEventListener('click',()=>{
+        const name     = document.getElementById('su-name').value.trim();
+        const email    = document.getElementById('su-email').value.trim().toLowerCase();
+        const hospital = document.getElementById('su-hospital').value.trim();
+        const password = document.getElementById('su-password').value;
+        const errEl    = document.getElementById('su-error');
+        errEl.classList.remove('show');
+        if(!name||!email||!hospital||password.length<6){ errEl.classList.add('show'); return; }
+        const accounts = getAccounts();
+        if(accounts[email]){ errEl.textContent='Account already exists. Sign in instead.'; errEl.classList.add('show'); return; }
+        const user = {name,email,hospital,password,certification:'Epic Trainer'};
+        accounts[email]=user; setAccounts(accounts);
+        doLogin(user);
+    });
+}
+
+function doLogin(user){
+    STATE.currentUser = user;
+    sessionStorage.setItem('_sess',JSON.stringify(user));
+    loadUserData();
+    document.getElementById('login-gate').style.display='none';
+    document.getElementById('greeting-name').textContent  = user.name.split(' ')[0];
+    document.getElementById('dashboard-name').textContent = user.name.split(' ')[0];
+    document.getElementById('user-greeting').classList.add('visible');
+    if(STATE.isPremium){
+        document.getElementById('plan-label').textContent='Premium Member';
+        document.getElementById('profile-plan-label').textContent='Premium Member';
+        document.getElementById('profile-upgrade-banner').style.display='none';
+    }
+    renderAll(); updateSavedStat();
+}
+
+document.getElementById('logout-btn').addEventListener('click',()=>{ sessionStorage.removeItem('_sess'); location.reload(); });
+
+// ═══════════════════════════════════════════
 // DATA
-// =====================
-const hospitals = [
-    { id: 1, name: "Mayo Clinic", version: "Epic 2022", modules: ["Radiant","Beaker","OpTime","Research","Cadence","Prelude"], notes: "Uses special billing modules and research functionality. Strong focus on oncology and cardiology.", lastUpdated: "2023-10-15", contact: { name: "Dr. Sarah Johnson", email: "sjohnson@mayoclinic.org" } },
-    { id: 2, name: "Johns Hopkins Hospital", version: "Epic 2023", modules: ["Care Everywhere","MyChart","Healthy Planet","Research","Cupid"], notes: "Research-focused customization with specialized modules. Early adopter of new Epic features.", lastUpdated: "2023-11-05", contact: { name: "Michael Chen", email: "mchen@jh.edu" } },
-    { id: 3, name: "Massachusetts General Hospital", version: "Epic 2022", modules: ["Cadence","Prelude","Grand Central","Beaker","Radiant"], notes: "Integrated with Partners healthcare system. Strong emphasis on patient portal implementation.", lastUpdated: "2023-09-22", contact: { name: "Emily Rodriguez", email: "erodriguez@mgh.harvard.edu" } },
-    { id: 4, name: "Cleveland Clinic", version: "Epic 2023", modules: ["Hyperspace","Cupid","Bones","MyChart","Healthy Planet"], notes: "Cardiology specialty focus with custom modules. Strong telemedicine integration.", lastUpdated: "2023-11-12", contact: { name: "Robert Williams", email: "rwilliams@clevelandclinic.org" } },
-    { id: 5, name: "UCSF Medical Center", version: "Epic 2022", modules: ["Beaker","Willow","Phoenix","Radiant","Care Everywhere"], notes: "Academic medical center configuration with research emphasis. Strong pediatric specialization.", lastUpdated: "2023-08-30", contact: { name: "Jennifer Lee", email: "jlee@ucsf.edu" } },
-    { id: 6, name: "NewYork-Presbyterian Hospital", version: "Epic 2023", modules: ["Healthy Planet","MyChart","Care Companion","Cadence","Prelude"], notes: "Large multi-campus system with unified Epic implementation. Strong population health focus.", lastUpdated: "2023-10-28", contact: { name: "David Kim", email: "dkim@nyp.org" } }
+// ═══════════════════════════════════════════
+const hospitals=[
+    {id:1,name:"Mayo Clinic",version:"Epic 2022",modules:["Radiant","Beaker","OpTime","Research","Cadence","Prelude"],notes:"Uses special billing modules and research functionality. Strong focus on oncology and cardiology.",lastUpdated:"2023-10-15",contact:{name:"Dr. Sarah Johnson",email:"sjohnson@mayoclinic.org"}},
+    {id:2,name:"Johns Hopkins Hospital",version:"Epic 2023",modules:["Care Everywhere","MyChart","Healthy Planet","Research","Cupid"],notes:"Research-focused customization with specialized modules. Early adopter of new Epic features.",lastUpdated:"2023-11-05",contact:{name:"Michael Chen",email:"mchen@jh.edu"}},
+    {id:3,name:"Massachusetts General",version:"Epic 2022",modules:["Cadence","Prelude","Grand Central","Beaker","Radiant"],notes:"Integrated with Partners healthcare system. Strong emphasis on patient portal implementation.",lastUpdated:"2023-09-22",contact:{name:"Emily Rodriguez",email:"erodriguez@mgh.harvard.edu"}},
+    {id:4,name:"Cleveland Clinic",version:"Epic 2023",modules:["Hyperspace","Cupid","Bones","MyChart","Healthy Planet"],notes:"Cardiology specialty focus with custom modules. Strong telemedicine integration.",lastUpdated:"2023-11-12",contact:{name:"Robert Williams",email:"rwilliams@clevelandclinic.org"}},
+    {id:5,name:"UCSF Medical Center",version:"Epic 2022",modules:["Beaker","Willow","Phoenix","Radiant","Care Everywhere"],notes:"Academic medical center configuration with research emphasis. Strong pediatric specialization.",lastUpdated:"2023-08-30",contact:{name:"Jennifer Lee",email:"jlee@ucsf.edu"}},
+    {id:6,name:"NewYork-Presbyterian",version:"Epic 2023",modules:["Healthy Planet","MyChart","Care Companion","Cadence","Prelude"],notes:"Large multi-campus system with unified Epic implementation. Strong population health focus.",lastUpdated:"2023-10-28",contact:{name:"David Kim",email:"dkim@nyp.org"}}
+];
+const defaultResources=[
+    {id:"res-001",title:"Epic Fundamentals Training Guide",type:"PDF Document",size:"5.2 MB",description:"Complete guide to Epic fundamentals for new trainers."},
+    {id:"res-002",title:"MyChart Patient Portal Tutorial",type:"Video",size:"22:15 min",description:"Detailed walkthrough of MyChart features and patient communication tools."},
+    {id:"res-003",title:"Clinical Documentation Templates",type:"ZIP File",size:"3.7 MB",description:"Collection of customizable clinical documentation templates."},
+    {id:"res-004",title:"Reporting Workbench Guide",type:"PDF Document",size:"4.1 MB",description:"Creating and customizing reports in Epic."},
+    {id:"res-005",title:"Epic 2023 Upgrade Guide",type:"PDF Document",size:"2.4 MB",description:"Complete guide to new features and changes in Epic 2023."},
+    {id:"res-006",title:"Playground Navigation Video",type:"Video Tutorial",size:"15:32 min",description:"Step-by-step guide to setting up and using the Epic playground environment."}
+];
+const faqs=[
+    {id:1,question:"How do I access the Epic Playground?",answer:"Access varies by organization. Typically connect through your VPN using a URL provided by your Epic team. Some organizations require additional authentication or special permissions from your Epic coordinator.",category:"Access",helpfulCount:24},
+    {id:2,question:"What's the difference between Hyperspace and Hyperdrive?",answer:"Hyperspace is the traditional Epic interface; Hyperdrive is the newer web-based version offering improved performance, faster navigation, better mobile compatibility, and more personalized workspace configurations.",category:"Navigation",helpfulCount:31},
+    {id:3,question:"How often does Epic release updates?",answer:"Major updates release once a year, typically spring or fall. Smaller patches come throughout the year. Preview environments are available 3–4 months before production upgrades.",category:"Updates",helpfulCount:18},
+    {id:4,question:"How can I customize training for different specialties?",answer:"Create specialized training profiles, build custom environments, and use Training Wheels to guide users. Develop specialty-specific patient scenarios, custom learning paths, and role-based configurations.",category:"Training",helpfulCount:29},
+    {id:5,question:"How do I get access to Epic UserWeb?",answer:"UserWeb access is provided by your organization's Epic coordinator after completing required training, signing access agreements, and demonstrating a legitimate business need.",category:"Access",helpfulCount:15},
+    {id:6,question:"What's the best way to train physicians on Epic?",answer:"Keep training specialty-specific, concise, and workflow-focused. Use real clinical scenarios, highlight SmartTools and SmartPhrases, and combine classroom training with one-on-one coaching and tip sheets.",category:"Training",helpfulCount:42}
 ];
 
-const defaultResources = [
-    { id: "res-001", title: "Epic Fundamentals Training Guide", type: "PDF Document", size: "5.2 MB", description: "Complete guide to Epic fundamentals for new trainers.", premium: true },
-    { id: "res-002", title: "MyChart Patient Portal Tutorial", type: "Video", size: "22:15 min", description: "Detailed walkthrough of MyChart features and patient communication tools.", premium: true },
-    { id: "res-003", title: "Clinical Documentation Templates", type: "ZIP File", size: "3.7 MB", description: "Collection of customizable clinical documentation templates.", premium: true },
-    { id: "res-004", title: "Reporting Workbench Guide", type: "PDF Document", size: "4.1 MB", description: "Creating and customizing reports in Epic.", premium: true },
-    { id: "res-005", title: "Epic 2023 Upgrade Guide", type: "PDF Document", size: "2.4 MB", description: "Complete guide to new features and changes in Epic 2023 version.", premium: true },
-    { id: "res-006", title: "Playground Navigation Video", type: "Video Tutorial", size: "15:32 min", description: "Step-by-step guide to setting up and using the Epic playground environment.", premium: true }
-];
+// ═══════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════
+function renderAll(){ renderHospitals();renderResources();renderFAQs();renderSavedItems();renderUploadedFiles();renderAISaved();renderMyQuestions();renderProfileSettings(); }
+function isSaved(id){ return STATE.savedItems.some(i=>i.id===id); }
 
-const faqs = [
-    { id: 1, question: "How do I access the Epic Playground?", answer: "Access to the Epic Playground varies by organization. Typically, you need to connect through your organization's VPN and use a specific URL provided by your Epic team. Some organizations require additional authentication steps or special permissions granted by your Epic coordinator.", category: "Access", helpfulCount: 24 },
-    { id: 2, question: "What's the difference between Hyperspace and Hyperdrive?", answer: "Hyperspace is the traditional Epic interface, while Hyperdrive is the newer, web-based version that offers improved performance and customization options. Hyperdrive allows for faster navigation, better mobile compatibility, and more personalized workspace configurations. Most organizations are transitioning to Hyperdrive, but some modules may still require Hyperspace.", category: "Navigation", helpfulCount: 31 },
-    { id: 3, question: "How often does Epic release updates?", answer: "Epic typically releases major updates once a year, with smaller updates and patches throughout the year. Organizations can choose when to implement these updates, but most follow a regular schedule. Major updates usually occur in the spring or fall, with preview environments available 3-4 months before the production upgrade.", category: "Updates", helpfulCount: 18 },
-    { id: 4, question: "How can I customize training for different specialties?", answer: "Epic allows trainers to create specialized training profiles, build custom training environments, and use the Training Wheels feature to guide users through workflows. You can create specialty-specific patient scenarios, develop custom learning paths, and utilize the role-based access configurations to simulate real clinical environments for each specialty.", category: "Training", helpfulCount: 29 },
-    { id: 5, question: "How do I get access to Epic UserWeb?", answer: "Access to Epic UserWeb is typically provided by your organization's Epic coordinator. You'll need to complete required training and request access through proper channels. Most organizations have a process for requesting UserWeb access that may include completing security training, signing access agreements, and having a legitimate business need for the resource.", category: "Access", helpfulCount: 15 },
-    { id: 6, question: "What's the best way to train physicians on Epic?", answer: "Physician training works best when it's specialty-specific, concise, and focused on workflow efficiency. Use real clinical scenarios, emphasize time-saving features like SmartTools and SmartPhrases, and provide just-in-time training resources. Many organizations find success with a combination of classroom training, one-on-one coaching, and specialty-specific tip sheets.", category: "Training", helpfulCount: 42 }
-];
-
-// =====================
-// RENDER FUNCTIONS
-// =====================
-function createHospitalCard(hospital, container) {
-    const isSaved = STATE.savedItems.some(i => i.id === `hosp-${hospital.id}`);
-    const card = document.createElement('div');
-    card.className = 'hospital-card';
-    card.dataset.id = hospital.id;
-    card.innerHTML = `
-        <div class="premium-lock" title="Save requires Premium"><i class="fas fa-lock"></i></div>
-        <h3><i class="fas fa-hospital"></i> ${hospital.name}</h3>
-        <div class="hospital-meta"><span>${hospital.version}</span><span>Updated: ${hospital.lastUpdated}</span></div>
-        <p>${hospital.notes}</p>
-        <div class="module-list">${hospital.modules.map(m => `<span class="module-tag">${m}</span>`).join('')}</div>
-        <div class="hospital-contact"><p><strong>Contact:</strong> ${hospital.contact.name} | ${hospital.contact.email}</p></div>
-        <div style="display:flex;gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap;">
-            <button class="btn btn-primary btn-sm" style="padding:0.5rem 1rem;font-size:0.9rem;">View Details</button>
-            <button class="btn ${isSaved ? 'saved' : 'btn-outline'} save-btn" data-id="hosp-${hospital.id}" data-type="hospital" data-name="${hospital.name}">
-                <i class="fas ${isSaved ? 'fa-check' : 'fa-bookmark'}"></i> ${isSaved ? 'Saved' : 'Save'}
-            </button>
+function mkHospitalCard(h){
+    const sv=isSaved('hosp-'+h.id);
+    const c=document.createElement('div'); c.className='hospital-card';
+    c.innerHTML=`
+        <h3><i class="fas fa-hospital"></i>${h.name}</h3>
+        <div class="hospital-meta"><span>${h.version}</span><span>Updated: ${h.lastUpdated}</span></div>
+        <p style="font-size:0.88rem;color:#555;">${h.notes}</p>
+        <div class="module-list">${h.modules.map(m=>`<span class="module-tag">${m}</span>`).join('')}</div>
+        <div class="hospital-contact"><i class="fas fa-user" style="margin-right:0.4rem;color:var(--epic-light-purple);"></i>${h.contact.name} &nbsp;|&nbsp; ${h.contact.email}</div>
+        <div class="card-actions">
+            <button class="btn btn-primary" style="font-size:0.85rem;padding:0.5rem 1rem;">View Details</button>
+            <button class="btn ${sv?'saved':'btn-outline'} save-btn" data-id="hosp-${h.id}" data-type="hospital" data-name="${h.name}"><i class="fas ${sv?'fa-check':'fa-bookmark'}"></i> ${sv?'Saved':'Save'}</button>
         </div>`;
-    return card;
+    return c;
 }
 
-function createResourceCard(res, isUploaded = false) {
-    const isSaved = STATE.savedItems.some(i => i.id === res.id);
-    const icon = res.type && res.type.toLowerCase().includes('video') ? 'fa-play-circle' : 'fa-download';
-    const card = document.createElement('div');
-    card.className = 'resource-card';
-    card.innerHTML = `
-        ${!isUploaded ? '<div class="premium-lock" title="Premium feature"><i class="fas fa-lock"></i></div>' : ''}
-        <h3>${res.title}</h3>
-        <div class="resource-meta"><span>${res.type || 'Document'}</span><span>${res.size || ''}</span></div>
-        <p>${res.description || ''}</p>
-        <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;">
-            <button class="btn btn-primary" style="padding:0.5rem 1rem;font-size:0.9rem;"><i class="fas ${icon}"></i> ${res.type && res.type.toLowerCase().includes('video') ? 'Watch' : 'Download'}</button>
-            <button class="btn ${isSaved ? 'saved' : 'btn-outline'} save-btn" data-id="${res.id}" data-type="resource" data-name="${res.title}">
-                <i class="fas ${isSaved ? 'fa-check' : 'fa-bookmark'}"></i> ${isSaved ? 'Saved' : 'Save'}
-            </button>
+function mkResourceCard(r,isUp=false){
+    const sv=isSaved(r.id); const isVid=(r.type||'').toLowerCase().includes('video');
+    const c=document.createElement('div'); c.className='resource-card';
+    c.innerHTML=`
+        ${!isUp?'<div style="position:absolute;top:1rem;right:1rem;color:var(--premium-gold);font-size:1.1rem;"><i class="fas fa-lock"></i></div>':''}
+        <h3>${r.title}</h3>
+        <div class="resource-meta"><span>${r.type||'Document'}</span><span>${r.size||''}</span></div>
+        <p style="font-size:0.86rem;color:#555;">${r.description||''}</p>
+        <div class="card-actions" style="margin-top:1rem;">
+            <button class="btn btn-primary" style="font-size:0.85rem;padding:0.5rem 1rem;"><i class="fas ${isVid?'fa-play-circle':'fa-download'}"></i> ${isVid?'Watch':'Download'}</button>
+            <button class="btn ${sv?'saved':'btn-outline'} save-btn" data-id="${r.id}" data-type="resource" data-name="${r.title}"><i class="fas ${sv?'fa-check':'fa-bookmark'}"></i> ${sv?'Saved':'Save'}</button>
         </div>`;
-    return card;
+    return c;
 }
 
-function createFAQItem(faq) {
-    const isSaved = STATE.savedItems.some(i => i.id === `faq-${faq.id}`);
-    const item = document.createElement('div');
-    item.className = 'faq-item';
-    item.innerHTML = `
-        <div class="faq-question">${faq.question} <span>+</span></div>
+function mkFAQItem(f){
+    const sv=isSaved('faq-'+f.id);
+    const el=document.createElement('div'); el.className='faq-item';
+    el.innerHTML=`
+        <div class="faq-question">${f.question} <span>+</span></div>
         <div class="faq-answer">
-            <p>${faq.answer}</p>
-            <div class="faq-meta">
-                <span class="faq-category">${faq.category}</span>
-                <span>${faq.helpfulCount} people found this helpful</span>
-            </div>
+            <p style="font-size:0.9rem;">${f.answer}</p>
+            <div class="faq-meta"><span class="faq-category">${f.category}</span><span>${f.helpfulCount} found this helpful</span></div>
             <div style="margin-top:0.75rem;">
-                <button class="btn ${isSaved ? 'saved' : 'btn-outline'} save-btn" data-id="faq-${faq.id}" data-type="faq" data-name="${faq.question}">
-                    <i class="fas ${isSaved ? 'fa-check' : 'fa-bookmark'}"></i> ${isSaved ? 'Saved' : 'Save this answer'}
-                </button>
+                <button class="btn ${sv?'saved':'btn-outline'} save-btn" data-id="faq-${f.id}" data-type="faq" data-name="${f.question}"><i class="fas ${sv?'fa-check':'fa-bookmark'}"></i> ${sv?'Saved':'Save this answer'}</button>
             </div>
         </div>`;
-    item.querySelector('.faq-question').addEventListener('click', function() {
-        const ans = this.nextElementSibling;
-        ans.classList.toggle('active');
-        this.querySelector('span').textContent = ans.classList.contains('active') ? '−' : '+';
-    });
-    return item;
+    el.querySelector('.faq-question').addEventListener('click',function(){ const a=this.nextElementSibling; a.classList.toggle('active'); this.querySelector('span').textContent=a.classList.contains('active')?'−':'+'; });
+    return el;
 }
 
-function renderHospitals() {
-    ['hospital-list', 'dashboard-hospitals'].forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.innerHTML = '';
-        const list = id === 'dashboard-hospitals' ? hospitals.slice(0, 2) : hospitals;
-        list.forEach(h => el.appendChild(createHospitalCard(h)));
-    });
-    attachSaveListeners();
+function renderHospitals(){
+    ['hospital-list','dashboard-hospitals'].forEach(id=>{ const el=document.getElementById(id); if(!el)return; el.innerHTML=''; (id==='dashboard-hospitals'?hospitals.slice(0,2):hospitals).forEach(h=>el.appendChild(mkHospitalCard(h))); });
+    attachSaveBtns();
 }
-
-function renderResources() {
-    const el = document.getElementById('resource-list');
-    if (!el) return;
-    el.innerHTML = '';
-    const allRes = [...defaultResources, ...STATE.uploadedFiles.map(f => ({
-        id: `upload-${f.id}`, title: f.title, type: f.type || 'Uploaded File', size: f.size, description: f.description || '', uploaded: true
-    }))];
-    allRes.forEach(r => el.appendChild(createResourceCard(r, r.uploaded)));
-
-    // Dashboard resources
-    const dashEl = document.getElementById('dashboard-resources');
-    if (dashEl) {
-        dashEl.innerHTML = '';
-        defaultResources.slice(0, 2).forEach(r => dashEl.appendChild(createResourceCard(r)));
-    }
-
-    // Update stat
-    const stat = document.getElementById('stat-resources');
-    if (stat) stat.textContent = allRes.length;
-
-    attachSaveListeners();
+function renderResources(){
+    const el=document.getElementById('resource-list'); if(!el)return; el.innerHTML='';
+    const all=[...defaultResources,...STATE.uploadedFiles.map(f=>({id:'upload-'+f.id,title:f.title,type:f.type||'Uploaded',size:f.size,description:f.description||'',uploaded:true}))];
+    all.forEach(r=>el.appendChild(mkResourceCard(r,r.uploaded)));
+    const de=document.getElementById('dashboard-resources'); if(de){de.innerHTML='';defaultResources.slice(0,2).forEach(r=>de.appendChild(mkResourceCard(r)));}
+    const st=document.getElementById('stat-resources'); if(st)st.textContent=all.length;
+    attachSaveBtns();
 }
-
-function renderFAQs() {
-    ['faq-list', 'playground-faqs'].forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.innerHTML = '';
-        faqs.forEach(f => el.appendChild(createFAQItem(f)));
-    });
-    attachSaveListeners();
-    // Premium FAQ toggles
-    document.querySelectorAll('#premium .faq-question').forEach(q => {
-        if (!q._hasListener) {
-            q._hasListener = true;
-            q.addEventListener('click', function() {
-                const ans = this.nextElementSibling;
-                ans.classList.toggle('active');
-                this.querySelector('span').textContent = ans.classList.contains('active') ? '−' : '+';
-            });
-        }
-    });
+function renderFAQs(){
+    ['faq-list','playground-faqs'].forEach(id=>{ const el=document.getElementById(id); if(!el)return; el.innerHTML=''; faqs.forEach(f=>el.appendChild(mkFAQItem(f))); });
+    attachSaveBtns();
 }
-
-function renderSavedItems() {
-    const container = document.getElementById('saved-items-container');
-    if (!container) return;
-    if (STATE.savedItems.length === 0) {
-        container.innerHTML = '<div class="empty-state"><i class="fas fa-bookmark"></i><p>No saved items yet. Browse hospitals, resources, and FAQs and click Save to add them here.</p></div>';
-        return;
-    }
-    container.innerHTML = '';
-    const grid = document.createElement('div');
-    grid.className = 'saved-items-grid';
-    STATE.savedItems.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'saved-item-card';
-        const typeIcon = item.type === 'hospital' ? 'fa-hospital' : item.type === 'resource' ? 'fa-file-alt' : 'fa-question-circle';
-        card.innerHTML = `
-            <div class="saved-item-actions">
-                <button class="btn btn-danger" style="padding:0.3rem 0.6rem;font-size:0.8rem;" data-remove="${item.id}"><i class="fas fa-trash"></i></button>
-            </div>
-            <h4><i class="fas ${typeIcon}" style="color:var(--epic-light-purple);margin-right:0.4rem;"></i>${item.name || item.id}</h4>
-            <p class="small" style="color:#888;margin-top:0.3rem;">${item.type} &bull; Saved ${new Date(item.savedAt).toLocaleDateString()}</p>`;
-        card.querySelector('[data-remove]').addEventListener('click', () => {
-            STATE.savedItems = STATE.savedItems.filter(i => i.id !== item.id);
-            saveState();
-            renderSavedItems();
-            showNotification('Item removed from saved content.');
-        });
-        grid.appendChild(card);
+function renderSavedItems(){
+    const c=document.getElementById('saved-items-container'); if(!c)return;
+    if(!STATE.savedItems.length){c.innerHTML='<div class="empty-state"><i class="fas fa-bookmark"></i><p>Nothing saved yet.</p></div>';return;}
+    c.innerHTML=''; const g=document.createElement('div'); g.className='saved-items-grid';
+    STATE.savedItems.forEach(item=>{
+        const card=document.createElement('div'); card.className='saved-item-card';
+        const icons={hospital:'fa-hospital',resource:'fa-file-alt',faq:'fa-question-circle'};
+        card.innerHTML=`
+            <div style="position:absolute;top:0.75rem;right:0.75rem;"><button class="btn btn-danger" style="padding:0.25rem 0.6rem;font-size:0.78rem;" data-rm="${item.id}"><i class="fas fa-trash"></i></button></div>
+            <h4 style="padding-right:2.5rem;font-size:0.95rem;"><i class="fas ${icons[item.type]||'fa-file'}" style="color:var(--epic-light-purple);margin-right:0.4rem;"></i>${item.name}</h4>
+            <p class="small" style="margin-top:0.4rem;color:#888;">${item.type} • Saved ${new Date(item.savedAt).toLocaleDateString()}</p>`;
+        card.querySelector('[data-rm]').addEventListener('click',()=>{ STATE.savedItems=STATE.savedItems.filter(i=>i.id!==item.id); persistAll();renderSavedItems();updateSavedStat();notify('Removed.'); });
+        g.appendChild(card);
     });
-    container.appendChild(grid);
+    c.appendChild(g);
 }
-
-function renderUploadedFiles() {
-    const el = document.getElementById('uploaded-files-list');
-    if (!el) return;
-    if (STATE.uploadedFiles.length === 0) {
-        el.innerHTML = '<div class="empty-state"><i class="fas fa-cloud-upload-alt"></i><p>You haven\'t uploaded any files yet.</p></div>';
-        return;
-    }
-    el.innerHTML = '';
-    STATE.uploadedFiles.forEach(f => {
-        const item = document.createElement('div');
-        item.className = 'uploaded-file-item';
-        const icon = (f.fileType || '').includes('pdf') ? 'fa-file-pdf' : (f.fileType || '').includes('video') ? 'fa-file-video' : 'fa-file-alt';
-        item.innerHTML = `
-            <i class="fas ${icon}"></i>
-            <div class="uploaded-file-meta">
-                <strong>${f.title}</strong>
-                <small>${f.type || 'File'} &bull; ${f.size} &bull; ${new Date(f.uploadedAt).toLocaleDateString()}</small>
-            </div>
-            <button class="btn btn-danger" data-remove="${f.id}"><i class="fas fa-trash"></i></button>`;
-        item.querySelector('[data-remove]').addEventListener('click', () => {
-            STATE.uploadedFiles = STATE.uploadedFiles.filter(u => u.id !== f.id);
-            saveState();
-            renderUploadedFiles();
-            renderResources();
-            showNotification('File removed.');
-        });
+function renderUploadedFiles(){
+    const el=document.getElementById('uploaded-files-list'); if(!el)return;
+    if(!STATE.uploadedFiles.length){el.innerHTML='<div class="empty-state"><i class="fas fa-cloud-upload-alt"></i><p>No uploads yet.</p></div>';return;}
+    el.innerHTML='';
+    STATE.uploadedFiles.forEach(f=>{
+        const item=document.createElement('div'); item.className='uploaded-file-item';
+        const icon=(f.fileType||'').includes('pdf')?'fa-file-pdf':(f.fileType||'').includes('video')?'fa-file-video':'fa-file-alt';
+        item.innerHTML=`<i class="fas ${icon}"></i><div class="uploaded-file-meta"><strong>${f.title}</strong><small>${f.type||'File'} • ${f.size} • ${new Date(f.uploadedAt).toLocaleDateString()}</small></div><button class="btn btn-danger" style="padding:0.35rem 0.65rem;font-size:0.8rem;" data-rm="${f.id}"><i class="fas fa-trash"></i></button>`;
+        item.querySelector('[data-rm]').addEventListener('click',()=>{ STATE.uploadedFiles=STATE.uploadedFiles.filter(u=>u.id!==f.id); persistAll();renderUploadedFiles();renderResources();notify('File removed.'); });
         el.appendChild(item);
     });
 }
-
-function renderAISaved() {
-    const el = document.getElementById('ai-saved-list');
-    if (!el) return;
-    if (STATE.aiSavedResponses.length === 0) {
-        el.innerHTML = '<div class="empty-state"><i class="fas fa-robot"></i><p>No saved AI responses yet.</p></div>';
-        return;
-    }
-    el.innerHTML = '';
-    STATE.aiSavedResponses.forEach((item, idx) => {
-        const card = document.createElement('div');
-        card.className = 'saved-item-card';
-        card.innerHTML = `
-            <div class="saved-item-actions">
-                <button class="btn btn-danger" style="padding:0.3rem 0.6rem;font-size:0.8rem;" data-ai-remove="${idx}"><i class="fas fa-trash"></i></button>
-            </div>
-            <p class="small" style="color:var(--epic-purple);font-weight:bold;">Q: ${item.question}</p>
-            <p style="margin-top:0.5rem;font-size:0.9rem;">${item.answer.substring(0, 200)}${item.answer.length > 200 ? '...' : ''}</p>
-            <p class="small" style="color:#888;margin-top:0.5rem;">${new Date(item.savedAt).toLocaleDateString()}</p>`;
-        card.querySelector('[data-ai-remove]').addEventListener('click', () => {
-            STATE.aiSavedResponses.splice(idx, 1);
-            saveState();
-            renderAISaved();
-        });
+function renderAISaved(){
+    const el=document.getElementById('ai-saved-list'); if(!el)return;
+    if(!STATE.aiSavedResponses.length){el.innerHTML='<div class="empty-state"><i class="fas fa-robot"></i><p>No saved AI responses yet.</p></div>';return;}
+    el.innerHTML='';
+    STATE.aiSavedResponses.forEach((item,idx)=>{
+        const card=document.createElement('div'); card.className='saved-item-card';
+        card.innerHTML=`<div style="position:absolute;top:0.75rem;right:0.75rem;"><button class="btn btn-danger" style="padding:0.25rem 0.6rem;font-size:0.78rem;" data-i="${idx}"><i class="fas fa-trash"></i></button></div><p style="color:var(--epic-purple);font-weight:600;font-size:0.88rem;padding-right:3rem;">Q: ${item.question}</p><p style="margin-top:0.5rem;font-size:0.85rem;color:#555;">${item.answer.substring(0,220)}${item.answer.length>220?'...':''}</p><p class="small" style="margin-top:0.4rem;color:#888;">${new Date(item.savedAt).toLocaleDateString()}</p>`;
+        card.querySelector('[data-i]').addEventListener('click',()=>{ STATE.aiSavedResponses.splice(idx,1);persistAll();renderAISaved(); });
         el.appendChild(card);
     });
 }
-
-function renderMyQuestions() {
-    const el = document.getElementById('my-questions-list');
-    if (!el) return;
-    if (STATE.myQuestions.length === 0) {
-        el.innerHTML = '<div class="empty-state"><i class="fas fa-question-circle"></i><p>You haven\'t asked any questions yet.</p></div>';
-        return;
-    }
-    el.innerHTML = '';
-    STATE.myQuestions.slice().reverse().forEach(q => {
-        const item = document.createElement('div');
-        item.className = 'faq-item';
-        item.innerHTML = `<div style="padding:0.5rem;"><strong>${q.question}</strong><p class="small" style="color:#888;margin-top:0.3rem;">${new Date(q.askedAt).toLocaleDateString()}</p></div>`;
-        el.appendChild(item);
-    });
+function renderMyQuestions(){
+    const el=document.getElementById('my-questions-list'); if(!el)return;
+    if(!STATE.myQuestions.length){el.innerHTML='<div class="empty-state"><i class="fas fa-question-circle"></i><p>No questions yet.</p></div>';return;}
+    el.innerHTML='';
+    STATE.myQuestions.slice().reverse().forEach(q=>{ const item=document.createElement('div');item.className='faq-item';item.innerHTML=`<div style="padding:0.4rem;"><strong style="font-size:0.9rem;">${q.question}</strong><p class="small" style="margin-top:0.25rem;color:#888;">${new Date(q.askedAt).toLocaleDateString()}</p></div>`;el.appendChild(item); });
 }
-
-function renderProfileSettings() {
-    const s = STATE.userSettings;
-    const nameEl = document.getElementById('name');
-    const emailEl = document.getElementById('email');
-    const hospEl = document.getElementById('hospital-select');
-    const certEl = document.getElementById('certification');
-    if (nameEl) nameEl.value = s.name || '';
-    if (emailEl) emailEl.value = s.email || '';
-    if (hospEl) hospEl.value = s.hospital || '';
-    if (certEl) certEl.value = s.certification || '';
-    // Header display
-    const nameDisp = document.getElementById('profile-name-display');
-    const hospDisp = document.getElementById('profile-hospital-display');
-    if (nameDisp) nameDisp.textContent = s.name || 'Epic Trainer';
-    if (hospDisp) hospDisp.textContent = s.hospital || '';
+function renderProfileSettings(){
+    const u=STATE.currentUser; if(!u)return;
+    ['set-name','set-email','set-hospital','set-cert'].forEach((id,i)=>{ const el=document.getElementById(id); if(el)el.value=[u.name,u.email,u.hospital,u.certification||''][i]||''; });
+    const nd=document.getElementById('profile-name-display'); if(nd)nd.textContent=u.name||'Trainer';
+    const hd=document.getElementById('profile-hospital-display'); if(hd)hd.textContent=u.hospital||'';
 }
+function updateSavedStat(){ const s=document.getElementById('stat-saved');if(s)s.textContent=STATE.savedItems.length; }
 
-// =====================
-// SAVE / UNSAVE
-// =====================
-function attachSaveListeners() {
-    document.querySelectorAll('.save-btn:not([data-listener])').forEach(btn => {
-        btn.dataset.listener = '1';
-        btn.addEventListener('click', handleSave);
-    });
+// ═══════════════════════════════════════════
+// SAVE BUTTONS
+// ═══════════════════════════════════════════
+function attachSaveBtns(){
+    document.querySelectorAll('.save-btn:not([data-w])').forEach(btn=>{ btn.dataset.w='1'; btn.addEventListener('click',handleSave); });
 }
-
-function handleSave(e) {
-    const btn = e.currentTarget;
-    const id = btn.dataset.id;
-    const type = btn.dataset.type;
-    const name = btn.dataset.name;
-    const alreadySaved = STATE.savedItems.some(i => i.id === id);
-
-    if (alreadySaved) {
-        STATE.savedItems = STATE.savedItems.filter(i => i.id !== id);
-        btn.className = 'btn btn-outline save-btn';
-        btn.dataset.listener = '1';
-        btn.innerHTML = `<i class="fas fa-bookmark"></i> Save${type === 'faq' ? ' this answer' : ''}`;
-        showNotification('Removed from saved content.');
+function handleSave(e){
+    const btn=e.currentTarget, id=btn.dataset.id, type=btn.dataset.type, name=btn.dataset.name;
+    const already=STATE.savedItems.some(i=>i.id===id);
+    if(already){
+        STATE.savedItems=STATE.savedItems.filter(i=>i.id!==id);
+        btn.className='btn btn-outline save-btn'; btn.dataset.w='1';
+        btn.innerHTML=`<i class="fas fa-bookmark"></i> ${type==='faq'?'Save this answer':'Save'}`;
+        notify('Removed from saved content.');
     } else {
-        STATE.savedItems.push({ id, type, name, savedAt: new Date().toISOString() });
-        btn.className = 'btn saved save-btn';
-        btn.dataset.listener = '1';
-        btn.innerHTML = `<i class="fas fa-check"></i> Saved`;
-        showNotification('Saved to your profile!', 'success');
+        STATE.savedItems.push({id,type,name,savedAt:new Date().toISOString()});
+        btn.className='btn saved save-btn'; btn.dataset.w='1';
+        btn.innerHTML='<i class="fas fa-check"></i> Saved';
+        notify('Saved to your profile!','success');
     }
-    saveState();
-    renderSavedItems();
+    persistAll();renderSavedItems();updateSavedStat();
 }
 
-// =====================
-// NOTIFICATION
-// =====================
-function showNotification(msg, type = '') {
-    const n = document.createElement('div');
-    n.className = 'notification ' + type;
-    n.textContent = msg;
-    document.body.appendChild(n);
-    setTimeout(() => { if (n.parentNode) n.parentNode.removeChild(n); }, 3000);
+// ═══════════════════════════════════════════
+// NOTIFICATIONS
+// ═══════════════════════════════════════════
+function notify(msg,type=''){
+    const n=document.createElement('div'); n.className='notification '+type; n.textContent=msg;
+    document.body.appendChild(n); setTimeout(()=>{ if(n.parentNode)n.parentNode.removeChild(n); },3000);
 }
 
-// =====================
-// NAVIGATION
-// =====================
-function initNav() {
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', e => {
-            e.preventDefault();
-            const targetId = link.getAttribute('href').substring(1);
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+// ═══════════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════════
+function initNav(){
+    document.querySelectorAll('.nav-link').forEach(link=>{
+        link.addEventListener('click',e=>{
+            e.preventDefault(); const id=link.getAttribute('href').substring(1);
+            document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
             link.classList.add('active');
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            const target = document.getElementById(targetId);
-            if (target) target.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+            document.getElementById(id)?.classList.add('active');
         });
     });
 }
 
-// =====================
+// ═══════════════════════════════════════════
 // PROFILE TABS
-// =====================
-function initProfileTabs() {
-    document.querySelectorAll('.profile-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.profile-tab-content').forEach(c => c.classList.remove('active'));
+// ═══════════════════════════════════════════
+function initProfileTabs(){
+    document.querySelectorAll('.profile-tab').forEach(tab=>{
+        tab.addEventListener('click',()=>{
+            document.querySelectorAll('.profile-tab').forEach(t=>t.classList.remove('active'));
+            document.querySelectorAll('.profile-tab-content').forEach(c=>c.classList.remove('active'));
             tab.classList.add('active');
-            const el = document.getElementById(tab.dataset.tab + '-tab');
-            if (el) el.classList.add('active');
-            // Refresh relevant content
-            if (tab.dataset.tab === 'saved') renderSavedItems();
-            if (tab.dataset.tab === 'uploads') renderUploadedFiles();
-            if (tab.dataset.tab === 'ai-saved') renderAISaved();
-            if (tab.dataset.tab === 'questions') renderMyQuestions();
+            document.getElementById(tab.dataset.tab+'-tab')?.classList.add('active');
+            const r={saved:renderSavedItems,uploads:renderUploadedFiles,'ai-saved':renderAISaved,questions:renderMyQuestions};
+            r[tab.dataset.tab]?.();
         });
     });
 }
 
-// =====================
+// ═══════════════════════════════════════════
 // MODALS
-// =====================
-function initModals() {
-    document.querySelectorAll('.modal-close').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const modalId = btn.dataset.modal;
-            if (modalId) document.getElementById(modalId).classList.remove('active');
-        });
-    });
-
-    // Close on overlay click
-    document.querySelectorAll('.modal-overlay').forEach(overlay => {
-        overlay.addEventListener('click', e => {
-            if (e.target === overlay) overlay.classList.remove('active');
-        });
-    });
-
-    // Upgrade triggers
-    document.querySelectorAll('.upgrade-trigger').forEach(btn => {
-        btn.addEventListener('click', () => document.getElementById('upgrade-modal').classList.add('active'));
-    });
-
-    // Start trial
-    document.getElementById('start-trial-btn').addEventListener('click', () => {
-        STATE.isPremium = true;
-        ['premium-status', 'profile-badge'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.innerHTML = '<i class="fas fa-crown"></i><span>Premium Member</span>';
-        });
-        document.getElementById('plan-label') && (document.getElementById('plan-label').textContent = 'Premium Member');
-        document.getElementById('profile-plan-label') && (document.getElementById('profile-plan-label').textContent = 'Premium Member');
-        const banner = document.getElementById('profile-upgrade-banner');
-        if (banner) banner.style.display = 'none';
+// ═══════════════════════════════════════════
+function initModals(){
+    document.querySelectorAll('.modal-close').forEach(btn=>{ btn.addEventListener('click',()=>document.getElementById(btn.dataset.modal)?.classList.remove('active')); });
+    document.querySelectorAll('.modal-overlay').forEach(o=>{ o.addEventListener('click',e=>{ if(e.target===o)o.classList.remove('active'); }); });
+    document.querySelectorAll('.upgrade-trigger').forEach(btn=>{ btn.addEventListener('click',()=>document.getElementById('upgrade-modal').classList.add('active')); });
+    document.getElementById('start-trial-btn').addEventListener('click',()=>{
+        STATE.isPremium=true; persistAll();
+        document.getElementById('plan-label').textContent='Premium Member';
+        document.getElementById('profile-plan-label').textContent='Premium Member';
+        document.getElementById('profile-upgrade-banner').style.display='none';
         document.getElementById('upgrade-modal').classList.remove('active');
-        showNotification('Welcome to Premium!', 'success');
+        notify('Welcome to Premium! All features unlocked.','success');
     });
 }
 
-// =====================
+// ═══════════════════════════════════════════
 // UPLOAD
-// =====================
-function initUpload() {
-    const uploadTriggers = ['upload-resource-btn', 'upload-from-profile-btn'];
-    uploadTriggers.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener('click', () => document.getElementById('upload-modal').classList.add('active'));
-    });
-
-    const fileUploadArea = document.getElementById('file-upload-area');
-    const fileInput = document.getElementById('file-input');
-    const fileInfo = document.getElementById('file-info');
-    const fileNameEl = document.getElementById('file-name');
-    const fileSizeEl = document.getElementById('file-size');
-    const startUploadBtn = document.getElementById('start-upload-btn');
-
-    let selectedFile = null;
-
-    fileUploadArea.addEventListener('click', () => fileInput.click());
-
-    fileUploadArea.addEventListener('dragover', e => { e.preventDefault(); fileUploadArea.classList.add('drag-over'); });
-    fileUploadArea.addEventListener('dragleave', () => fileUploadArea.classList.remove('drag-over'));
-    fileUploadArea.addEventListener('drop', e => {
-        e.preventDefault();
-        fileUploadArea.classList.remove('drag-over');
-        const f = e.dataTransfer.files[0];
-        if (f) handleFileSelected(f);
-    });
-
-    fileInput.addEventListener('change', e => {
-        if (e.target.files.length > 0) handleFileSelected(e.target.files[0]);
-    });
-
-    function handleFileSelected(f) {
-        selectedFile = f;
-        fileNameEl.textContent = f.name;
-        fileSizeEl.textContent = formatFileSize(f.size);
-        fileInfo.style.display = 'block';
-        checkUploadReady();
-    }
-
-    document.getElementById('doc-title').addEventListener('input', checkUploadReady);
-
-    function checkUploadReady() {
-        const hasFile = selectedFile !== null;
-        const hasTitle = document.getElementById('doc-title').value.trim() !== '';
-        startUploadBtn.disabled = !(hasFile && hasTitle);
-    }
-
-    startUploadBtn.addEventListener('click', () => {
-        if (!selectedFile) return;
-        startUploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
-        startUploadBtn.disabled = true;
-
-        // Simulate upload — store metadata (not actual binary for size reasons)
-        setTimeout(() => {
-            const newFile = {
-                id: Date.now().toString(),
-                title: document.getElementById('doc-title').value.trim(),
-                description: document.getElementById('doc-description').value.trim(),
-                type: document.getElementById('doc-category').value || 'Uploaded File',
-                size: formatFileSize(selectedFile.size),
-                fileType: selectedFile.type,
-                tags: document.getElementById('doc-tags').value,
-                uploadedAt: new Date().toISOString()
-            };
-            STATE.uploadedFiles.push(newFile);
-            saveState();
-            renderUploadedFiles();
-            renderResources();
-
-            // Reset
+// ═══════════════════════════════════════════
+function initUpload(){
+    ['upload-resource-btn','upload-from-profile-btn'].forEach(id=>{ document.getElementById(id)?.addEventListener('click',()=>document.getElementById('upload-modal').classList.add('active')); });
+    const area=document.getElementById('file-upload-area'),inp=document.getElementById('file-input');
+    const info=document.getElementById('file-info'),fnEl=document.getElementById('file-name'),fsEl=document.getElementById('file-size-display'),upBtn=document.getElementById('start-upload-btn');
+    let sel=null;
+    area.addEventListener('click',()=>inp.click());
+    area.addEventListener('dragover',e=>{e.preventDefault();area.classList.add('drag-over');});
+    area.addEventListener('dragleave',()=>area.classList.remove('drag-over'));
+    area.addEventListener('drop',e=>{e.preventDefault();area.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f)pick(f);});
+    inp.addEventListener('change',e=>{if(e.target.files[0])pick(e.target.files[0]);});
+    function pick(f){sel=f;fnEl.textContent=f.name;fsEl.textContent=fmtSz(f.size);info.style.display='block';chk();}
+    document.getElementById('doc-title').addEventListener('input',chk);
+    function chk(){upBtn.disabled=!(sel&&document.getElementById('doc-title').value.trim());}
+    upBtn.addEventListener('click',()=>{
+        if(!sel)return; upBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Uploading...'; upBtn.disabled=true;
+        setTimeout(()=>{
+            STATE.uploadedFiles.push({id:Date.now().toString(),title:document.getElementById('doc-title').value.trim(),description:document.getElementById('doc-description').value.trim(),type:document.getElementById('doc-category').value||'Uploaded File',size:fmtSz(sel.size),fileType:sel.type,tags:document.getElementById('doc-tags').value,uploadedAt:new Date().toISOString()});
+            persistAll();renderUploadedFiles();renderResources();
             document.getElementById('upload-modal').classList.remove('active');
-            startUploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Document';
-            startUploadBtn.disabled = false;
-            selectedFile = null;
-            fileInput.value = '';
-            fileInfo.style.display = 'none';
-            document.getElementById('doc-title').value = '';
-            document.getElementById('doc-description').value = '';
-            document.getElementById('doc-category').value = '';
-            document.getElementById('doc-tags').value = '';
-            showNotification('File uploaded successfully!', 'success');
-        }, 1200);
+            upBtn.innerHTML='<i class="fas fa-upload"></i> Upload Document';upBtn.disabled=false;
+            sel=null;inp.value='';info.style.display='none';
+            ['doc-title','doc-description','doc-tags'].forEach(i=>document.getElementById(i).value='');
+            document.getElementById('doc-category').value='';
+            notify('File uploaded!','success');
+        },1200);
     });
 }
+function fmtSz(b){if(!b)return'0 B';const k=1024,s=['B','KB','MB','GB'],i=Math.floor(Math.log(b)/Math.log(k));return(b/Math.pow(k,i)).toFixed(1)+' '+s[i];}
 
-// =====================
+// ═══════════════════════════════════════════
 // SEARCH
-// =====================
-function initSearch() {
-    document.getElementById('hospital-search')?.addEventListener('input', e => {
-        const term = e.target.value.toLowerCase();
-        document.querySelectorAll('#hospital-list .hospital-card').forEach(card => {
-            card.style.display = card.textContent.toLowerCase().includes(term) ? '' : 'none';
-        });
-    });
+// ═══════════════════════════════════════════
+function initSearch(){
+    const pairs=[['hospital-search','#hospital-list .hospital-card'],['faq-search','#faq-list .faq-item'],['resource-search','#resource-list .resource-card'],['dash-search','#dashboard .hospital-card, #dashboard .resource-card']];
+    pairs.forEach(([id,sel])=>{ document.getElementById(id)?.addEventListener('input',e=>{ const t=e.target.value.toLowerCase(); document.querySelectorAll(sel).forEach(c=>{c.style.display=c.textContent.toLowerCase().includes(t)?'':'none';}); }); });
+}
 
-    document.getElementById('faq-search')?.addEventListener('input', e => {
-        const term = e.target.value.toLowerCase();
-        document.querySelectorAll('#faq-list .faq-item').forEach(item => {
-            item.style.display = item.textContent.toLowerCase().includes(term) ? '' : 'none';
-        });
-    });
-
-    document.getElementById('resource-search')?.addEventListener('input', e => {
-        const term = e.target.value.toLowerCase();
-        document.querySelectorAll('#resource-list .resource-card').forEach(card => {
-            card.style.display = card.textContent.toLowerCase().includes(term) ? '' : 'none';
-        });
-    });
-
-    document.getElementById('dash-search')?.addEventListener('input', e => {
-        const term = e.target.value.toLowerCase();
-        document.querySelectorAll('#dashboard .hospital-card, #dashboard .resource-card').forEach(card => {
-            card.style.display = card.textContent.toLowerCase().includes(term) ? '' : 'none';
-        });
+// ═══════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════
+function initSettings(){
+    document.getElementById('save-settings-btn')?.addEventListener('click',()=>{
+        const u=STATE.currentUser;
+        u.name=document.getElementById('set-name').value;
+        u.email=document.getElementById('set-email').value.trim().toLowerCase();
+        u.hospital=document.getElementById('set-hospital').value;
+        u.certification=document.getElementById('set-cert').value;
+        const a=getAccounts(); a[u.email]=u; setAccounts(a);
+        sessionStorage.setItem('_sess',JSON.stringify(u));
+        document.getElementById('greeting-name').textContent=u.name.split(' ')[0];
+        document.getElementById('dashboard-name').textContent=u.name.split(' ')[0];
+        renderProfileSettings(); notify('Settings saved!','success');
     });
 }
 
-// =====================
-// SETTINGS SAVE
-// =====================
-function initSettings() {
-    document.getElementById('save-settings-btn')?.addEventListener('click', () => {
-        STATE.userSettings.name = document.getElementById('name').value;
-        STATE.userSettings.email = document.getElementById('email').value;
-        STATE.userSettings.hospital = document.getElementById('hospital-select').value;
-        STATE.userSettings.certification = document.getElementById('certification').value;
-        saveState();
-        renderProfileSettings();
-        showNotification('Settings saved!', 'success');
-    });
-}
+// ═══════════════════════════════════════════
+// AI CHAT
+// ═══════════════════════════════════════════
+const AI_SYS=`You are an expert Epic EMR Trainer Assistant. Help Epic trainers and healthcare professionals with:
+- Epic modules: Hyperspace, Hyperdrive, MyChart, Beaker, Radiant, Cadence, OpTime, Willow, etc.
+- Training strategies for physicians, nurses, and all clinical staff
+- Epic Playground and training environment setup and access
+- Epic certifications, UserWeb access, go-live support
+- Workflow optimization and troubleshooting
+- Latest Epic updates and new features
+You have web search capability — use it for current Epic information. Be concise, accurate, practical. Use bullets or numbered steps for clarity.`;
 
-// =====================
-// FORMAT FILE SIZE
-// =====================
-function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024, sizes = ['Bytes','KB','MB','GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
+function initAIChat(){
+    const fab=document.getElementById('ai-fab'),panel=document.getElementById('ai-panel'),closeBtn=document.getElementById('ai-close-btn'),input=document.getElementById('ai-input'),sendBtn=document.getElementById('ai-send'),msgs=document.getElementById('ai-messages');
+    fab.addEventListener('click',()=>{panel.classList.toggle('open');if(panel.classList.contains('open'))input.focus();});
+    closeBtn.addEventListener('click',()=>panel.classList.remove('open'));
+    input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,100)+'px';});
+    input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});
+    sendBtn.addEventListener('click',send);
 
-// =====================
-// AI CHAT (Anthropic API with web search)
-// =====================
-const AI_SYSTEM_PROMPT = `You are an expert Epic EMR (Electronic Medical Records) Trainer Assistant. You help Epic trainers and healthcare professionals with:
-- Navigating Epic modules (Hyperspace, Hyperdrive, MyChart, Beaker, Radiant, Cadence, etc.)
-- Training strategies for physicians, nurses, and staff
-- Epic playground/training environment setup
-- Epic certifications and UserWeb access
-- Workflow optimization and best practices
-- Troubleshooting common Epic issues
-- Epic updates and new features
-
-You have access to web search to find the latest Epic news, updates, and resources. Be concise, accurate, and practical. Format your answers clearly with bullet points or numbered steps when appropriate.`;
-
-function initAIChat() {
-    const fab = document.getElementById('ai-fab');
-    const panel = document.getElementById('ai-panel');
-    const closeBtn = document.getElementById('ai-close-btn');
-    const input = document.getElementById('ai-input');
-    const sendBtn = document.getElementById('ai-send');
-    const messagesEl = document.getElementById('ai-messages');
-
-    fab.addEventListener('click', () => {
-        panel.classList.toggle('open');
-        if (panel.classList.contains('open')) input.focus();
-    });
-
-    closeBtn.addEventListener('click', () => panel.classList.remove('open'));
-
-    // Auto-resize textarea
-    input.addEventListener('input', () => {
-        input.style.height = 'auto';
-        input.style.height = Math.min(input.scrollHeight, 100) + 'px';
-    });
-
-    input.addEventListener('keydown', e => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
-    });
-
-    sendBtn.addEventListener('click', sendMessage);
-
-    async function sendMessage() {
-        const text = input.value.trim();
-        if (!text) return;
-
-        // Add user message
-        addMessage('user', text);
-        input.value = '';
-        input.style.height = 'auto';
-        sendBtn.disabled = true;
-
-        // Save to My Questions
-        STATE.myQuestions.push({ question: text, askedAt: new Date().toISOString() });
-        saveState();
-
-        // Add typing indicator
-        const thinkingEl = addMessage('assistant', '⠋ Searching and thinking...', true);
-
-        // Build history for API
-        STATE.aiHistory.push({ role: 'user', content: text });
-        // Keep only last 10 exchanges for context window
-        const recentHistory = STATE.aiHistory.slice(-10);
-
-        try {
-            // Calls our Netlify serverless function (/netlify/functions/ai-chat)
-            // which securely injects the ANTHROPIC_API_KEY on the server side.
-            const response = await fetch('/.netlify/functions/ai-chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    model: 'claude-sonnet-4-20250514',
-                    max_tokens: 1024,
-                    system: AI_SYSTEM_PROMPT,
-                    tools: [{
-                        type: 'web_search_20250305',
-                        name: 'web_search'
-                    }],
-                    messages: recentHistory
-                })
+    async function send(){
+        const text=input.value.trim(); if(!text)return;
+        addMsg('user',text); input.value=''; input.style.height='auto'; sendBtn.disabled=true;
+        STATE.myQuestions.push({question:text,askedAt:new Date().toISOString()}); persistAll();
+        const thinking=addMsg('assistant','⠋ Searching and thinking...',true);
+        STATE.aiHistory.push({role:'user',content:text});
+        const history=STATE.aiHistory.slice(-12);
+        try{
+            const resp=await fetch('/.netlify/functions/ai-chat',{
+                method:'POST',headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1024,system:AI_SYS,tools:[{type:'web_search_20250305',name:'web_search'}],messages:history})
             });
-
-            const data = await response.json();
-
-            // Extract text from all content blocks
-            let fullText = '';
-            if (data.content && Array.isArray(data.content)) {
-                data.content.forEach(block => {
-                    if (block.type === 'text') fullText += block.text;
-                });
-            }
-
-            if (!fullText && data.error) {
-                fullText = `I encountered an error: ${data.error.message || 'Unknown error'}. Please try again.`;
-            }
-
-            // Remove thinking indicator
-            if (thinkingEl && thinkingEl.parentNode) thinkingEl.parentNode.removeChild(thinkingEl);
-
-            // Add assistant response with save button
-            const msgEl = addMessage('assistant', fullText || 'I could not generate a response. Please try again.');
-
-            // Add save button to AI response
-            if (msgEl && fullText) {
-                const saveBtn = document.createElement('button');
-                saveBtn.className = 'ai-save-btn';
-                saveBtn.innerHTML = '<i class="fas fa-bookmark"></i> Save Response';
-                saveBtn.addEventListener('click', () => {
-                    STATE.aiSavedResponses.push({
-                        question: text,
-                        answer: fullText,
-                        savedAt: new Date().toISOString()
-                    });
-                    saveState();
-                    saveBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
-                    saveBtn.disabled = true;
-                    showNotification('AI response saved to your profile!', 'success');
-                });
-                msgEl.appendChild(saveBtn);
-            }
-
-            // Update history
-            STATE.aiHistory.push({ role: 'assistant', content: fullText });
-
-        } catch (err) {
-            if (thinkingEl && thinkingEl.parentNode) thinkingEl.parentNode.removeChild(thinkingEl);
-            addMessage('assistant', `Sorry, I had trouble connecting. Please check your internet connection and try again. (${err.message})`);
+            const data=await resp.json();
+            if(data.error)throw new Error(data.error.message||JSON.stringify(data.error));
+            let reply='';
+            if(Array.isArray(data.content))data.content.forEach(b=>{if(b.type==='text')reply+=b.text;});
+            if(!reply)reply='I received a response but could not extract text. Please try again.';
+            thinking.remove();
+            const msgEl=addMsg('assistant',reply);
+            const sb=document.createElement('button'); sb.className='ai-save-btn'; sb.innerHTML='<i class="fas fa-bookmark"></i> Save Response';
+            sb.addEventListener('click',()=>{ STATE.aiSavedResponses.push({question:text,answer:reply,savedAt:new Date().toISOString()}); persistAll(); sb.innerHTML='<i class="fas fa-check"></i> Saved!'; sb.disabled=true; notify('AI response saved!','success'); });
+            msgEl.appendChild(sb);
+            STATE.aiHistory.push({role:'assistant',content:reply});
+        }catch(err){
+            thinking.remove();
+            addMsg('assistant','⚠️ Error: '+err.message+'. Make sure ANTHROPIC_API_KEY is set in Netlify environment variables and the site has been redeployed.');
         }
-
-        sendBtn.disabled = false;
-        input.focus();
+        sendBtn.disabled=false; input.focus();
     }
 
-    function addMessage(role, text, isThinking = false) {
-        const msg = document.createElement('div');
-        msg.className = `ai-msg ${role}${isThinking ? ' thinking' : ''}`;
-
-        // Render basic markdown: **bold**, *italic*, bullet points, newlines
-        if (role === 'assistant' && !isThinking) {
-            msg.innerHTML = renderMarkdown(text);
-        } else {
-            msg.textContent = text;
-        }
-
-        messagesEl.appendChild(msg);
-        messagesEl.scrollTop = messagesEl.scrollHeight;
-        return msg;
+    function addMsg(role,text,isThinking=false){
+        const el=document.createElement('div'); el.className='ai-msg '+role+(isThinking?' thinking':'');
+        if(role==='assistant'&&!isThinking){ el.innerHTML=mdToHtml(text); }else{ el.textContent=text; }
+        msgs.appendChild(el); msgs.scrollTop=msgs.scrollHeight; return el;
     }
-
-    function renderMarkdown(text) {
-        return text
-            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.+?)\*/g, '<em>$1</em>')
-            .replace(/`(.+?)`/g, '<code style="background:#eee;padding:0.1rem 0.3rem;border-radius:3px;">$1</code>')
-            .replace(/^### (.+)$/gm, '<strong style="display:block;margin:0.5rem 0 0.2rem;">$1</strong>')
-            .replace(/^## (.+)$/gm, '<strong style="display:block;margin:0.7rem 0 0.3rem;font-size:1.05em;">$1</strong>')
-            .replace(/^- (.+)$/gm, '<li style="margin-left:1rem;">$1</li>')
-            .replace(/^(\d+)\. (.+)$/gm, '<li style="margin-left:1rem;">$1. $2</li>')
-            .replace(/\n\n/g, '<br><br>')
-            .replace(/\n/g, '<br>');
+    function mdToHtml(t){
+        return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+            .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>')
+            .replace(/`(.+?)`/g,'<code>$1</code>')
+            .replace(/^### (.+)$/gm,'<strong style="display:block;margin:0.5rem 0 0.2rem;">$1</strong>')
+            .replace(/^## (.+)$/gm,'<strong style="display:block;margin:0.6rem 0 0.3rem;font-size:1em;">$1</strong>')
+            .replace(/^- (.+)$/gm,'<li style="margin-left:1.2rem;list-style:disc;">$1</li>')
+            .replace(/^(\d+)\. (.+)$/gm,'<li style="margin-left:1.2rem;">$2</li>')
+            .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
     }
 }
 
-// =====================
-// INIT
-// =====================
-document.addEventListener('DOMContentLoaded', () => {
-    initNav();
-    initProfileTabs();
-    initModals();
-    initUpload();
-    initSearch();
-    initSettings();
-    initAIChat();
-
-    renderHospitals();
-    renderResources();
-    renderFAQs();
-    renderSavedItems();
-    renderUploadedFiles();
-    renderAISaved();
-    renderMyQuestions();
-    renderProfileSettings();
+// ═══════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+    initNav(); initProfileTabs(); initModals(); initUpload(); initSearch(); initSettings(); initAIChat(); initAuth();
 });
 </script>
 </body>
