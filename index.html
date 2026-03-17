@@ -271,53 +271,26 @@
         .empty-state { text-align: center; padding: 3rem; color: #888; }
         .empty-state i { font-size: 3rem; margin-bottom: 1rem; color: #ccc; }
     
-        /* Login Gate */
-        #login-gate { position: fixed; inset: 0; background: rgba(75,40,109,0.97); z-index: 2000; display: flex; align-items: center; justify-content: center; }
-        .gate-box { background: white; border-radius: 16px; padding: 2.5rem; width: 90%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-        .gate-logo { text-align: center; margin-bottom: 1.5rem; }
-        .gate-logo i { font-size: 3rem; color: #7B52AB; }
-        .gate-logo h2 { color: #4B286D; margin-top: 0.5rem; }
-        .gate-logo p { color: #666; font-size: 0.88rem; margin-top: 0.4rem; }
-        .auth-tabs { display: flex; border-bottom: 2px solid #eee; margin-bottom: 1.5rem; }
-        .auth-tab { flex: 1; text-align: center; padding: 0.75rem; cursor: pointer; font-weight: 600; color: #888; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
-        .auth-tab.active { color: #4B286D; border-bottom-color: #4B286D; }
-        .auth-form { display: none !important; }
-        .auth-form.active { display: block !important; }
-        .form-error { color: #dc3545; font-size: 0.82rem; margin-top: 0.3rem; display: none; }
-        .form-error.show { display: block; }
-</style>
+        .ai-tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 1.5rem; }
+        .ai-tool-card { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; transition: transform 0.2s; }
+        .ai-tool-card:hover { transform: translateY(-3px); }
+        .ai-tool-header { display: flex; align-items: center; gap: 1rem; padding: 1.25rem 1.5rem; border-bottom: 1px solid #eee; }
+        .ai-tool-icon { width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; flex-shrink: 0; }
+        .ai-tool-header h3 { margin: 0; font-size: 1rem; color: var(--epic-purple); }
+        .ai-tool-header p { margin: 0; font-size: 0.82rem; color: #666; }
+        .ai-tool-body { padding: 1.25rem 1.5rem; }
+        .ai-tool-result { margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid var(--epic-light-purple); font-size: 0.88rem; line-height: 1.6; max-height: 400px; overflow-y: auto; }
+        .ai-tool-result.loading { color: #888; font-style: italic; border-left-color: #ccc; }
+        .ai-tool-result.error { border-left-color: var(--danger); background: #fff5f5; color: var(--danger); }
+        .ai-result-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
+        @media (max-width: 768px) { .ai-tools-grid { grid-template-columns: 1fr; } }
+
+    </style>
 </head>
 <body>
 
-<div id="login-gate">
-    <div class="gate-box">
-        <div class="gate-logo">
-            <i class="fas fa-hospital-user"></i>
-            <h2>Epic EMR Trainer</h2>
-            <p>Sign in or create an account to continue</p>
-        </div>
-        <div class="auth-tabs">
-            <div class="auth-tab active" data-auth="signin">Sign In</div>
-            <div class="auth-tab" data-auth="signup">Create Account</div>
-        </div>
-        <div class="auth-form active" id="signin-form">
-            <div class="form-group"><label>Email</label><input type="email" class="form-control" id="si-email" placeholder="your@email.com"></div>
-            <div class="form-group"><label>Password</label><input type="password" class="form-control" id="si-password" placeholder="Your password"></div>
-            <div class="form-error" id="si-error">Invalid email or password.</div>
-            <button class="btn btn-primary" id="si-btn" style="width:100%;margin-top:0.5rem;padding:0.85rem;"><i class="fas fa-sign-in-alt"></i> Sign In</button>
-            <p style="font-size:0.82rem;color:#888;text-align:center;margin-top:1rem;">New user? Switch to Create Account above.</p>
-        </div>
-        <div class="auth-form" id="signup-form">
-            <div class="form-group"><label>Full Name</label><input type="text" class="form-control" id="su-name" placeholder="Your full name"></div>
-            <div class="form-group"><label>Email</label><input type="email" class="form-control" id="su-email" placeholder="your@email.com"></div>
-            
-            <div class="form-group"><label>Password <span style="font-size:0.82rem;color:#888;">(min 6 characters)</span></label><input type="password" class="form-control" id="su-password" placeholder="Create a password"></div>
-            <div class="form-error" id="su-error">Please fill all fields. Password min 6 chars.</div>
-            <button class="btn btn-primary" id="su-btn" style="width:100%;margin-top:0.5rem;padding:0.85rem;"><i class="fas fa-user-plus"></i> Create Account</button>
-        </div>
-    </div>
-</div>
-  <div class="header-content">
+<header>
+    <div class="header-content">
         <div class="logo">
             <i class="fas fa-hospital-user"></i>
             <span>Epic EMR Trainer Assistant</span>
@@ -327,7 +300,7 @@
                 <i class="fas fa-crown"></i>
                 <span id="plan-label">Free Plan</span>
             </div>
-            <div id="user-greeting" style="color:white;font-size:0.9rem;display:none;align-items:center;gap:0.4rem;"><i class="fas fa-user-circle"></i><span id="greeting-name">Trainer</span></div><button id="logout-btn" class="btn" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);font-size:0.85rem;padding:0.4rem 0.9rem;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            <button id="login-btn" class="btn btn-primary"><i class="fas fa-user"></i> Trainer Login</button>
         </div>
     </div>
 </header>
@@ -340,6 +313,7 @@
         <li><a href="#resources" class="nav-link"><i class="fas fa-book"></i> Resources</a></li>
         <li><a href="#faq" class="nav-link"><i class="fas fa-question-circle"></i> FAQ</a></li>
         <li><a href="#profile" class="nav-link"><i class="fas fa-user"></i> My Profile</a></li>
+        <li><a href="#ai-tools" class="nav-link"><i class="fas fa-robot"></i> AI Tools</a></li>
         <li><a href="#premium" class="nav-link"><i class="fas fa-crown"></i> Premium</a></li>
     </ul>
 </nav>
@@ -587,6 +561,175 @@
             </div>
         </div>
     </section>
+
+    <section id="ai-tools" class="tab-content">
+        <h2><i class="fas fa-robot"></i> AI Tools</h2>
+        <p class="subtitle">Powerful AI tools built specifically for Epic trainers</p>
+        <div class="ai-tools-grid">
+
+            <div class="ai-tool-card">
+                <div class="ai-tool-header">
+                    <div class="ai-tool-icon" style="background:linear-gradient(135deg,#4B286D,#7B52AB);"><i class="fas fa-file-pdf"></i></div>
+                    <div><h3>Document Q&amp;A</h3><p>Upload any Epic document and ask questions about it</p></div>
+                </div>
+                <div class="ai-tool-body">
+                    <div class="file-upload" id="pdf-upload-area">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Click to upload a PDF, Word doc, or text file</p>
+                        <input type="file" id="pdf-file-input" style="display:none" accept=".pdf,.doc,.docx,.txt">
+                    </div>
+                    <div id="pdf-file-info" style="display:none;background:#f0f0f0;padding:0.6rem;border-radius:6px;margin:0.5rem 0;font-size:0.88rem;"><i class="fas fa-file"></i> <span id="pdf-file-name"></span></div>
+                    <div class="form-group" style="margin-top:0.75rem;">
+                        <input type="text" class="form-control" id="pdf-question" placeholder="Ask a question about your document...">
+                    </div>
+                    <button class="btn btn-primary" id="pdf-ask-btn" style="width:100%;" disabled><i class="fas fa-search"></i> Ask AI About This Document</button>
+                    <div id="pdf-answer" class="ai-tool-result" style="display:none;"></div>
+                </div>
+            </div>
+
+            <div class="ai-tool-card">
+                <div class="ai-tool-header">
+                    <div class="ai-tool-icon" style="background:linear-gradient(135deg,#dc3545,#c82333);"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div><h3>Error Message Explainer</h3><p>Paste any Epic error and get a plain-English fix</p></div>
+                </div>
+                <div class="ai-tool-body">
+                    <div class="form-group">
+                        <label>Paste your Epic error message:</label>
+                        <textarea class="form-control" id="error-input" placeholder="e.g. CLARITY_ADT: Error 1042 - ADT event failed..." style="min-height:90px;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Your role (optional):</label>
+                        <select class="form-control" id="error-role">
+                            <option value="">Select role</option>
+                            <option>Trainer</option><option>Physician</option><option>Nurse</option>
+                            <option>Pharmacist</option><option>Billing Specialist</option><option>IT/Analyst</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="error-explain-btn" style="width:100%;"><i class="fas fa-magic"></i> Explain This Error</button>
+                    <div id="error-answer" class="ai-tool-result" style="display:none;"></div>
+                </div>
+            </div>
+
+            <div class="ai-tool-card">
+                <div class="ai-tool-header">
+                    <div class="ai-tool-icon" style="background:linear-gradient(135deg,#28a745,#1e7e34);"><i class="fas fa-pen-fancy"></i></div>
+                    <div><h3>SmartPhrase Generator</h3><p>Describe a workflow, get a ready-to-use SmartPhrase</p></div>
+                </div>
+                <div class="ai-tool-body">
+                    <div class="form-group">
+                        <label>Specialty:</label>
+                        <select class="form-control" id="sp-specialty">
+                            <option value="">Select specialty</option>
+                            <option>Primary Care</option><option>Cardiology</option><option>Oncology</option>
+                            <option>Emergency Medicine</option><option>Surgery</option><option>Pediatrics</option>
+                            <option>Psychiatry</option><option>Radiology</option><option>Pharmacy</option><option>Nursing</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Describe what this SmartPhrase should do:</label>
+                        <textarea class="form-control" id="sp-description" placeholder="e.g. A progress note template for diabetic patient follow-up..." style="min-height:80px;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>SmartPhrase name (optional):</label>
+                        <input type="text" class="form-control" id="sp-name" placeholder="e.g. DIABETICFU">
+                    </div>
+                    <button class="btn btn-primary" id="sp-generate-btn" style="width:100%;"><i class="fas fa-pen"></i> Generate SmartPhrase</button>
+                    <div id="sp-answer" class="ai-tool-result" style="display:none;"></div>
+                </div>
+            </div>
+
+            <div class="ai-tool-card">
+                <div class="ai-tool-header">
+                    <div class="ai-tool-icon" style="background:linear-gradient(135deg,#17a2b8,#138496);"><i class="fas fa-calendar-alt"></i></div>
+                    <div><h3>Training Plan Generator</h3><p>Get a complete go-live training plan in seconds</p></div>
+                </div>
+                <div class="ai-tool-body">
+                    <div class="form-group">
+                        <label>Role being trained:</label>
+                        <select class="form-control" id="tp-role">
+                            <option value="">Select role</option>
+                            <option>Physician</option><option>Nurse / RN</option><option>Medical Assistant</option>
+                            <option>Pharmacist</option><option>Billing Specialist</option><option>Registration / Front Desk</option>
+                            <option>Lab Technician</option><option>Radiology Technician</option><option>Scheduler</option><option>Executive / Leadership</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Epic modules being implemented:</label>
+                        <input type="text" class="form-control" id="tp-modules" placeholder="e.g. Cadence, MyChart, Beaker">
+                    </div>
+                    <div class="form-group">
+                        <label>Go-live date:</label>
+                        <input type="date" class="form-control" id="tp-golive">
+                    </div>
+                    <div class="form-group">
+                        <label>Training hours available per week:</label>
+                        <select class="form-control" id="tp-hours">
+                            <option value="2">2 hours/week</option>
+                            <option value="4" selected>4 hours/week</option>
+                            <option value="8">8 hours/week</option>
+                            <option value="16">16+ hours/week (intensive)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Special considerations (optional):</label>
+                        <input type="text" class="form-control" id="tp-notes" placeholder="e.g. Remote workforce, limited computer experience...">
+                    </div>
+                    <button class="btn btn-primary" id="tp-generate-btn" style="width:100%;"><i class="fas fa-calendar-check"></i> Generate Training Plan</button>
+                    <div id="tp-answer" class="ai-tool-result" style="display:none;"></div>
+                </div>
+            </div>
+
+            <div class="ai-tool-card">
+                <div class="ai-tool-header">
+                    <div class="ai-tool-icon" style="background:linear-gradient(135deg,#fd7e14,#e55a00);"><i class="fas fa-project-diagram"></i></div>
+                    <div><h3>Epic Workflow Builder</h3><p>Describe a clinical process, get step-by-step Epic instructions</p></div>
+                </div>
+                <div class="ai-tool-body">
+                    <div class="form-group">
+                        <label>Epic module:</label>
+                        <select class="form-control" id="wf-module">
+                            <option value="">Select module</option>
+                            <option>Hyperspace / Hyperdrive</option><option>MyChart</option><option>Cadence (Scheduling)</option>
+                            <option>Prelude (Registration)</option><option>Beaker (Lab)</option><option>Radiant (Radiology)</option>
+                            <option>OpTime (Surgery)</option><option>Willow (Pharmacy)</option><option>Cupid (Cardiology)</option>
+                            <option>Healthy Planet</option><option>Grand Central (ADT)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Describe the workflow:</label>
+                        <textarea class="form-control" id="wf-description" placeholder="e.g. How does a nurse document vital signs and administer medication in Epic for an inpatient patient?" style="min-height:80px;"></textarea>
+                    </div>
+                    <button class="btn btn-primary" id="wf-generate-btn" style="width:100%;"><i class="fas fa-sitemap"></i> Build This Workflow</button>
+                    <div id="wf-answer" class="ai-tool-result" style="display:none;"></div>
+                </div>
+            </div>
+
+            <div class="ai-tool-card">
+                <div class="ai-tool-header">
+                    <div class="ai-tool-icon" style="background:linear-gradient(135deg,#FFD700,#D4AF37);"><i class="fas fa-lightbulb"></i></div>
+                    <div><h3>Epic Tip Generator</h3><p>Get productivity tips for any Epic module or role</p></div>
+                </div>
+                <div class="ai-tool-body">
+                    <div class="form-group">
+                        <label>Module or topic:</label>
+                        <input type="text" class="form-control" id="tip-topic" placeholder="e.g. Hyperdrive, SmartTools, physician documentation...">
+                    </div>
+                    <div class="form-group">
+                        <label>Role:</label>
+                        <select class="form-control" id="tip-role">
+                            <option value="">Any role</option>
+                            <option>Physician</option><option>Nurse</option><option>Pharmacist</option>
+                            <option>Trainer</option><option>Billing</option><option>Admin</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-premium" id="tip-generate-btn" style="width:100%;"><i class="fas fa-lightbulb"></i> Get Epic Tips</button>
+                    <div id="tip-answer" class="ai-tool-result" style="display:none;"></div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
 </main>
 
 <!-- Upload Modal -->
@@ -657,7 +800,6 @@
 </div>
 
 <!-- AI Chat Panel -->
-<div id="ask-ai-label" style="position:fixed;bottom:105px;right:24px;background:white;color:#4B286D;font-size:0.72rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:0.25rem 0.75rem;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,0.15);z-index:1200;text-align:center;pointer-events:none;">ASK AI</div>
 <button id="ai-fab" title="Ask AI Trainer">
     <i class="fas fa-robot"></i>
 </button>
@@ -1414,84 +1556,11 @@ function initAIChat() {
     }
 }
 
-
-// =====================
-// AUTH SYSTEM
-// =====================
-function getAccounts(){ try{ return JSON.parse(localStorage.getItem('_accounts')||'{}'); }catch{ return {}; } }
-function setAccounts(a){ localStorage.setItem('_accounts',JSON.stringify(a)); }
-
-function initAuth(){
-    try{
-        const s = JSON.parse(sessionStorage.getItem('_sess'));
-        if(s && s.email){ doLogin(s); return; }
-    }catch{}
-
-    document.getElementById('login-gate').style.display='flex';
-
-    document.querySelectorAll('.auth-tab').forEach(t=>{
-        t.addEventListener('click',()=>{
-            document.querySelectorAll('.auth-tab').forEach(x=>x.classList.remove('active'));
-            document.querySelectorAll('.auth-form').forEach(x=>x.classList.remove('active'));
-            t.classList.add('active');
-            document.getElementById(t.dataset.auth+'-form').classList.add('active');
-        });
-    });
-
-    ['si-email','si-password'].forEach(id=>{ document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('si-btn').click(); }); });
-    ['su-name','su-email','su-password'].forEach(id=>{ document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('su-btn').click(); }); });
-
-    document.getElementById('si-btn').addEventListener('click',()=>{
-        const email=document.getElementById('si-email').value.trim().toLowerCase();
-        const password=document.getElementById('si-password').value;
-        const errEl=document.getElementById('si-error');
-        errEl.classList.remove('show');
-        if(!email||!password){ errEl.textContent='Please enter email and password.'; errEl.classList.add('show'); return; }
-        const accounts=getAccounts();
-        if(!accounts[email]||accounts[email].password!==password){ errEl.textContent='Invalid email or password.'; errEl.classList.add('show'); return; }
-        doLogin(accounts[email]);
-    });
-
-    document.getElementById('su-btn').addEventListener('click',()=>{
-        const name=document.getElementById('su-name').value.trim();
-        const email=document.getElementById('su-email').value.trim().toLowerCase();
-        const hospital='';
-        const password=document.getElementById('su-password').value;
-        const errEl=document.getElementById('su-error');
-        errEl.classList.remove('show');
-        if(!name||!email||password.length<6){ errEl.classList.add('show'); return; }
-        const accounts=getAccounts();
-        if(accounts[email]){ errEl.textContent='Account already exists. Sign in instead.'; errEl.classList.add('show'); return; }
-        const user={name,email,hospital,password,certification:'Epic Trainer'};
-        accounts[email]=user; setAccounts(accounts);
-        doLogin(user);
-    });
-}
-
-function doLogin(user){
-    sessionStorage.setItem('_sess',JSON.stringify(user));
-    document.getElementById('login-gate').style.display='none';
-    const greeting=document.getElementById('user-greeting');
-    if(greeting){ greeting.style.display='flex'; }
-    const greetName=document.getElementById('greeting-name');
-    if(greetName) greetName.textContent=user.name.split(' ')[0];
-    const dashName=document.getElementById('dashboard-name')||document.querySelector('#dashboard h2');
-    if(document.getElementById('dashboard-name')) document.getElementById('dashboard-name').textContent=user.name.split(' ')[0];
-    const profileName=document.getElementById('profile-name-display');
-    if(profileName) profileName.textContent=user.name;
-    const profileHosp=document.getElementById('profile-hospital-display');
-    if(profileHosp) profileHosp.textContent=user.hospital||'';
-    showNotification('Welcome back, '+user.name.split(' ')[0]+'!','success');
-}
-
-const logoutBtn=document.getElementById('logout-btn');
-if(logoutBtn){ logoutBtn.addEventListener('click',()=>{ sessionStorage.removeItem('_sess'); location.reload(); }); }
-
 // =====================
 // INIT
 // =====================
 document.addEventListener('DOMContentLoaded', () => {
-    initAuth();
+    initAITools();
     initNav();
     initProfileTabs();
     initModals();
@@ -1509,6 +1578,151 @@ document.addEventListener('DOMContentLoaded', () => {
     renderMyQuestions();
     renderProfileSettings();
 });
+
+function mdRender(t) {
+    return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g,'<em>$1</em>')
+        .replace(/`(.+?)`/g,'<code style="background:#eee;padding:0.1rem 0.3rem;border-radius:3px;">$1</code>')
+        .replace(/^### (.+)$/gm,'<strong style="display:block;margin:0.5rem 0 0.2rem;color:#4B286D;">$1</strong>')
+        .replace(/^## (.+)$/gm,'<strong style="display:block;margin:0.7rem 0 0.3rem;color:#4B286D;">$1</strong>')
+        .replace(/^- (.+)$/gm,'<li style="margin-left:1.2rem;list-style:disc;">$1</li>')
+        .replace(/^(\d+)\. (.+)$/gm,'<li style="margin-left:1.2rem;">$2</li>')
+        .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+}
+
+async function callAITool(prompt, resultEl) {
+    resultEl.style.display = 'block';
+    resultEl.className = 'ai-tool-result loading';
+    resultEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AI is thinking...';
+    try {
+        const resp = await fetch('/.netlify/functions/ai-chat', {
+            method: 'POST', headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+                system: 'You are an expert Epic EMR Trainer Assistant. Be specific, practical, and use Epic terminology correctly.',
+                messages: [{ role: 'user', content: prompt }]
+            })
+        });
+        const data = await resp.json();
+        if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+        let text = '';
+        if (Array.isArray(data.content)) data.content.forEach(b => { if(b.type==='text') text += b.text; });
+        if (!text) throw new Error('No response received');
+        resultEl.className = 'ai-tool-result';
+        const shortQ = prompt.substring(0, 80).replace(/'/g, '');
+        resultEl.innerHTML = mdRender(text) +
+            '<div class="ai-result-actions">' +
+            '<button class="ai-save-btn" onclick="saveToolResult(this, \'' + shortQ + '\', this.closest(\'.ai-tool-result\').innerText)"><i class="fas fa-bookmark"></i> Save</button>' +
+            '<button class="ai-save-btn" onclick="copyToolResult(this, this.closest(\'.ai-tool-result\').innerText)"><i class="fas fa-copy"></i> Copy</button>' +
+            '</div>';
+    } catch(err) {
+        resultEl.className = 'ai-tool-result error';
+        resultEl.textContent = 'Error: ' + err.message;
+    }
+}
+
+function saveToolResult(btn, question, answer) {
+    STATE.aiSavedResponses.push({ question, answer, savedAt: new Date().toISOString() });
+    saveState();
+    btn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+    btn.disabled = true;
+    showNotification('Result saved to your profile!', 'success');
+}
+
+function copyToolResult(btn, text) {
+    navigator.clipboard.writeText(text).then(() => {
+        btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i> Copy'; }, 2000);
+    });
+}
+
+function initAITools() {
+    // PDF Q&A
+    const pdfArea = document.getElementById('pdf-upload-area');
+    const pdfInput = document.getElementById('pdf-file-input');
+    const pdfInfo = document.getElementById('pdf-file-info');
+    const pdfName = document.getElementById('pdf-file-name');
+    const pdfAskBtn = document.getElementById('pdf-ask-btn');
+    let pdfContent = '';
+
+    pdfArea.addEventListener('click', () => pdfInput.click());
+    pdfArea.addEventListener('dragover', e => { e.preventDefault(); pdfArea.classList.add('drag-over'); });
+    pdfArea.addEventListener('dragleave', () => pdfArea.classList.remove('drag-over'));
+    pdfArea.addEventListener('drop', e => { e.preventDefault(); pdfArea.classList.remove('drag-over'); if(e.dataTransfer.files[0]) readPDF(e.dataTransfer.files[0]); });
+    pdfInput.addEventListener('change', e => { if(e.target.files[0]) readPDF(e.target.files[0]); });
+
+    function readPDF(file) {
+        pdfName.textContent = file.name;
+        pdfInfo.style.display = 'block';
+        if (file.type === 'application/pdf') {
+            pdfContent = 'PDF document: ' + file.name;
+            pdfAskBtn.disabled = false;
+            showNotification('PDF uploaded! Now ask your question.', 'success');
+        } else {
+            const reader = new FileReader();
+            reader.onload = ev => { pdfContent = ev.target.result.substring(0, 8000); pdfAskBtn.disabled = false; showNotification('Document loaded!', 'success'); };
+            reader.readAsText(file);
+        }
+    }
+    pdfAskBtn.addEventListener('click', () => {
+        const q = document.getElementById('pdf-question').value.trim();
+        if (!q) return showNotification('Please enter a question.', 'error');
+        const prompt = pdfContent ? 'Document content:\n' + pdfContent + '\n\nQuestion: ' + q : 'Answer this Epic question: ' + q;
+        callAITool(prompt, document.getElementById('pdf-answer'));
+    });
+    document.getElementById('pdf-question').addEventListener('keydown', e => { if(e.key==='Enter') pdfAskBtn.click(); });
+
+    // Error Explainer
+    document.getElementById('error-explain-btn').addEventListener('click', () => {
+        const err = document.getElementById('error-input').value.trim();
+        const role = document.getElementById('error-role').value;
+        if (!err) return showNotification('Please paste an error message.', 'error');
+        const prompt = 'I am an Epic EMR ' + (role||'user') + ' and received this error:\n\n"' + err + '"\n\n1. Explain what this error means in plain English\n2. Give the most likely cause\n3. Provide step-by-step fix instructions\n4. Tell me who to contact if I cannot fix it';
+        callAITool(prompt, document.getElementById('error-answer'));
+    });
+
+    // SmartPhrase Generator
+    document.getElementById('sp-generate-btn').addEventListener('click', () => {
+        const specialty = document.getElementById('sp-specialty').value;
+        const desc = document.getElementById('sp-description').value.trim();
+        const name = document.getElementById('sp-name').value.trim();
+        if (!desc) return showNotification('Please describe the SmartPhrase.', 'error');
+        const prompt = 'Create a complete Epic SmartPhrase for ' + (specialty||'general') + ' use.\nName: ' + (name||'CUSTOM') + '\nPurpose: ' + desc + '\n\nProvide: 1) Complete SmartPhrase text with Epic syntax (.LIST., ***) 2) How to create it in Epic 3) Customization tips 4) Related SmartPhrases';
+        callAITool(prompt, document.getElementById('sp-answer'));
+    });
+
+    // Training Plan Generator
+    document.getElementById('tp-generate-btn').addEventListener('click', () => {
+        const role = document.getElementById('tp-role').value;
+        const modules = document.getElementById('tp-modules').value.trim();
+        const golive = document.getElementById('tp-golive').value;
+        const hours = document.getElementById('tp-hours').value;
+        const notes = document.getElementById('tp-notes').value.trim();
+        if (!role || !modules) return showNotification('Please select a role and enter modules.', 'error');
+        const days = golive ? Math.ceil((new Date(golive)-new Date())/(1000*60*60*24)) : null;
+        const prompt = 'Create a detailed Epic training plan.\nRole: ' + role + '\nModules: ' + modules + '\nGo-live: ' + (golive||'TBD') + (days?' ('+days+' days away)':'') + '\nHours/week: ' + hours + '\nNotes: ' + (notes||'None') + '\n\nProvide: week-by-week schedule, learning objectives, training methods, assessments, go-live support plan, post go-live follow-up';
+        callAITool(prompt, document.getElementById('tp-answer'));
+    });
+
+    // Workflow Builder
+    document.getElementById('wf-generate-btn').addEventListener('click', () => {
+        const module = document.getElementById('wf-module').value;
+        const desc = document.getElementById('wf-description').value.trim();
+        if (!desc) return showNotification('Please describe the workflow.', 'error');
+        const prompt = 'Create step-by-step Epic instructions for:\nModule: ' + (module||'Epic EMR') + '\nWorkflow: ' + desc + '\n\nInclude: prerequisites, numbered steps with exact navigation paths, common mistakes, keyboard shortcuts, tips for training end users';
+        callAITool(prompt, document.getElementById('wf-answer'));
+    });
+
+    // Tip Generator
+    document.getElementById('tip-generate-btn').addEventListener('click', () => {
+        const topic = document.getElementById('tip-topic').value.trim();
+        const role = document.getElementById('tip-role').value;
+        if (!topic) return showNotification('Please enter a topic.', 'error');
+        const prompt = 'Give me 5 powerful Epic EMR productivity tips for ' + topic + (role?' for '+role+' users':'') + '. For each tip: title, 2-3 sentence explanation, exact steps or shortcut, why it saves time. Focus on tips most users do not know.';
+        callAITool(prompt, document.getElementById('tip-answer'));
+    });
+}
+
 </script>
 </body>
 </html>
