@@ -285,9 +285,52 @@
         .ai-result-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
         @media (max-width: 768px) { .ai-tools-grid { grid-template-columns: 1fr; } }
 
+    
+        #login-gate { position: fixed; inset: 0; background: rgba(75,40,109,0.97); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        .gate-box { background: white; border-radius: 16px; padding: 2.5rem; width: 90%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .gate-logo { text-align: center; margin-bottom: 1.5rem; }
+        .gate-logo i { font-size: 3rem; color: #7B52AB; }
+        .gate-logo h2 { color: #4B286D; margin-top: 0.5rem; }
+        .gate-logo p { color: #666; font-size: 0.88rem; margin-top: 0.4rem; }
+        .auth-tabs { display: flex; border-bottom: 2px solid #eee; margin-bottom: 1.5rem; }
+        .auth-tab { flex: 1; text-align: center; padding: 0.75rem; cursor: pointer; font-weight: 600; color: #888; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+        .auth-tab.active { color: #4B286D; border-bottom-color: #4B286D; }
+        .auth-form { display: none !important; }
+        .auth-form.active { display: block !important; }
+        .form-error { color: #dc3545; font-size: 0.82rem; margin-top: 0.3rem; display: none; }
+        .form-error.show { display: block; }
+
     </style>
 </head>
 <body>
+
+<div id="login-gate">
+    <div class="gate-box">
+        <div class="gate-logo">
+            <i class="fas fa-hospital-user"></i>
+            <h2>Epic EMR Trainer</h2>
+            <p>Sign in or create an account to continue</p>
+        </div>
+        <div class="auth-tabs">
+            <div class="auth-tab active" data-auth="signin">Sign In</div>
+            <div class="auth-tab" data-auth="signup">Create Account</div>
+        </div>
+        <div class="auth-form active" id="signin-form">
+            <div class="form-group"><label>Email</label><input type="email" class="form-control" id="si-email" placeholder="your@email.com"></div>
+            <div class="form-group"><label>Password</label><input type="password" class="form-control" id="si-password" placeholder="Your password"></div>
+            <div class="form-error" id="si-error">Invalid email or password.</div>
+            <button class="btn btn-primary" id="si-btn" style="width:100%;margin-top:0.5rem;padding:0.85rem;"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+            <p style="font-size:0.82rem;color:#888;text-align:center;margin-top:1rem;">New user? Switch to Create Account above.</p>
+        </div>
+        <div class="auth-form" id="signup-form">
+            <div class="form-group"><label>Full Name</label><input type="text" class="form-control" id="su-name" placeholder="Your full name"></div>
+            <div class="form-group"><label>Email</label><input type="email" class="form-control" id="su-email" placeholder="your@email.com"></div>
+            <div class="form-group"><label>Password <span style="font-size:0.82rem;color:#888;">(min 6 characters)</span></label><input type="password" class="form-control" id="su-password" placeholder="Create a password"></div>
+            <div class="form-error" id="su-error">Please fill all fields. Password min 6 chars.</div>
+            <button class="btn btn-primary" id="su-btn" style="width:100%;margin-top:0.5rem;padding:0.85rem;"><i class="fas fa-user-plus"></i> Create Account</button>
+        </div>
+    </div>
+</div>
 
 <header>
     <div class="header-content">
@@ -1560,6 +1603,7 @@ function initAIChat() {
 // INIT
 // =====================
 document.addEventListener('DOMContentLoaded', () => {
+    initAuth();
     initAITools();
     initNav();
     initProfileTabs();
@@ -1722,6 +1766,61 @@ function initAITools() {
         callAITool(prompt, document.getElementById('tip-answer'));
     });
 }
+
+
+function getAccounts(){ try{ return JSON.parse(localStorage.getItem('_accounts')||'{}'); }catch{ return {}; } }
+function setAccounts(a){ localStorage.setItem('_accounts',JSON.stringify(a)); }
+
+function initAuth(){
+    try{ const s=JSON.parse(sessionStorage.getItem('_sess')); if(s&&s.email){ doLogin(s); return; } }catch{}
+    document.getElementById('login-gate').style.display='flex';
+    document.querySelectorAll('.auth-tab').forEach(t=>{
+        t.addEventListener('click',()=>{
+            document.querySelectorAll('.auth-tab').forEach(x=>x.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(x=>x.classList.remove('active'));
+            t.classList.add('active');
+            document.getElementById(t.dataset.auth+'-form').classList.add('active');
+        });
+    });
+    ['si-email','si-password'].forEach(id=>{ document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('si-btn').click(); }); });
+    ['su-name','su-email','su-password'].forEach(id=>{ document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('su-btn').click(); }); });
+    document.getElementById('si-btn').addEventListener('click',()=>{
+        const email=document.getElementById('si-email').value.trim().toLowerCase();
+        const password=document.getElementById('si-password').value;
+        const errEl=document.getElementById('si-error');
+        errEl.classList.remove('show');
+        if(!email||!password){ errEl.textContent='Please enter email and password.'; errEl.classList.add('show'); return; }
+        const accounts=getAccounts();
+        if(!accounts[email]||accounts[email].password!==password){ errEl.textContent='Invalid email or password.'; errEl.classList.add('show'); return; }
+        doLogin(accounts[email]);
+    });
+    document.getElementById('su-btn').addEventListener('click',()=>{
+        const name=document.getElementById('su-name').value.trim();
+        const email=document.getElementById('su-email').value.trim().toLowerCase();
+        const password=document.getElementById('su-password').value;
+        const errEl=document.getElementById('su-error');
+        errEl.classList.remove('show');
+        if(!name||!email||password.length<6){ errEl.classList.add('show'); return; }
+        const accounts=getAccounts();
+        if(accounts[email]){ errEl.textContent='Account already exists. Sign in instead.'; errEl.classList.add('show'); return; }
+        const user={name,email,hospital:'',password,certification:'Epic Trainer'};
+        accounts[email]=user; setAccounts(accounts);
+        doLogin(user);
+    });
+}
+
+function doLogin(user){
+    sessionStorage.setItem('_sess',JSON.stringify(user));
+    document.getElementById('login-gate').style.display='none';
+    const g=document.getElementById('user-greeting'); if(g) g.style.display='flex';
+    const gn=document.getElementById('greeting-name'); if(gn) gn.textContent=user.name.split(' ')[0];
+    const dn=document.getElementById('dashboard-name'); if(dn) dn.textContent=user.name.split(' ')[0];
+    const pn=document.getElementById('profile-name-display'); if(pn) pn.textContent=user.name;
+    showNotification('Welcome, '+user.name.split(' ')[0]+'!','success');
+}
+
+const logoutBtn=document.getElementById('logout-btn');
+if(logoutBtn){ logoutBtn.addEventListener('click',()=>{ sessionStorage.removeItem('_sess'); location.reload(); }); }
 
 </script>
 </body>
