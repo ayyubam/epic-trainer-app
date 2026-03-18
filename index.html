@@ -5,6 +5,362 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Epic EMR Trainer Assistant</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+// =====================
+// PHASE 2 - SUPABASE
+// =====================
+const SUPA_URL = 'https://rrfcukkvdsraukybkxzc.supabase.co';
+const SUPA_KEY = 'sb_publishable_hIWPVlBUD_5ACnZ58Xaqcw_gjfzq355';
+let supabase = null;
+let currentUser = null;
+
+function initSupabase() {
+    supabase = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+}
+
+// ── AUTH ──
+async function signUp(name, email, password) {
+    const { data, error } = await supabase.auth.signUp({
+        email, password,
+        options: { data: { name } }
+    });
+    if (error) throw error;
+    return data;
+}
+
+async function signIn(email, password) {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    return data;
+}
+
+async function signOut() {
+    await supabase.auth.signOut();
+    currentUser = null;
+    sessionStorage.removeItem('_sess');
+    location.reload();
+}
+
+async function getProfile(userId) {
+    const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
+    if (error && error.code !== 'PGRST116') console.error('Profile error:', error);
+    return data;
+}
+
+async function updateProfile(userId, updates) {
+    const { error } = await supabase.from('profiles').upsert({ id: userId, ...updates });
+    if (error) throw error;
+}
+
+// ── SAVED ITEMS ──
+async function syncSavedItems() {
+    if (!currentUser) return;
+    const { data, error } = await supabase.from('saved_items').select('*').eq('user_id', currentUser.id).order('saved_at', { ascending: false });
+    if (!error && data) {
+        STATE.savedItems = data.map(d => ({ id: d.item_id, type: d.item_type, name: d.item_name, savedAt: d.saved_at, dbId: d.id }));
+        saveState(); renderSavedItems(); updateSavedStat();
+    }
+}
+
+async function saveItemToCloud(item) {
+    if (!currentUser) return;
+    const { error } = await supabase.from('saved_items').insert({
+        user_id: currentUser.id, item_id: item.id, item_type: item.type, item_name: item.name
+    });
+    if (error) console.error('Save error:', error);
+}
+
+async function removeItemFromCloud(itemId) {
+    if (!currentUser) return;
+    await supabase.from('saved_items').delete().eq('user_id', currentUser.id).eq('item_id', itemId);
+}
+
+// ── AI RESPONSES ──
+async function syncAIResponses() {
+    if (!currentUser) return;
+    const { data, error } = await supabase.from('ai_responses').select('*').eq('user_id', currentUser.id).order('saved_at', { ascending: false });
+    if (!error && data) {
+        STATE.aiSavedResponses = data.map(d => ({ question: d.question, answer: d.answer, savedAt: d.saved_at, dbId: d.id }));
+        saveState(); renderAISaved();
+    }
+}
+
+async function saveAIResponseToCloud(question, answer) {
+    if (!currentUser) return;
+    await supabase.from('ai_responses').insert({ user_id: currentUser.id, question, answer });
+}
+
+// ── UPLOADED FILES ──
+async function syncUploadedFiles() {
+    if (!currentUser) return;
+    const { data, error } = await supabase.from('uploaded_files').select('*').eq('user_id', currentUser.id).order('uploaded_at', { ascending: false });
+    if (!error && data) {
+        STATE.uploadedFiles = data.map(d => ({ id: d.id, title: d.title, description: d.description, type: d.type, size: d.size, fileType: d.file_type, tags: d.tags, uploadedAt: d.uploaded_at }));
+        saveState(); renderUploadedFiles(); renderResources();
+    }
+}
+
+async function saveFileToCloud(file) {
+    if (!currentUser) return;
+    const { error } = await supabase.from('uploaded_files').insert({
+        user_id: currentUser.id, title: file.title, description: file.description,
+        type: file.type, size: file.size, file_type: file.fileType, tags: file.tags
+    });
+    if (error) console.error('File save error:', error);
+}
+
+// ── QUESTIONS ──
+async function saveQuestionToCloud(question) {
+    if (!currentUser) return;
+    await supabase.from('my_questions').insert({ user_id: currentUser.id, question });
+}
+
+async function syncQuestions() {
+    if (!currentUser) return;
+    const { data, error } = await supabase.from('my_questions').select('*').eq('user_id', currentUser.id).order('asked_at', { ascending: false }).limit(50);
+    if (!error && data) {
+        STATE.myQuestions = data.map(d => ({ question: d.question, askedAt: d.asked_at }));
+        saveState(); renderMyQuestions();
+    }
+}
+
+// ── CERTIFICATIONS ──
+let userCerts = [];
+
+async function loadCertifications() {
+    if (!currentUser) return;
+    const { data, error } = await supabase.from('certifications').select('*').eq('user_id', currentUser.id).order('expiry_date', { ascending: true });
+    if (!error && data) { userCerts = data; renderCertifications(); }
+}
+
+async function addCertification(cert) {
+    if (!currentUser) return;
+    const { data, error } = await supabase.from('certifications').insert({ user_id: currentUser.id, ...cert }).select();
+    if (error) throw error;
+    return data;
+}
+
+async function deleteCertification(id) {
+    await supabase.from('certifications').delete().eq('id', id);
+}
+
+function renderCertifications() {
+    const el = document.getElementById('cert-list'); if (!el) return;
+    if (!userCerts.length) { el.innerHTML = '<div class="empty-state"><i class="fas fa-certificate"></i><p>No certifications added yet.</p></div>'; return; }
+    el.innerHTML = '';
+    userCerts.forEach(cert => {
+        const expiry = cert.expiry_date ? new Date(cert.expiry_date) : null;
+        const now = new Date();
+        const daysLeft = expiry ? Math.ceil((expiry - now) / (1000*60*60*24)) : null;
+        let badgeClass = 'cert-active', badgeText = 'Active';
+        if (daysLeft !== null) {
+            if (daysLeft < 0) { badgeClass='cert-expired'; badgeText='Expired'; }
+            else if (daysLeft < 90) { badgeClass='cert-expiring'; badgeText='Expiring in '+daysLeft+'d'; }
+        }
+        const card = document.createElement('div'); card.className = 'cert-card';
+        card.innerHTML = `
+            <div class="cert-info">
+                <h4><i class="fas fa-certificate" style="color:var(--premium-gold);margin-right:0.4rem;"></i>${cert.cert_name}</h4>
+                <p>${cert.cert_number ? 'ID: '+cert.cert_number+' &bull; ' : ''}Issued: ${cert.issued_date||'N/A'} &bull; Expires: ${cert.expiry_date||'N/A'}</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+                <span class="cert-badge ${badgeClass}">${badgeText}</span>
+                <button class="btn btn-danger" style="padding:0.3rem 0.6rem;font-size:0.8rem;" data-cert-id="${cert.id}"><i class="fas fa-trash"></i></button>
+            </div>`;
+        card.querySelector('[data-cert-id]').addEventListener('click', async () => {
+            await deleteCertification(cert.id);
+            userCerts = userCerts.filter(c => c.id !== cert.id);
+            renderCertifications();
+            showNotification('Certification removed.');
+        });
+        el.appendChild(card);
+    });
+}
+
+// ── TRAINING HOURS ──
+let trainingHours = [];
+
+async function loadTrainingHours() {
+    if (!currentUser) return;
+    const { data, error } = await supabase.from('training_hours').select('*').eq('user_id', currentUser.id).order('date', { ascending: false });
+    if (!error && data) { trainingHours = data; renderTrainingHours(); }
+}
+
+async function addTrainingHours(entry) {
+    const { data, error } = await supabase.from('training_hours').insert({ user_id: currentUser.id, ...entry }).select();
+    if (error) throw error;
+    return data;
+}
+
+async function deleteTrainingHours(id) {
+    await supabase.from('training_hours').delete().eq('id', id);
+}
+
+function renderTrainingHours() {
+    const el = document.getElementById('hours-list'); if (!el) return;
+    const total = trainingHours.reduce((s,h) => s + parseFloat(h.hours||0), 0);
+    const sessions = trainingHours.length;
+    const thisMonth = trainingHours.filter(h => {
+        const d = new Date(h.date); const now = new Date();
+        return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
+    }).reduce((s,h) => s + parseFloat(h.hours||0), 0);
+    const td = document.getElementById('total-hours-display'); if(td) td.textContent = total.toFixed(1);
+    const sd = document.getElementById('total-sessions-display'); if(sd) sd.textContent = sessions;
+    const md = document.getElementById('this-month-hours-display'); if(md) md.textContent = thisMonth.toFixed(1);
+    if (!trainingHours.length) { el.innerHTML = '<div class="empty-state"><i class="fas fa-clock"></i><p>No training hours logged yet.</p></div>'; return; }
+    el.innerHTML = '';
+    trainingHours.forEach(entry => {
+        const card = document.createElement('div'); card.className = 'hours-card';
+        card.innerHTML = `
+            <div class="hours-info">
+                <strong>${entry.activity}</strong>
+                <span>${entry.date} ${entry.notes ? '&bull; '+entry.notes : ''}</span>
+            </div>
+            <span class="hours-badge">${entry.hours} hrs</span>
+            <button class="btn btn-danger" style="padding:0.3rem 0.6rem;font-size:0.8rem;" data-hours-id="${entry.id}"><i class="fas fa-trash"></i></button>`;
+        card.querySelector('[data-hours-id]').addEventListener('click', async () => {
+            await deleteTrainingHours(entry.id);
+            trainingHours = trainingHours.filter(h => h.id !== entry.id);
+            renderTrainingHours();
+            showNotification('Entry removed.');
+        });
+        el.appendChild(card);
+    });
+}
+
+function initCertifications() {
+    document.getElementById('add-cert-btn')?.addEventListener('click', async () => {
+        const name = document.getElementById('cert-name').value.trim();
+        const number = document.getElementById('cert-number').value.trim();
+        const issued = document.getElementById('cert-issued').value;
+        const expiry = document.getElementById('cert-expiry').value;
+        if (!name) return showNotification('Please enter a certification name.', 'error');
+        try {
+            const data = await addCertification({ cert_name: name, cert_number: number||null, issued_date: issued||null, expiry_date: expiry||null });
+            if (data) userCerts.unshift(data[0]);
+            renderCertifications();
+            document.getElementById('cert-name').value = '';
+            document.getElementById('cert-number').value = '';
+            document.getElementById('cert-issued').value = '';
+            document.getElementById('cert-expiry').value = '';
+            showNotification('Certification added!', 'success');
+        } catch(err) { showNotification('Error: ' + err.message, 'error'); }
+    });
+}
+
+function initTrainingHours() {
+    document.getElementById('add-hours-btn')?.addEventListener('click', async () => {
+        const activity = document.getElementById('hours-activity').value.trim();
+        const hours = document.getElementById('hours-count').value;
+        const date = document.getElementById('hours-date').value;
+        const notes = document.getElementById('hours-notes').value.trim();
+        if (!activity || !hours || !date) return showNotification('Please fill in activity, hours, and date.', 'error');
+        try {
+            const data = await addTrainingHours({ activity, hours: parseFloat(hours), date, notes: notes||null });
+            if (data) trainingHours.unshift(data[0]);
+            renderTrainingHours();
+            document.getElementById('hours-activity').value = '';
+            document.getElementById('hours-count').value = '';
+            document.getElementById('hours-date').value = '';
+            document.getElementById('hours-notes').value = '';
+            showNotification('Hours logged!', 'success');
+        } catch(err) { showNotification('Error: ' + err.message, 'error'); }
+    });
+
+    document.getElementById('export-hours-btn')?.addEventListener('click', () => {
+        if (!trainingHours.length) return showNotification('No hours to export.', 'error');
+        const rows = [['Activity','Hours','Date','Notes']];
+        trainingHours.forEach(h => rows.push([h.activity, h.hours, h.date, h.notes||'']));
+        const csv = rows.map(r => r.map(v => '"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+        const blob = new Blob([csv], {type:'text/csv'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = 'epic-training-hours.csv'; a.click();
+        showNotification('CSV exported!', 'success');
+    });
+}
+
+// ── SUPABASE AUTH OVERRIDE ──
+async function initSupabaseAuth() {
+    initSupabase();
+
+    // Check existing session
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+        currentUser = session.user;
+        const profile = await getProfile(currentUser.id);
+        const user = { name: profile?.name || currentUser.email, email: currentUser.email, hospital: profile?.hospital || '', certification: profile?.certification || 'Epic Trainer' };
+        doLogin(user);
+        await Promise.all([syncSavedItems(), syncAIResponses(), syncUploadedFiles(), syncQuestions(), loadCertifications(), loadTrainingHours()]);
+        return;
+    }
+
+    // Override signin button
+    const siBtnOld = document.getElementById('si-btn');
+    const siBtn = siBtnOld.cloneNode(true);
+    siBtnOld.parentNode.replaceChild(siBtn, siBtnOld);
+    siBtn.addEventListener('click', async () => {
+        const email = document.getElementById('si-email').value.trim().toLowerCase();
+        const password = document.getElementById('si-password').value;
+        const errEl = document.getElementById('si-error');
+        errEl.classList.remove('show');
+        if (!email || !password) { errEl.textContent='Please enter email and password.'; errEl.classList.add('show'); return; }
+        siBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...'; siBtn.disabled = true;
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            currentUser = data.user;
+            const profile = await getProfile(currentUser.id);
+            const user = { name: profile?.name || email, email, hospital: profile?.hospital||'', certification: profile?.certification||'Epic Trainer' };
+            doLogin(user);
+            await Promise.all([syncSavedItems(), syncAIResponses(), syncUploadedFiles(), syncQuestions(), loadCertifications(), loadTrainingHours()]);
+        } catch(err) {
+            errEl.textContent = err.message === 'Invalid login credentials' ? 'Invalid email or password.' : err.message;
+            errEl.classList.add('show');
+            siBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In'; siBtn.disabled = false;
+        }
+    });
+
+    // Override signup button
+    const suBtnOld = document.getElementById('su-btn');
+    const suBtn = suBtnOld.cloneNode(true);
+    suBtnOld.parentNode.replaceChild(suBtn, suBtnOld);
+    suBtn.addEventListener('click', async () => {
+        const name = document.getElementById('su-name').value.trim();
+        const email = document.getElementById('su-email').value.trim().toLowerCase();
+        const password = document.getElementById('su-password').value;
+        const errEl = document.getElementById('su-error');
+        errEl.classList.remove('show');
+        if (!name || !email || password.length < 6) { errEl.classList.add('show'); return; }
+        suBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...'; suBtn.disabled = true;
+        try {
+            const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name } } });
+            if (error) throw error;
+            if (data.user) {
+                currentUser = data.user;
+                await updateProfile(currentUser.id, { name, email });
+                const user = { name, email, hospital: '', certification: 'Epic Trainer' };
+                doLogin(user);
+                showNotification('Account created! Welcome, ' + name.split(' ')[0] + '!', 'success');
+            }
+        } catch(err) {
+            errEl.textContent = err.message;
+            errEl.classList.add('show');
+            suBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account'; suBtn.disabled = false;
+        }
+    });
+
+    // Override logout
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        const newLogout = logoutBtn.cloneNode(true);
+        logoutBtn.parentNode.replaceChild(newLogout, logoutBtn);
+        newLogout.addEventListener('click', async () => { await signOut(); });
+    }
+
+    document.getElementById('login-gate').style.display = 'flex';
+}
+
+</script>
     <style>
         :root {
             --epic-purple: #4B286D;
@@ -300,6 +656,54 @@
         .form-error { color: #dc3545; font-size: 0.82rem; margin-top: 0.3rem; display: none; }
         .form-error.show { display: block; }
 
+    
+        /* Phase 2 - Supabase */
+        .cert-card { background: white; border-radius: 10px; padding: 1.25rem; box-shadow: 0 3px 8px rgba(0,0,0,0.08); margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; }
+        .cert-info h4 { color: var(--epic-purple); margin-bottom: 0.25rem; font-size: 0.95rem; }
+        .cert-info p { color: #666; font-size: 0.82rem; }
+        .cert-badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.78rem; font-weight: bold; }
+        .cert-active { background: #d4edda; color: #155724; }
+        .cert-expiring { background: #fff3cd; color: #856404; }
+        .cert-expired { background: #f8d7da; color: #721c24; }
+        .hours-card { background: white; border-radius: 10px; padding: 1.25rem; box-shadow: 0 3px 8px rgba(0,0,0,0.08); margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+        .hours-info { flex: 1; }
+        .hours-info strong { display: block; font-size: 0.92rem; color: var(--text-dark); }
+        .hours-info span { font-size: 0.82rem; color: #666; }
+        .hours-badge { background: var(--epic-lighter-purple); color: var(--epic-purple); padding: 0.3rem 0.75rem; border-radius: 20px; font-weight: bold; font-size: 0.85rem; white-space: nowrap; }
+        .sync-status { font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 20px; display: inline-flex; align-items: center; gap: 0.3rem; }
+        .sync-ok { background: #d4edda; color: #155724; }
+        .sync-err { background: #f8d7da; color: #721c24; }
+        .sync-ing { background: #fff3cd; color: #856404; }
+        .profile-sync-bar { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+
+    
+        .cert-card { background: white; border-radius: 10px; padding: 1.25rem; box-shadow: 0 3px 8px rgba(0,0,0,0.08); margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; }
+        .cert-info h4 { color: var(--epic-purple); margin-bottom: 0.25rem; font-size: 0.95rem; }
+        .cert-info p { color: #666; font-size: 0.82rem; }
+        .cert-badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.78rem; font-weight: bold; }
+        .cert-active { background: #d4edda; color: #155724; }
+        .cert-expiring { background: #fff3cd; color: #856404; }
+        .cert-expired { background: #f8d7da; color: #721c24; }
+        .hours-card { background: white; border-radius: 10px; padding: 1.25rem; box-shadow: 0 3px 8px rgba(0,0,0,0.08); margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+        .hours-info { flex: 1; }
+        .hours-info strong { display: block; font-size: 0.92rem; }
+        .hours-info span { font-size: 0.82rem; color: #666; }
+        .hours-badge { background: var(--epic-lighter-purple); color: var(--epic-purple); padding: 0.3rem 0.75rem; border-radius: 20px; font-weight: bold; font-size: 0.85rem; white-space: nowrap; }
+
+
+        .cert-card { background: white; border-radius: 10px; padding: 1.25rem; box-shadow: 0 3px 8px rgba(0,0,0,0.08); margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; }
+        .cert-info h4 { color: var(--epic-purple); margin-bottom: 0.25rem; font-size: 0.95rem; }
+        .cert-info p { color: #666; font-size: 0.82rem; }
+        .cert-badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.78rem; font-weight: bold; }
+        .cert-active { background: #d4edda; color: #155724; }
+        .cert-expiring { background: #fff3cd; color: #856404; }
+        .cert-expired { background: #f8d7da; color: #721c24; }
+        .hours-card { background: white; border-radius: 10px; padding: 1.25rem; box-shadow: 0 3px 8px rgba(0,0,0,0.08); margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+        .hours-info { flex: 1; }
+        .hours-info strong { display: block; font-size: 0.92rem; }
+        .hours-info span { font-size: 0.82rem; color: #666; }
+        .hours-badge { background: var(--epic-lighter-purple); color: var(--epic-purple); padding: 0.3rem 0.75rem; border-radius: 20px; font-weight: bold; font-size: 0.85rem; white-space: nowrap; }
+
     </style>
 </head>
 <body>
@@ -451,6 +855,8 @@
             <div class="profile-tab" data-tab="uploads">My Uploads</div>
             <div class="profile-tab" data-tab="ai-saved">AI Responses</div>
             <div class="profile-tab" data-tab="questions">My Questions</div>
+            <div class="profile-tab" data-tab="certifications">Certifications</div>
+            <div class="profile-tab" data-tab="training-hours">Training Hours</div>
             <div class="profile-tab" data-tab="settings">Settings</div>
         </div>
 
@@ -495,6 +901,46 @@
                         <p>You haven't asked any questions yet. Questions you ask the AI Trainer will appear here.</p>
                     </div>
                 </div>
+            </div>
+
+            <div id="certifications-tab" class="profile-tab-content">
+                <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+                    <h3>My Epic Certifications</h3>
+                </div>
+                <div style="background:white;border-radius:10px;padding:1.25rem;box-shadow:0 3px 8px rgba(0,0,0,0.08);margin-bottom:1.5rem;">
+                    <h4 style="margin-bottom:1rem;color:var(--epic-purple);">Add Certification</h4>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
+                        <div class="form-group" style="margin:0;"><label>Certification Name</label><input type="text" class="form-control" id="cert-name" placeholder="e.g. Epic Physician Trainer"></div>
+                        <div class="form-group" style="margin:0;"><label>Cert Number (optional)</label><input type="text" class="form-control" id="cert-number" placeholder="e.g. EPT-2024-1234"></div>
+                        <div class="form-group" style="margin:0;"><label>Issue Date</label><input type="date" class="form-control" id="cert-issued"></div>
+                        <div class="form-group" style="margin:0;"><label>Expiry Date</label><input type="date" class="form-control" id="cert-expiry"></div>
+                    </div>
+                    <button class="btn btn-primary" id="add-cert-btn" style="margin-top:1rem;"><i class="fas fa-plus"></i> Add Certification</button>
+                </div>
+                <div id="cert-list"><div class="empty-state"><i class="fas fa-certificate"></i><p>No certifications added yet.</p></div></div>
+            </div>
+
+            <div id="training-hours-tab" class="profile-tab-content">
+                <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+                    <h3>Training Hours Log</h3>
+                    <button class="btn btn-outline" id="export-hours-btn" style="margin-left:auto;font-size:0.85rem;padding:0.4rem 0.9rem;"><i class="fas fa-download"></i> Export CSV</button>
+                </div>
+                <div style="background:white;border-radius:10px;padding:1.25rem;box-shadow:0 3px 8px rgba(0,0,0,0.08);margin-bottom:1.5rem;">
+                    <h4 style="margin-bottom:1rem;color:var(--epic-purple);">Log Training Activity</h4>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
+                        <div class="form-group" style="margin:0;"><label>Activity</label><input type="text" class="form-control" id="hours-activity" placeholder="e.g. Physician go-live support"></div>
+                        <div class="form-group" style="margin:0;"><label>Hours</label><input type="number" class="form-control" id="hours-count" placeholder="e.g. 4" min="0.5" step="0.5"></div>
+                        <div class="form-group" style="margin:0;"><label>Date</label><input type="date" class="form-control" id="hours-date"></div>
+                        <div class="form-group" style="margin:0;"><label>Notes (optional)</label><input type="text" class="form-control" id="hours-notes" placeholder="e.g. ED department, 12 physicians"></div>
+                    </div>
+                    <button class="btn btn-primary" id="add-hours-btn" style="margin-top:1rem;"><i class="fas fa-plus"></i> Log Hours</button>
+                </div>
+                <div style="background:var(--epic-lighter-purple);border-radius:10px;padding:1rem;margin-bottom:1.5rem;display:flex;gap:2rem;flex-wrap:wrap;">
+                    <div style="text-align:center;"><div style="font-size:1.8rem;font-weight:bold;color:var(--epic-purple);" id="total-hours-display">0</div><div style="font-size:0.82rem;color:#666;">Total Hours</div></div>
+                    <div style="text-align:center;"><div style="font-size:1.8rem;font-weight:bold;color:var(--epic-purple);" id="total-sessions-display">0</div><div style="font-size:0.82rem;color:#666;">Sessions</div></div>
+                    <div style="text-align:center;"><div style="font-size:1.8rem;font-weight:bold;color:var(--epic-purple);" id="this-month-hours-display">0</div><div style="font-size:0.82rem;color:#666;">This Month</div></div>
+                </div>
+                <div id="hours-list"><div class="empty-state"><i class="fas fa-clock"></i><p>No training hours logged yet.</p></div></div>
             </div>
 
             <div class="profile-tab-content" id="settings-tab">
@@ -1244,6 +1690,10 @@ function initProfileTabs() {
             if (tab.dataset.tab === 'uploads') renderUploadedFiles();
             if (tab.dataset.tab === 'ai-saved') renderAISaved();
             if (tab.dataset.tab === 'questions') renderMyQuestions();
+            if (tab.dataset.tab === 'certifications') loadCertifications();
+            if (tab.dataset.tab === 'training-hours') loadTrainingHours();
+            if (tab.dataset.tab === 'certifications') loadCertifications();
+            if (tab.dataset.tab === 'training-hours') loadTrainingHours();
         });
     });
 }
@@ -1603,8 +2053,10 @@ function initAIChat() {
 // INIT
 // =====================
 document.addEventListener('DOMContentLoaded', () => {
-    initAuth();
+    initSupabaseAuth();
     initAITools();
+    initCertifications();
+    initTrainingHours();
     initNav();
     initProfileTabs();
     initModals();
