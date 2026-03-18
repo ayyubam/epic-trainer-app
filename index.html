@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Epic EMR Trainer Assistant</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 // =====================
 // PHASE 2 - SUPABASE
 // =====================
@@ -2326,6 +2326,12 @@ function doLogin(user){
 const logoutBtn=document.getElementById('logout-btn');
 if(logoutBtn){ logoutBtn.addEventListener('click',()=>{ sessionStorage.removeItem('_sess'); location.reload(); }); }
 
+</script>
+<script>
+const SUPA_URL = 'https://rrfcukkvdsraukybkxzc.supabase.co';
+const SUPA_KEY = 'sb_publishable_hIWPVlBUD_5ACnZ58Xaqcw_gjfzq355';
+let supabase = null;
+let currentUser = null;
 </script>
 </body>
 </html>
