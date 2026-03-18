@@ -295,9 +295,7 @@ async function initSupabaseAuth() {
     }
 
     // Override signin button
-    const siBtnOld = document.getElementById('si-btn');
-    const siBtn = siBtnOld.cloneNode(true);
-    siBtnOld.parentNode.replaceChild(siBtn, siBtnOld);
+    const siBtn = document.getElementById('si-btn');
     siBtn.addEventListener('click', async () => {
         const email = document.getElementById('si-email').value.trim().toLowerCase();
         const password = document.getElementById('si-password').value;
@@ -321,9 +319,7 @@ async function initSupabaseAuth() {
     });
 
     // Override signup button
-    const suBtnOld = document.getElementById('su-btn');
-    const suBtn = suBtnOld.cloneNode(true);
-    suBtnOld.parentNode.replaceChild(suBtn, suBtnOld);
+    const suBtn = document.getElementById('su-btn');
     suBtn.addEventListener('click', async () => {
         const name = document.getElementById('su-name').value.trim();
         const email = document.getElementById('su-email').value.trim().toLowerCase();
@@ -352,9 +348,7 @@ async function initSupabaseAuth() {
     // Override logout
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
-        const newLogout = logoutBtn.cloneNode(true);
-        logoutBtn.parentNode.replaceChild(newLogout, logoutBtn);
-        newLogout.addEventListener('click', async () => { await signOut(); });
+        logoutBtn.addEventListener('click', async () => { await signOut(); });
     }
 
     document.getElementById('login-gate').style.display = 'flex';
