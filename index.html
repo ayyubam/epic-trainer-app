@@ -297,6 +297,7 @@ async function initSupabaseAuth() {
     // Override signin button
     const siBtn = document.getElementById('si-btn');
     siBtn.addEventListener('click', async () => {
+        console.log('Sign in clicked');
         const email = document.getElementById('si-email').value.trim().toLowerCase();
         const password = document.getElementById('si-password').value;
         const errEl = document.getElementById('si-error');
@@ -304,7 +305,9 @@ async function initSupabaseAuth() {
         if (!email || !password) { errEl.textContent='Please enter email and password.'; errEl.classList.add('show'); return; }
         siBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...'; siBtn.disabled = true;
         try {
+            console.log('Calling Supabase signIn for:', email);
             const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            console.log('Supabase response:', data, error);
             if (error) throw error;
             currentUser = data.user;
             const profile = await getProfile(currentUser.id);
@@ -321,6 +324,7 @@ async function initSupabaseAuth() {
     // Override signup button
     const suBtn = document.getElementById('su-btn');
     suBtn.addEventListener('click', async () => {
+        console.log('Sign up clicked');
         const name = document.getElementById('su-name').value.trim();
         const email = document.getElementById('su-email').value.trim().toLowerCase();
         const password = document.getElementById('su-password').value;
@@ -329,7 +333,9 @@ async function initSupabaseAuth() {
         if (!name || !email || password.length < 6) { errEl.classList.add('show'); return; }
         suBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...'; suBtn.disabled = true;
         try {
+            console.log('Calling Supabase signUp for:', email);
             const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name } } });
+            console.log('Supabase signUp response:', data, error);
             if (error) throw error;
             if (data.user) {
                 currentUser = data.user;
