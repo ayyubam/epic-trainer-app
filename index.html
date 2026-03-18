@@ -1,423 +1,411 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Epic EMR Trainer Assistant</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { --epic-purple: #4B286D; --epic-light-purple: #7B52AB; --epic-lighter-purple: #E6E6FA; --epic-gray: #F5F5F5; --text-dark: #333; --success: #28a745; --danger: #dc3545; --premium-gold: #FFD700; --premium-dark: #D4AF37; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        body { background: var(--epic-gray); color: var(--text-dark); line-height: 1.6; }
-        header { background:linear-gradient(135deg,var(--epic-purple),var(--epic-light-purple)); color:white; padding:1rem; position:sticky; top:0; z-index:100; box-shadow:0 2px 10px rgba(0,0,0,0.2); }
-        .header-content { display:flex; justify-content:space-between; align-items:center; max-width:1400px; margin:0 auto; flex-wrap:wrap; gap:0.5rem; }
-        .logo { display:flex; align-items:center; font-size:1.4rem; font-weight:bold; }
-        .logo i { margin-right:10px; font-size:1.7rem; }
-        .user-actions { display:flex; align-items:center; gap:0.75rem; }
-        .premium-badge { background:linear-gradient(135deg,var(--premium-gold),var(--premium-dark)); color:#333; padding:0.4rem 0.9rem; border-radius:20px; font-weight:bold; display:flex; align-items:center; gap:0.4rem; font-size:0.85rem; }
-        nav { background:var(--epic-light-purple); padding:0.5rem; position:sticky; top:62px; z-index:99; }
-        .nav-tabs { display:flex; list-style:none; max-width:1400px; margin:0 auto; overflow-x:auto; gap:0.25rem; }
-        .nav-tabs a { color:white; text-decoration:none; padding:0.4rem 0.9rem; display:block; white-space:nowrap; border-radius:20px; font-size:0.88rem; }
-        .nav-tabs a.active, .nav-tabs a:hover { background:var(--epic-purple); }
-        main { max-width:1400px; margin:0 auto; padding:2rem 1rem; }
-        .tab-content { display:none; animation:fadeIn 0.3s; }
-        .tab-content.active { display:block; }
-        .subtitle { color:#666; margin-bottom:1.5rem; display:block; }
-        .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1.5rem; margin-bottom:2rem; }
-        .stat-card { background:white; border-radius:10px; padding:1.5rem; box-shadow:0 4px 6px rgba(0,0,0,0.1); text-align:center; }
-        .stat-card i { font-size:2.5rem; margin-bottom:1rem; color:var(--epic-light-purple); }
-        .stat-card h3 { font-size:2rem; color:var(--epic-purple); }
-        .search-container { margin-bottom:2rem; position:relative; }
-        .search-box { width:100%; padding:0.9rem 1rem 0.9rem 3rem; border:1px solid #ddd; border-radius:50px; font-size:1rem; }
-        .search-icon { position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:#777; }
-        .hospital-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:1.5rem; margin-bottom:2rem; }
-        .hospital-card { background:white; border-radius:10px; padding:1.5rem; box-shadow:0 4px 6px rgba(0,0,0,0.1); transition:transform 0.2s; }
-        .hospital-card:hover { transform:translateY(-4px); }
-        .hospital-card h3 { color:var(--epic-purple); margin-bottom:0.5rem; display:flex; align-items:center; gap:0.5rem; }
-        .hospital-meta { display:flex; justify-content:space-between; margin-bottom:0.75rem; font-size:0.85rem; color:#666; }
-        .module-list { display:flex; flex-wrap:wrap; gap:0.4rem; margin:0.75rem 0; }
-        .module-tag { background:var(--epic-lighter-purple); color:var(--epic-purple); padding:0.2rem 0.7rem; border-radius:20px; font-size:0.78rem; }
-        .hospital-contact { margin:0.75rem 0; padding:0.5rem; background:var(--epic-lighter-purple); border-radius:5px; font-size:0.85rem; }
-        .card-actions { display:flex; gap:0.5rem; margin-top:0.75rem; flex-wrap:wrap; }
-        .resource-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.5rem; }
-        .resource-card { background:white; border-radius:10px; padding:1.5rem; box-shadow:0 4px 6px rgba(0,0,0,0.1); transition:transform 0.2s; position:relative; }
-        .resource-card:hover { transform:translateY(-4px); }
-        .resource-card h3 { color:var(--epic-purple); margin-bottom:0.75rem; font-size:1rem; }
-        .resource-meta { display:flex; justify-content:space-between; color:#666; font-size:0.85rem; margin-bottom:0.75rem; }
-        .faq-item { margin-bottom:1rem; background:white; border-radius:10px; padding:1rem; box-shadow:0 2px 4px rgba(0,0,0,0.08); }
-        .faq-question { font-weight:bold; cursor:pointer; display:flex; justify-content:space-between; align-items:center; padding:0.4rem; user-select:none; }
-        .faq-answer { display:none; padding:0.75rem 0.4rem 0.4rem; border-top:1px solid #eee; margin-top:0.5rem; font-size:0.92rem; }
-        .faq-answer.open { display:block; }
-        .faq-meta { display:flex; justify-content:space-between; margin-top:0.75rem; font-size:0.8rem; color:#666; }
-        .faq-category { background:var(--epic-lighter-purple); color:var(--epic-purple); padding:0.15rem 0.5rem; border-radius:3px; }
-        .btn { padding:0.65rem 1.2rem; border:none; border-radius:6px; font-size:0.9rem; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; justify-content:center; gap:0.4rem; }
-        .btn-primary { background:var(--epic-purple); color:white; }
-        .btn-primary:hover { background:var(--epic-light-purple); }
-        .btn-outline { background:transparent; border:1.5px solid var(--epic-purple); color:var(--epic-purple); }
-        .btn-outline:hover { background:var(--epic-lighter-purple); }
-        .btn-danger { background:var(--danger); color:white; }
-        .btn-premium { background:linear-gradient(135deg,var(--premium-gold),var(--premium-dark)); color:#333; font-weight:bold; }
-        .btn.saved { background:var(--success); color:white; border-color:var(--success); }
-        .btn:disabled { opacity:0.5; cursor:not-allowed; }
-        .form-group { margin-bottom:1.25rem; }
-        .form-group label { display:block; margin-bottom:0.4rem; font-weight:600; font-size:0.9rem; }
-        .form-control { width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:6px; font-size:0.95rem; }
-        .form-control:focus { outline:none; border-color:var(--epic-light-purple); }
-        textarea.form-control { min-height:90px; resize:vertical; }
-        .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center; z-index:1000; }
-        .modal-overlay.active { display:flex; }
-        .modal { background:white; border-radius:12px; padding:2rem; width:90%; max-width:500px; max-height:90vh; overflow-y:auto; }
-        .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
-        .modal-header h2 { font-size:1.15rem; color:var(--epic-purple); }
-        .modal-close { background:none; border:none; font-size:1.4rem; cursor:pointer; color:#666; }
-        .file-upload { border:2px dashed #ccc; border-radius:8px; padding:2rem; text-align:center; cursor:pointer; margin-bottom:1rem; }
-        .file-upload:hover, .file-upload.drag-over { border-color:var(--epic-purple); }
-        .file-upload i { font-size:2.5rem; color:#ccc; margin-bottom:0.75rem; display:block; }
-        .profile-header { display:flex; align-items:center; margin-bottom:2rem; gap:1.5rem; }
-        .profile-avatar { width:90px; height:90px; border-radius:50%; background:var(--epic-light-purple); display:flex; align-items:center; justify-content:center; color:white; font-size:2.2rem; flex-shrink:0; }
-        .profile-tabs { display:flex; border-bottom:1px solid #ddd; margin-bottom:2rem; overflow-x:auto; }
-        .profile-tab { padding:0.85rem 1.3rem; cursor:pointer; border-bottom:3px solid transparent; white-space:nowrap; font-size:0.9rem; }
-        .profile-tab.active { border-bottom-color:var(--epic-purple); color:var(--epic-purple); font-weight:bold; }
-        .profile-tab-content { display:none; }
-        .profile-tab-content.active { display:block; }
-        .saved-items-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.25rem; }
-        .saved-item-card { background:white; border-radius:10px; padding:1.25rem; box-shadow:0 3px 6px rgba(0,0,0,0.08); position:relative; }
-        .premium-upgrade { background:linear-gradient(135deg,#f6f0c4,#d4d3dd); border-radius:10px; padding:2rem; margin:1.5rem 0; text-align:center; border:2px solid var(--premium-gold); }
-        .premium-upgrade h2 { color:#333; margin-bottom:0.75rem; display:flex; align-items:center; justify-content:center; gap:0.5rem; font-size:1.2rem; }
-        .premium-features { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:0.75rem; margin:1.5rem 0; text-align:left; }
-        .premium-feature { display:flex; align-items:center; gap:0.5rem; font-size:0.9rem; }
-        .premium-feature i { color:var(--premium-dark); }
-        .pricing-plans { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:1.5rem; margin:1.5rem 0; }
-        .pricing-plan { background:white; border-radius:10px; padding:1.75rem; box-shadow:0 4px 6px rgba(0,0,0,0.1); text-align:center; position:relative; overflow:hidden; }
-        .pricing-plan.popular { border:2px solid var(--premium-gold); transform:scale(1.04); }
-        .popular-badge { position:absolute; top:0; right:0; background:var(--premium-gold); color:#333; padding:0.4rem 0.9rem; font-weight:bold; font-size:0.78rem; }
-        .plan-price { font-size:2.2rem; font-weight:bold; margin:0.75rem 0; color:var(--epic-purple); }
-        .plan-price span { font-size:0.9rem; }
-        .plan-features { list-style:none; margin:1.25rem 0; }
-        .plan-features li { padding:0.4rem 0; border-bottom:1px solid #eee; font-size:0.88rem; }
-        .ai-tools-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(400px,1fr)); gap:1.5rem; }
-        .ai-tool-card { background:white; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); overflow:hidden; }
-        .ai-tool-header { display:flex; align-items:center; gap:1rem; padding:1.25rem 1.5rem; border-bottom:1px solid #eee; }
-        .ai-tool-icon { width:50px; height:50px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:white; font-size:1.3rem; flex-shrink:0; }
-        .ai-tool-header h3 { margin:0; font-size:1rem; color:var(--epic-purple); }
-        .ai-tool-header p { margin:0; font-size:0.82rem; color:#666; }
-        .ai-tool-body { padding:1.25rem 1.5rem; }
-        .ai-tool-result { margin-top:1rem; padding:1rem; background:#f8f9fa; border-radius:8px; border-left:4px solid var(--epic-light-purple); font-size:0.88rem; line-height:1.6; max-height:400px; overflow-y:auto; }
-        .ai-tool-result.loading { color:#888; font-style:italic; border-left-color:#ccc; }
-        .ai-tool-result.error { border-left-color:var(--danger); background:#fff5f5; color:var(--danger); }
-        .ai-result-actions { display:flex; gap:0.5rem; margin-top:0.75rem; }
-        .cert-card { background:white; border-radius:10px; padding:1.25rem; box-shadow:0 3px 8px rgba(0,0,0,0.08); margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; }
-        .cert-info h4 { color:var(--epic-purple); margin-bottom:0.25rem; font-size:0.95rem; }
-        .cert-info p { color:#666; font-size:0.82rem; }
-        .cert-badge { padding:0.25rem 0.75rem; border-radius:20px; font-size:0.78rem; font-weight:bold; }
-        .cert-active { background:#d4edda; color:#155724; }
-        .cert-expiring { background:#fff3cd; color:#856404; }
-        .cert-expired { background:#f8d7da; color:#721c24; }
-        .hours-card { background:white; border-radius:10px; padding:1.25rem; box-shadow:0 3px 8px rgba(0,0,0,0.08); margin-bottom:0.75rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; }
-        .hours-info { flex:1; }
-        .hours-info strong { display:block; font-size:0.92rem; }
-        .hours-info span { font-size:0.82rem; color:#666; }
-        .hours-badge { background:var(--epic-lighter-purple); color:var(--epic-purple); padding:0.3rem 0.75rem; border-radius:20px; font-weight:bold; font-size:0.85rem; }
-        #ai-fab { position:fixed; bottom:24px; right:24px; background:linear-gradient(135deg,var(--epic-purple),var(--epic-light-purple)); color:white; padding:0.6rem 1.1rem; border-radius:30px; border:none; cursor:pointer; box-shadow:0 4px 16px rgba(75,40,109,0.5); z-index:1200; display:flex; flex-direction:column; align-items:center; gap:0.15rem; transition:transform 0.2s; }
-        #ai-fab i { font-size:1.3rem; }
-        #ai-fab span { font-size:0.7rem; font-weight:800; letter-spacing:0.05em; text-transform:uppercase; }
-        #ai-fab:hover { transform:scale(1.05); }
-        #ask-ai-label { position:fixed; bottom:105px; right:24px; background:white; color:var(--epic-purple); font-size:0.72rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; padding:0.25rem 0.75rem; border-radius:20px; box-shadow:0 2px 8px rgba(0,0,0,0.15); z-index:1200; pointer-events:none; }
-        #ai-panel { position:fixed; bottom:94px; right:24px; width:380px; max-width:calc(100vw - 48px); background:white; border-radius:16px; box-shadow:0 8px 40px rgba(0,0,0,0.2); z-index:1200; display:none; flex-direction:column; max-height:560px; overflow:hidden; }
-        #ai-panel.open { display:flex; animation:slideUp 0.25s ease; }
-        .ai-panel-header { background:linear-gradient(135deg,var(--epic-purple),var(--epic-light-purple)); color:white; padding:1rem 1.2rem; display:flex; justify-content:space-between; align-items:center; border-radius:16px 16px 0 0; }
-        .ai-panel-header h3 { margin:0; font-size:0.95rem; display:flex; align-items:center; gap:0.5rem; }
-        #ai-close-btn { background:none; border:none; color:white; font-size:1.2rem; cursor:pointer; }
-        #ai-messages { flex:1; overflow-y:auto; padding:1rem; display:flex; flex-direction:column; gap:0.75rem; min-height:200px; }
-        .ai-msg { max-width:88%; padding:0.7rem 1rem; border-radius:12px; font-size:0.88rem; line-height:1.55; word-break:break-word; }
-        .ai-msg.user { background:var(--epic-lighter-purple); align-self:flex-end; border-bottom-right-radius:4px; }
-        .ai-msg.assistant { background:#f0f0f0; align-self:flex-start; border-bottom-left-radius:4px; }
-        .ai-msg.thinking { color:#888; font-style:italic; }
-        .ai-input-row { padding:0.75rem; border-top:1px solid #eee; display:flex; gap:0.5rem; align-items:flex-end; }
-        #ai-input { flex:1; border:1.5px solid #ddd; border-radius:8px; padding:0.6rem 0.8rem; font-size:0.88rem; resize:none; max-height:100px; min-height:38px; outline:none; font-family:inherit; }
-        #ai-input:focus { border-color:var(--epic-light-purple); }
-        #ai-send { background:var(--epic-purple); color:white; border:none; border-radius:8px; padding:0.6rem 0.9rem; cursor:pointer; font-size:1rem; }
-        #ai-send:hover { background:var(--epic-light-purple); }
-        #ai-send:disabled { background:#ccc; cursor:not-allowed; }
-        .ai-save-btn { font-size:0.76rem; padding:0.25rem 0.65rem; margin-top:0.4rem; background:var(--epic-lighter-purple); color:var(--epic-purple); border:1px solid var(--epic-light-purple); border-radius:20px; cursor:pointer; display:inline-flex; align-items:center; gap:0.3rem; }
-        .ai-save-btn:hover { background:var(--epic-light-purple); color:white; }
-        .uploaded-file-item { display:flex; align-items:center; gap:0.8rem; background:white; padding:0.8rem 1rem; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.08); margin-bottom:0.75rem; }
-        .uploaded-file-meta { flex:1; }
-        .uploaded-file-meta strong { display:block; font-size:0.92rem; }
-        .uploaded-file-meta small { color:#888; font-size:0.78rem; }
-        .empty-state { text-align:center; padding:3rem; color:#aaa; }
-        .empty-state i { font-size:2.5rem; margin-bottom:1rem; color:#ddd; display:block; }
-        .notification { position:fixed; bottom:20px; right:20px; background:var(--epic-purple); color:white; padding:0.9rem 1.4rem; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15); z-index:3000; animation:slideUp 0.3s ease; font-size:0.9rem; max-width:320px; }
-        .notification.success { background:var(--success); }
-        .notification.error { background:var(--danger); }
-        .small { font-size:0.82rem; color:#888; }
-        footer { background:var(--epic-purple); color:white; text-align:center; padding:2rem; margin-top:3rem; font-size:0.88rem; line-height:2; }
-        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-        @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
-        .pulse { animation:pulse 2s infinite; }
-        @media(max-width:768px){ .hospital-grid,.resource-grid,.saved-items-grid,.pricing-plans,.ai-tools-grid{grid-template-columns:1fr;} .header-content{flex-direction:column;text-align:center;} .stats-grid{grid-template-columns:1fr 1fr;} .profile-header{flex-direction:column;text-align:center;} .pricing-plan.popular{transform:none;} #ai-panel{width:calc(100vw - 32px);right:16px;} #ai-fab,#ask-ai-label{right:16px;} }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Epic EMR Trainer Assistant</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{--epic-purple:#4B286D;--epic-light-purple:#7B52AB;--epic-lighter-purple:#E6E6FA;--epic-gray:#F5F5F5;--text-dark:#333;--success:#28a745;--danger:#dc3545;--premium-gold:#FFD700;--premium-dark:#D4AF37;}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+body{background:var(--epic-gray);color:var(--text-dark);line-height:1.6;}
+header{background:linear-gradient(135deg,var(--epic-purple),var(--epic-light-purple));color:white;padding:1rem;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,0.2);}
+.header-content{display:flex;justify-content:space-between;align-items:center;max-width:1400px;margin:0 auto;flex-wrap:wrap;gap:0.5rem;}
+.logo{display:flex;align-items:center;font-size:1.4rem;font-weight:bold;}
+.logo i{margin-right:10px;font-size:1.7rem;}
+.user-actions{display:flex;align-items:center;gap:0.75rem;}
+.premium-badge{background:linear-gradient(135deg,var(--premium-gold),var(--premium-dark));color:#333;padding:0.4rem 0.9rem;border-radius:20px;font-weight:bold;display:flex;align-items:center;gap:0.4rem;font-size:0.85rem;}
+nav{background:var(--epic-light-purple);padding:0.5rem;position:sticky;top:62px;z-index:99;}
+.nav-tabs{display:flex;list-style:none;max-width:1400px;margin:0 auto;overflow-x:auto;gap:0.25rem;}
+.nav-tabs a{color:white;text-decoration:none;padding:0.4rem 0.9rem;display:block;white-space:nowrap;border-radius:20px;font-size:0.88rem;}
+.nav-tabs a.active,.nav-tabs a:hover{background:var(--epic-purple);}
+main{max-width:1400px;margin:0 auto;padding:2rem 1rem;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+.subtitle{color:#666;margin-bottom:1.5rem;display:block;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-bottom:2rem;}
+.stat-card{background:white;border-radius:10px;padding:1.5rem;box-shadow:0 4px 6px rgba(0,0,0,0.1);text-align:center;}
+.stat-card i{font-size:2.5rem;margin-bottom:1rem;color:var(--epic-light-purple);}
+.stat-card h3{font-size:2rem;color:var(--epic-purple);}
+.search-container{margin-bottom:2rem;position:relative;}
+.search-box{width:100%;padding:0.9rem 1rem 0.9rem 3rem;border:1px solid #ddd;border-radius:50px;font-size:1rem;}
+.search-icon{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:#777;}
+.hospital-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.5rem;margin-bottom:2rem;}
+.hospital-card{background:white;border-radius:10px;padding:1.5rem;box-shadow:0 4px 6px rgba(0,0,0,0.1);transition:transform 0.2s;}
+.hospital-card:hover{transform:translateY(-4px);}
+.hospital-card h3{color:var(--epic-purple);margin-bottom:0.5rem;display:flex;align-items:center;gap:0.5rem;}
+.hospital-meta{display:flex;justify-content:space-between;margin-bottom:0.75rem;font-size:0.85rem;color:#666;}
+.module-list{display:flex;flex-wrap:wrap;gap:0.4rem;margin:0.75rem 0;}
+.module-tag{background:var(--epic-lighter-purple);color:var(--epic-purple);padding:0.2rem 0.7rem;border-radius:20px;font-size:0.78rem;}
+.hospital-contact{margin:0.75rem 0;padding:0.5rem;background:var(--epic-lighter-purple);border-radius:5px;font-size:0.85rem;}
+.card-actions{display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap;}
+.resource-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;}
+.resource-card{background:white;border-radius:10px;padding:1.5rem;box-shadow:0 4px 6px rgba(0,0,0,0.1);transition:transform 0.2s;position:relative;}
+.resource-card:hover{transform:translateY(-4px);}
+.resource-card h3{color:var(--epic-purple);margin-bottom:0.75rem;font-size:1rem;}
+.resource-meta{display:flex;justify-content:space-between;color:#666;font-size:0.85rem;margin-bottom:0.75rem;}
+.faq-item{margin-bottom:1rem;background:white;border-radius:10px;padding:1rem;box-shadow:0 2px 4px rgba(0,0,0,0.08);}
+.faq-question{font-weight:bold;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:0.4rem;user-select:none;}
+.faq-answer{display:none;padding:0.75rem 0.4rem 0.4rem;border-top:1px solid #eee;margin-top:0.5rem;font-size:0.92rem;}
+.faq-answer.open{display:block;}
+.faq-meta{display:flex;justify-content:space-between;margin-top:0.75rem;font-size:0.8rem;color:#666;}
+.faq-category{background:var(--epic-lighter-purple);color:var(--epic-purple);padding:0.15rem 0.5rem;border-radius:3px;}
+.btn{padding:0.65rem 1.2rem;border:none;border-radius:6px;font-size:0.9rem;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;justify-content:center;gap:0.4rem;}
+.btn-primary{background:var(--epic-purple);color:white;}
+.btn-primary:hover{background:var(--epic-light-purple);}
+.btn-outline{background:transparent;border:1.5px solid var(--epic-purple);color:var(--epic-purple);}
+.btn-outline:hover{background:var(--epic-lighter-purple);}
+.btn-danger{background:var(--danger);color:white;}
+.btn-premium{background:linear-gradient(135deg,var(--premium-gold),var(--premium-dark));color:#333;font-weight:bold;}
+.btn.saved{background:var(--success);color:white;border-color:var(--success);}
+.btn:disabled{opacity:0.5;cursor:not-allowed;}
+.form-group{margin-bottom:1.25rem;}
+.form-group label{display:block;margin-bottom:0.4rem;font-weight:600;font-size:0.9rem;}
+.form-control{width:100%;padding:0.75rem;border:1px solid #ddd;border-radius:6px;font-size:0.95rem;}
+.form-control:focus{outline:none;border-color:var(--epic-light-purple);}
+textarea.form-control{min-height:90px;resize:vertical;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:1000;}
+.modal-overlay.active{display:flex;}
+.modal{background:white;border-radius:12px;padding:2rem;width:90%;max-width:500px;max-height:90vh;overflow-y:auto;}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
+.modal-header h2{font-size:1.15rem;color:var(--epic-purple);}
+.modal-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:#666;}
+.file-upload{border:2px dashed #ccc;border-radius:8px;padding:2rem;text-align:center;cursor:pointer;margin-bottom:1rem;}
+.file-upload:hover,.file-upload.drag-over{border-color:var(--epic-purple);}
+.file-upload i{font-size:2.5rem;color:#ccc;margin-bottom:0.75rem;display:block;}
+.profile-header{display:flex;align-items:center;margin-bottom:2rem;gap:1.5rem;}
+.profile-avatar{width:90px;height:90px;border-radius:50%;background:var(--epic-light-purple);display:flex;align-items:center;justify-content:center;color:white;font-size:2.2rem;flex-shrink:0;}
+.profile-tabs{display:flex;border-bottom:1px solid #ddd;margin-bottom:2rem;overflow-x:auto;}
+.profile-tab{padding:0.85rem 1.3rem;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;font-size:0.9rem;}
+.profile-tab.active{border-bottom-color:var(--epic-purple);color:var(--epic-purple);font-weight:bold;}
+.profile-tab-content{display:none;}
+.profile-tab-content.active{display:block;}
+.saved-items-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;}
+.saved-item-card{background:white;border-radius:10px;padding:1.25rem;box-shadow:0 3px 6px rgba(0,0,0,0.08);position:relative;}
+.premium-upgrade{background:linear-gradient(135deg,#f6f0c4,#d4d3dd);border-radius:10px;padding:2rem;margin:1.5rem 0;text-align:center;border:2px solid var(--premium-gold);}
+.premium-upgrade h2{color:#333;margin-bottom:0.75rem;display:flex;align-items:center;justify-content:center;gap:0.5rem;font-size:1.2rem;}
+.premium-features{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.75rem;margin:1.5rem 0;text-align:left;}
+.premium-feature{display:flex;align-items:center;gap:0.5rem;font-size:0.9rem;}
+.premium-feature i{color:var(--premium-dark);}
+.pricing-plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.5rem;margin:1.5rem 0;}
+.pricing-plan{background:white;border-radius:10px;padding:1.75rem;box-shadow:0 4px 6px rgba(0,0,0,0.1);text-align:center;position:relative;overflow:hidden;}
+.pricing-plan.popular{border:2px solid var(--premium-gold);transform:scale(1.04);}
+.popular-badge{position:absolute;top:0;right:0;background:var(--premium-gold);color:#333;padding:0.4rem 0.9rem;font-weight:bold;font-size:0.78rem;}
+.plan-price{font-size:2.2rem;font-weight:bold;margin:0.75rem 0;color:var(--epic-purple);}
+.plan-price span{font-size:0.9rem;}
+.plan-features{list-style:none;margin:1.25rem 0;}
+.plan-features li{padding:0.4rem 0;border-bottom:1px solid #eee;font-size:0.88rem;}
+.ai-tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:1.5rem;}
+.ai-tool-card{background:white;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);overflow:hidden;}
+.ai-tool-header{display:flex;align-items:center;gap:1rem;padding:1.25rem 1.5rem;border-bottom:1px solid #eee;}
+.ai-tool-icon{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.3rem;flex-shrink:0;}
+.ai-tool-header h3{margin:0;font-size:1rem;color:var(--epic-purple);}
+.ai-tool-header p{margin:0;font-size:0.82rem;color:#666;}
+.ai-tool-body{padding:1.25rem 1.5rem;}
+.ai-tool-result{margin-top:1rem;padding:1rem;background:#f8f9fa;border-radius:8px;border-left:4px solid var(--epic-light-purple);font-size:0.88rem;line-height:1.6;max-height:400px;overflow-y:auto;}
+.ai-tool-result.loading{color:#888;font-style:italic;border-left-color:#ccc;}
+.ai-tool-result.error{border-left-color:var(--danger);background:#fff5f5;color:var(--danger);}
+.ai-result-actions{display:flex;gap:0.5rem;margin-top:0.75rem;}
+.cert-card{background:white;border-radius:10px;padding:1.25rem;box-shadow:0 3px 8px rgba(0,0,0,0.08);margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;}
+.cert-info h4{color:var(--epic-purple);margin-bottom:0.25rem;font-size:0.95rem;}
+.cert-info p{color:#666;font-size:0.82rem;}
+.cert-badge{padding:0.25rem 0.75rem;border-radius:20px;font-size:0.78rem;font-weight:bold;}
+.cert-active{background:#d4edda;color:#155724;}
+.cert-expiring{background:#fff3cd;color:#856404;}
+.cert-expired{background:#f8d7da;color:#721c24;}
+.hours-card{background:white;border-radius:10px;padding:1.25rem;box-shadow:0 3px 8px rgba(0,0,0,0.08);margin-bottom:0.75rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;}
+.hours-info{flex:1;}
+.hours-info strong{display:block;font-size:0.92rem;}
+.hours-info span{font-size:0.82rem;color:#666;}
+.hours-badge{background:var(--epic-lighter-purple);color:var(--epic-purple);padding:0.3rem 0.75rem;border-radius:20px;font-weight:bold;font-size:0.85rem;}
+#ai-fab{position:fixed;bottom:24px;right:24px;background:linear-gradient(135deg,var(--epic-purple),var(--epic-light-purple));color:white;padding:0.6rem 1.1rem;border-radius:30px;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(75,40,109,0.5);z-index:1200;display:flex;flex-direction:column;align-items:center;gap:0.15rem;transition:transform 0.2s;}
+#ai-fab i{font-size:1.3rem;}
+#ai-fab span{font-size:0.7rem;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;}
+#ai-fab:hover{transform:scale(1.05);}
+#ai-panel{position:fixed;bottom:94px;right:24px;width:380px;max-width:calc(100vw - 48px);background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.2);z-index:1200;display:none;flex-direction:column;max-height:560px;overflow:hidden;}
+#ai-panel.open{display:flex;}
+.ai-panel-header{background:linear-gradient(135deg,var(--epic-purple),var(--epic-light-purple));color:white;padding:1rem 1.2rem;display:flex;justify-content:space-between;align-items:center;border-radius:16px 16px 0 0;}
+.ai-panel-header h3{margin:0;font-size:0.95rem;display:flex;align-items:center;gap:0.5rem;}
+#ai-close-btn{background:none;border:none;color:white;font-size:1.2rem;cursor:pointer;}
+#ai-messages{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:0.75rem;min-height:200px;}
+.ai-msg{max-width:88%;padding:0.7rem 1rem;border-radius:12px;font-size:0.88rem;line-height:1.55;word-break:break-word;}
+.ai-msg.user{background:var(--epic-lighter-purple);align-self:flex-end;border-bottom-right-radius:4px;}
+.ai-msg.assistant{background:#f0f0f0;align-self:flex-start;border-bottom-left-radius:4px;}
+.ai-msg.thinking{color:#888;font-style:italic;}
+.ai-input-row{padding:0.75rem;border-top:1px solid #eee;display:flex;gap:0.5rem;align-items:flex-end;}
+#ai-input{flex:1;border:1.5px solid #ddd;border-radius:8px;padding:0.6rem 0.8rem;font-size:0.88rem;resize:none;max-height:100px;min-height:38px;outline:none;font-family:inherit;}
+#ai-input:focus{border-color:var(--epic-light-purple);}
+#ai-send{background:var(--epic-purple);color:white;border:none;border-radius:8px;padding:0.6rem 0.9rem;cursor:pointer;font-size:1rem;}
+#ai-send:hover{background:var(--epic-light-purple);}
+#ai-send:disabled{background:#ccc;cursor:not-allowed;}
+.ai-save-btn{font-size:0.76rem;padding:0.25rem 0.65rem;margin-top:0.4rem;background:var(--epic-lighter-purple);color:var(--epic-purple);border:1px solid var(--epic-light-purple);border-radius:20px;cursor:pointer;display:inline-flex;align-items:center;gap:0.3rem;}
+.ai-save-btn:hover{background:var(--epic-light-purple);color:white;}
+.uploaded-file-item{display:flex;align-items:center;gap:0.8rem;background:white;padding:0.8rem 1rem;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.08);margin-bottom:0.75rem;}
+.uploaded-file-meta{flex:1;}
+.uploaded-file-meta strong{display:block;font-size:0.92rem;}
+.uploaded-file-meta small{color:#888;font-size:0.78rem;}
+.empty-state{text-align:center;padding:3rem;color:#aaa;}
+.empty-state i{font-size:2.5rem;margin-bottom:1rem;color:#ddd;display:block;}
+.notification{position:fixed;bottom:20px;right:20px;background:var(--epic-purple);color:white;padding:0.9rem 1.4rem;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);z-index:3000;font-size:0.9rem;max-width:320px;}
+.notification.success{background:var(--success);}
+.notification.error{background:var(--danger);}
+.small{font-size:0.82rem;color:#888;}
+footer{background:var(--epic-purple);color:white;text-align:center;padding:2rem;margin-top:3rem;font-size:0.88rem;line-height:2;}
+@media(max-width:768px){.hospital-grid,.resource-grid,.saved-items-grid,.pricing-plans,.ai-tools-grid{grid-template-columns:1fr;}.header-content{flex-direction:column;text-align:center;}.stats-grid{grid-template-columns:1fr 1fr;}.profile-header{flex-direction:column;text-align:center;}.pricing-plan.popular{transform:none;}#ai-panel{width:calc(100vw - 32px);right:16px;}#ai-fab{right:16px;}}
+</style>
 </head>
 <body>
 <header>
-    <div class="header-content">
-        <div class="logo"><i class="fas fa-hospital-user"></i><span>Epic EMR Trainer Assistant</span></div>
-        <div class="user-actions">
-            <div class="premium-badge"><i class="fas fa-crown"></i><span id="plan-label">Free Plan</span></div>
-            <div id="user-name-display" style="color:white;font-size:0.9rem;display:flex;align-items:center;gap:0.4rem;"><i class="fas fa-user-circle"></i><span id="greeting-name">Trainer</span></div>
-            <button id="logout-btn" class="btn" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);font-size:0.85rem;padding:0.4rem 0.9rem;"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </div>
-    </div>
+<div class="header-content">
+<div class="logo"><i class="fas fa-hospital-user"></i><span>Epic EMR Trainer Assistant</span></div>
+<div class="user-actions">
+<div class="premium-badge"><i class="fas fa-crown"></i><span id="plan-label">Free Plan</span></div>
+<div style="color:white;font-size:0.9rem;display:flex;align-items:center;gap:0.4rem;"><i class="fas fa-user-circle"></i><span id="greeting-name">Trainer</span></div>
+</div>
+</div>
 </header>
 <nav>
-    <ul class="nav-tabs">
-        <li><a href="#dashboard" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a></li>
-        <li><a href="#hospitals" class="nav-link"><i class="fas fa-hospital"></i> Hospitals</a></li>
-        <li><a href="#playground" class="nav-link"><i class="fas fa-gamepad"></i> Playground</a></li>
-        <li><a href="#resources" class="nav-link"><i class="fas fa-book"></i> Resources</a></li>
-        <li><a href="#faq" class="nav-link"><i class="fas fa-question-circle"></i> FAQ</a></li>
-        <li><a href="#ai-tools" class="nav-link"><i class="fas fa-robot"></i> AI Tools</a></li>
-        <li><a href="#profile" class="nav-link"><i class="fas fa-user"></i> My Profile</a></li>
-        <li><a href="#premium" class="nav-link"><i class="fas fa-crown"></i> Premium</a></li>
-    </ul>
+<ul class="nav-tabs">
+<li><a href="#dashboard" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a></li>
+<li><a href="#hospitals" class="nav-link"><i class="fas fa-hospital"></i> Hospitals</a></li>
+<li><a href="#playground" class="nav-link"><i class="fas fa-gamepad"></i> Playground</a></li>
+<li><a href="#resources" class="nav-link"><i class="fas fa-book"></i> Resources</a></li>
+<li><a href="#faq" class="nav-link"><i class="fas fa-question-circle"></i> FAQ</a></li>
+<li><a href="#ai-tools" class="nav-link"><i class="fas fa-robot"></i> AI Tools</a></li>
+<li><a href="#profile" class="nav-link"><i class="fas fa-user"></i> My Profile</a></li>
+<li><a href="#premium" class="nav-link"><i class="fas fa-crown"></i> Premium</a></li>
+</ul>
 </nav>
 <main>
 <section id="dashboard" class="tab-content active">
-    <h2>Welcome, <span id="dashboard-name">Trainer</span></h2>
-    <p class="subtitle">Your central hub for Epic EMR training resources</p>
-    <div class="search-container"><i class="fas fa-search search-icon"></i><input type="text" class="search-box" id="dash-search" placeholder="Search hospitals, resources, FAQs..."></div>
-    <div class="stats-grid">
-        <div class="stat-card"><i class="fas fa-hospital"></i><h3>6</h3><p>Hospital Systems</p></div>
-        <div class="stat-card"><i class="fas fa-file-alt"></i><h3 id="stat-resources">6</h3><p>Training Resources</p></div>
-        <div class="stat-card"><i class="fas fa-question-circle"></i><h3>6</h3><p>FAQs</p></div>
-        <div class="stat-card"><i class="fas fa-bookmark"></i><h3 id="stat-saved">0</h3><p>Saved Items</p></div>
-    </div>
-    <h3 style="margin-bottom:1rem;">Recently Added Hospitals</h3>
-    <div class="hospital-grid" id="dashboard-hospitals"></div>
-    <h3 style="margin:1.5rem 0 1rem;">Recent Resources</h3>
-    <div class="resource-grid" id="dashboard-resources"></div>
+<h2>Welcome, <span id="dashboard-name">Trainer</span></h2>
+<p class="subtitle">Your central hub for Epic EMR training resources</p>
+<div class="search-container"><i class="fas fa-search search-icon"></i><input type="text" class="search-box" id="dash-search" placeholder="Search hospitals, resources, FAQs..."></div>
+<div class="stats-grid">
+<div class="stat-card"><i class="fas fa-hospital"></i><h3>6</h3><p>Hospital Systems</p></div>
+<div class="stat-card"><i class="fas fa-file-alt"></i><h3 id="stat-resources">6</h3><p>Training Resources</p></div>
+<div class="stat-card"><i class="fas fa-question-circle"></i><h3>6</h3><p>FAQs</p></div>
+<div class="stat-card"><i class="fas fa-bookmark"></i><h3 id="stat-saved">0</h3><p>Saved Items</p></div>
+</div>
+<h3 style="margin-bottom:1rem;">Recently Added Hospitals</h3>
+<div class="hospital-grid" id="dashboard-hospitals"></div>
+<h3 style="margin:1.5rem 0 1rem;">Recent Resources</h3>
+<div class="resource-grid" id="dashboard-resources"></div>
 </section>
 <section id="hospitals" class="tab-content">
-    <h2>Hospital Systems</h2><p class="subtitle">Comprehensive database of hospital Epic implementations</p>
-    <div class="search-container"><i class="fas fa-search search-icon"></i><input type="text" class="search-box" id="hospital-search" placeholder="Search hospitals..."></div>
-    <div class="hospital-grid" id="hospital-list"></div>
+<h2>Hospital Systems</h2><p class="subtitle">Comprehensive database of hospital Epic implementations</p>
+<div class="search-container"><i class="fas fa-search search-icon"></i><input type="text" class="search-box" id="hospital-search" placeholder="Search hospitals..."></div>
+<div class="hospital-grid" id="hospital-list"></div>
 </section>
 <section id="playground" class="tab-content">
-    <h2>Epic Playground Navigation</h2><p class="subtitle">Guidance for using the Epic training environments</p>
-    <div id="playground-faqs"></div>
+<h2>Epic Playground Navigation</h2><p class="subtitle">Guidance for using the Epic training environments</p>
+<div id="playground-faqs"></div>
 </section>
 <section id="resources" class="tab-content">
-    <h2>Epic Resources</h2><p class="subtitle">Training materials, guides, and documentation</p>
-    <div class="search-container"><i class="fas fa-search search-icon"></i><input type="text" class="search-box" id="resource-search" placeholder="Search resources..."></div>
-    <div style="margin-bottom:1.5rem;"><button class="btn btn-primary" id="upload-resource-btn"><i class="fas fa-upload"></i> Upload New Resource</button></div>
-    <div class="resource-grid" id="resource-list"></div>
+<h2>Epic Resources</h2><p class="subtitle">Training materials, guides, and documentation</p>
+<div class="search-container"><i class="fas fa-search search-icon"></i><input type="text" class="search-box" id="resource-search" placeholder="Search resources..."></div>
+<div style="margin-bottom:1.5rem;"><button class="btn btn-primary" id="upload-resource-btn"><i class="fas fa-upload"></i> Upload New Resource</button></div>
+<div class="resource-grid" id="resource-list"></div>
 </section>
 <section id="faq" class="tab-content">
-    <h2>Frequently Asked Questions</h2><p class="subtitle">Find answers to common Epic navigation questions</p>
-    <div class="search-container"><i class="fas fa-search search-icon"></i><input type="text" class="search-box" id="faq-search" placeholder="Search FAQs..."></div>
-    <div id="faq-list"></div>
+<h2>Frequently Asked Questions</h2><p class="subtitle">Find answers to common Epic navigation questions</p>
+<div class="search-container"><i class="fas fa-search search-icon"></i><input type="text" class="search-box" id="faq-search" placeholder="Search FAQs..."></div>
+<div id="faq-list"></div>
 </section>
 <section id="ai-tools" class="tab-content">
-    <h2><i class="fas fa-robot"></i> AI Tools</h2><p class="subtitle">Powerful AI tools built specifically for Epic trainers</p>
-    <div class="ai-tools-grid">
-        <div class="ai-tool-card"><div class="ai-tool-header"><div class="ai-tool-icon" style="background:linear-gradient(135deg,#4B286D,#7B52AB);"><i class="fas fa-file-pdf"></i></div><div><h3>Document Q&amp;A</h3><p>Upload any Epic document and ask questions</p></div></div><div class="ai-tool-body"><div class="file-upload" id="pdf-upload-area"><i class="fas fa-cloud-upload-alt"></i><p>Click to upload a PDF or text file</p><input type="file" id="pdf-file-input" style="display:none" accept=".pdf,.doc,.docx,.txt"></div><div id="pdf-file-info" style="display:none;background:#f0f0f0;padding:0.6rem;border-radius:6px;margin:0.5rem 0;font-size:0.88rem;"><i class="fas fa-file"></i> <span id="pdf-file-name"></span></div><div class="form-group" style="margin-top:0.75rem;"><input type="text" class="form-control" id="pdf-question" placeholder="Ask a question about your document..."></div><button class="btn btn-primary" id="pdf-ask-btn" style="width:100%;" disabled><i class="fas fa-search"></i> Ask AI About This Document</button><div id="pdf-answer" class="ai-tool-result" style="display:none;"></div></div></div>
-        <div class="ai-tool-card"><div class="ai-tool-header"><div class="ai-tool-icon" style="background:linear-gradient(135deg,#dc3545,#c82333);"><i class="fas fa-exclamation-triangle"></i></div><div><h3>Error Message Explainer</h3><p>Paste any Epic error and get a plain-English fix</p></div></div><div class="ai-tool-body"><div class="form-group"><label>Epic error message:</label><textarea class="form-control" id="error-input" placeholder="Paste your Epic error here..."></textarea></div><div class="form-group"><label>Your role (optional):</label><select class="form-control" id="error-role"><option value="">Select role</option><option>Trainer</option><option>Physician</option><option>Nurse</option><option>Pharmacist</option><option>Billing Specialist</option><option>IT/Analyst</option></select></div><button class="btn btn-primary" id="error-explain-btn" style="width:100%;"><i class="fas fa-magic"></i> Explain This Error</button><div id="error-answer" class="ai-tool-result" style="display:none;"></div></div></div>
-        <div class="ai-tool-card"><div class="ai-tool-header"><div class="ai-tool-icon" style="background:linear-gradient(135deg,#28a745,#1e7e34);"><i class="fas fa-pen-fancy"></i></div><div><h3>SmartPhrase Generator</h3><p>Describe a workflow, get a ready-to-use SmartPhrase</p></div></div><div class="ai-tool-body"><div class="form-group"><label>Specialty:</label><select class="form-control" id="sp-specialty"><option value="">Select specialty</option><option>Primary Care</option><option>Cardiology</option><option>Oncology</option><option>Emergency Medicine</option><option>Surgery</option><option>Pediatrics</option><option>Psychiatry</option><option>Radiology</option><option>Pharmacy</option><option>Nursing</option></select></div><div class="form-group"><label>Describe what this SmartPhrase should do:</label><textarea class="form-control" id="sp-description" placeholder="e.g. A progress note template for diabetic patient follow-up..."></textarea></div><div class="form-group"><label>SmartPhrase name (optional):</label><input type="text" class="form-control" id="sp-name" placeholder="e.g. DIABETICFU"></div><button class="btn btn-primary" id="sp-generate-btn" style="width:100%;"><i class="fas fa-pen"></i> Generate SmartPhrase</button><div id="sp-answer" class="ai-tool-result" style="display:none;"></div></div></div>
-        <div class="ai-tool-card"><div class="ai-tool-header"><div class="ai-tool-icon" style="background:linear-gradient(135deg,#17a2b8,#138496);"><i class="fas fa-calendar-alt"></i></div><div><h3>Training Plan Generator</h3><p>Get a complete go-live training plan in seconds</p></div></div><div class="ai-tool-body"><div class="form-group"><label>Role being trained:</label><select class="form-control" id="tp-role"><option value="">Select role</option><option>Physician</option><option>Nurse / RN</option><option>Medical Assistant</option><option>Pharmacist</option><option>Billing Specialist</option><option>Registration / Front Desk</option><option>Lab Technician</option><option>Radiology Technician</option><option>Scheduler</option><option>Executive / Leadership</option></select></div><div class="form-group"><label>Epic modules:</label><input type="text" class="form-control" id="tp-modules" placeholder="e.g. Cadence, MyChart, Beaker"></div><div class="form-group"><label>Go-live date:</label><input type="date" class="form-control" id="tp-golive"></div><div class="form-group"><label>Training hours per week:</label><select class="form-control" id="tp-hours"><option value="2">2 hrs/week</option><option value="4" selected>4 hrs/week</option><option value="8">8 hrs/week</option><option value="16">16+ hrs/week</option></select></div><div class="form-group"><label>Special notes (optional):</label><input type="text" class="form-control" id="tp-notes" placeholder="e.g. Remote workforce..."></div><button class="btn btn-primary" id="tp-generate-btn" style="width:100%;"><i class="fas fa-calendar-check"></i> Generate Training Plan</button><div id="tp-answer" class="ai-tool-result" style="display:none;"></div></div></div>
-        <div class="ai-tool-card"><div class="ai-tool-header"><div class="ai-tool-icon" style="background:linear-gradient(135deg,#fd7e14,#e55a00);"><i class="fas fa-project-diagram"></i></div><div><h3>Epic Workflow Builder</h3><p>Describe a process, get step-by-step Epic instructions</p></div></div><div class="ai-tool-body"><div class="form-group"><label>Epic module:</label><select class="form-control" id="wf-module"><option value="">Select module</option><option>Hyperspace / Hyperdrive</option><option>MyChart</option><option>Cadence (Scheduling)</option><option>Prelude (Registration)</option><option>Beaker (Lab)</option><option>Radiant (Radiology)</option><option>OpTime (Surgery)</option><option>Willow (Pharmacy)</option><option>Cupid (Cardiology)</option><option>Healthy Planet</option><option>Grand Central (ADT)</option></select></div><div class="form-group"><label>Describe the workflow:</label><textarea class="form-control" id="wf-description" placeholder="e.g. How does a nurse document vital signs in Epic?"></textarea></div><button class="btn btn-primary" id="wf-generate-btn" style="width:100%;"><i class="fas fa-sitemap"></i> Build This Workflow</button><div id="wf-answer" class="ai-tool-result" style="display:none;"></div></div></div>
-        <div class="ai-tool-card"><div class="ai-tool-header"><div class="ai-tool-icon" style="background:linear-gradient(135deg,#FFD700,#D4AF37);"><i class="fas fa-lightbulb"></i></div><div><h3>Epic Tip Generator</h3><p>Get productivity tips for any Epic module or role</p></div></div><div class="ai-tool-body"><div class="form-group"><label>Module or topic:</label><input type="text" class="form-control" id="tip-topic" placeholder="e.g. Hyperdrive, SmartTools..."></div><div class="form-group"><label>Role:</label><select class="form-control" id="tip-role"><option value="">Any role</option><option>Physician</option><option>Nurse</option><option>Pharmacist</option><option>Trainer</option><option>Billing</option><option>Admin</option></select></div><button class="btn btn-premium" id="tip-generate-btn" style="width:100%;"><i class="fas fa-lightbulb"></i> Get Epic Tips</button><div id="tip-answer" class="ai-tool-result" style="display:none;"></div></div></div>
-    </div>
+<h2><i class="fas fa-robot"></i> AI Tools</h2><p class="subtitle">Powerful AI tools built specifically for Epic trainers</p>
+<div class="ai-tools-grid">
+<div class="ai-tool-card"><div class="ai-tool-header"><div class="ai-tool-icon" style="background:linear-gradient(135deg,#4B286D,#7B52AB);"><i class="fas fa-file-pdf"></i></div><div><h3>Document Q&amp;A</h3><p>Upload any Epic document and ask questions</p></div></div><div class="ai-tool-body"><div class="file-upload" id="pdf-upload-area"><i class="fas fa-cloud-upload-alt"></i><p>Click to upload a PDF or text file</p><input type="file" id="pdf-file-input" style="display:none" accept=".pdf,.doc,.docx,.txt"></div><div id="pdf-file-info" style="display:none;background:#f0f0f0;padding:0.6rem;border-radius:6px;margin:0.5rem 0;font-size:0.88rem;"><i class="fas fa-file"></i> <span id="pdf-file-name"></span></div><div class="form-group" style="margin-top:0.75rem;"><input type="text" class="form-control" id="pdf-question" placeholder="Ask a question about your document..."></div><button class="btn btn-primary" id="pdf-ask-btn" style="width:100%;" disabled><i class="fas fa-search"></i> Ask AI About This Document</button><div id="pdf-answer" class="ai-tool-result" style="display:none;"></div></div></div>
+<div class="ai-tool-card"><div class="ai-tool-header"><div class="ai-tool-icon" style="background:linear-gradient(135deg,#dc3545,#c82333);"><i class="fas fa-exclamation-triangle"></i></div><div><h3>Error Message Explainer</h3><p>Paste any Epic error and get a plain-English fix</p></div></div><div class="ai-tool-body"><div class="form-group"><label>Epic error message:</label><textarea class="form-control" id="error-input" placeholder="Paste your Epic error here..."></textarea></div><div class="form-group"><label>Your role (optional):</label><select class="form-control" id="error-role"><option value="">Select role</option><option>Trainer</option><option>Physician</option><option>Nurse</option><option>Pharmacist</option><option>Billing Specialist</option><option>IT/Analyst</option></select></div><button class="btn btn-primary" id="error-explain-btn" style="width:100%;"><i class="fas fa-magic"></i> Explain This Error</button><div id="error-answer" class="ai-tool-result" style="display:none;"></div></div></div>
+<div class="ai-tool-card"><div class="ai-tool-header"><div class="ai-tool-icon" style="background:linear-gradient(135deg,#28a745,#1e7e34);"><i class="fas fa-pen-fancy"></i></div><div><h3>SmartPhrase Generator</h3><p>Describe a workflow, get a ready-to-use SmartPhrase</p></div></div><div class="ai-tool-body"><div class="form-group"><label>Specialty:</label><select class="form-control" id="sp-specialty"><option value="">Select specialty</option><option>Primary Care</option><option>Cardiology</option><option>Oncology</option><option>Emergency Medicine</option><option>Surgery</option><option>Pediatrics</option><option>Psychiatry</option><option>Radiology</option><option>Pharmacy</option><option>Nursing</option></select></div><div class="form-group"><label>Describe what this SmartPhrase should do:</label><textarea class="form-control" id="sp-description" placeholder="e.g. A progress note template for diabetic patient follow-up..."></textarea></div><div class="form-group"><label>SmartPhrase name (optional):</label><input type="text" class="form-control" id="sp-name" placeholder="e.g. DIABETICFU"></div><button class="btn btn-primary" id="sp-generate-btn" style="width:100%;"><i class="fas fa-pen"></i> Generate SmartPhrase</button><div id="sp-answer" class="ai-tool-result" style="display:none;"></div></div></div>
+<div class="ai-tool-card"><div class="ai-tool-header"><div class="ai-tool-icon" style="background:linear-gradient(135deg,#17a2b8,#138496);"><i class="fas fa-calendar-alt"></i></div><div><h3>Training Plan Generator</h3><p>Get a complete go-live training plan in seconds</p></div></div><div class="ai-tool-body"><div class="form-group"><label>Role being trained:</label><select class="form-control" id="tp-role"><option value="">Select role</option><option>Physician</option><option>Nurse / RN</option><option>Medical Assistant</option><option>Pharmacist</option><option>Billing Specialist</option><option>Registration / Front Desk</option><option>Lab Technician</option><option>Radiology Technician</option><option>Scheduler</option><option>Executive / Leadership</option></select></div><div class="form-group"><label>Epic modules:</label><input type="text" class="form-control" id="tp-modules" placeholder="e.g. Cadence, MyChart, Beaker"></div><div class="form-group"><label>Go-live date:</label><input type="date" class="form-control" id="tp-golive"></div><div class="form-group"><label>Training hours per week:</label><select class="form-control" id="tp-hours"><option value="2">2 hrs/week</option><option value="4" selected>4 hrs/week</option><option value="8">8 hrs/week</option><option value="16">16+ hrs/week</option></select></div><div class="form-group"><label>Special notes (optional):</label><input type="text" class="form-control" id="tp-notes" placeholder="e.g. Remote workforce..."></div><button class="btn btn-primary" id="tp-generate-btn" style="width:100%;"><i class="fas fa-calendar-check"></i> Generate Training Plan</button><div id="tp-answer" class="ai-tool-result" style="display:none;"></div></div></div>
+<div class="ai-tool-card"><div class="ai-tool-header"><div class="ai-tool-icon" style="background:linear-gradient(135deg,#fd7e14,#e55a00);"><i class="fas fa-project-diagram"></i></div><div><h3>Epic Workflow Builder</h3><p>Describe a process, get step-by-step Epic instructions</p></div></div><div class="ai-tool-body"><div class="form-group"><label>Epic module:</label><select class="form-control" id="wf-module"><option value="">Select module</option><option>Hyperspace / Hyperdrive</option><option>MyChart</option><option>Cadence (Scheduling)</option><option>Prelude (Registration)</option><option>Beaker (Lab)</option><option>Radiant (Radiology)</option><option>OpTime (Surgery)</option><option>Willow (Pharmacy)</option><option>Cupid (Cardiology)</option><option>Healthy Planet</option><option>Grand Central (ADT)</option></select></div><div class="form-group"><label>Describe the workflow:</label><textarea class="form-control" id="wf-description" placeholder="e.g. How does a nurse document vital signs in Epic?"></textarea></div><button class="btn btn-primary" id="wf-generate-btn" style="width:100%;"><i class="fas fa-sitemap"></i> Build This Workflow</button><div id="wf-answer" class="ai-tool-result" style="display:none;"></div></div></div>
+<div class="ai-tool-card"><div class="ai-tool-header"><div class="ai-tool-icon" style="background:linear-gradient(135deg,#FFD700,#D4AF37);"><i class="fas fa-lightbulb"></i></div><div><h3>Epic Tip Generator</h3><p>Get productivity tips for any Epic module or role</p></div></div><div class="ai-tool-body"><div class="form-group"><label>Module or topic:</label><input type="text" class="form-control" id="tip-topic" placeholder="e.g. Hyperdrive, SmartTools..."></div><div class="form-group"><label>Role:</label><select class="form-control" id="tip-role"><option value="">Any role</option><option>Physician</option><option>Nurse</option><option>Pharmacist</option><option>Trainer</option><option>Billing</option><option>Admin</option></select></div><button class="btn btn-premium" id="tip-generate-btn" style="width:100%;"><i class="fas fa-lightbulb"></i> Get Epic Tips</button><div id="tip-answer" class="ai-tool-result" style="display:none;"></div></div></div>
+</div>
 </section>
 <section id="profile" class="tab-content">
-    <div class="profile-header"><div class="profile-avatar"><i class="fas fa-user"></i></div><div><h2 id="profile-name-display">Trainer</h2><p>Epic Certified Trainer</p><p id="profile-hospital-display" style="color:#666;font-size:0.9rem;"></p><div class="premium-badge" style="margin-top:0.5rem;display:inline-flex;"><i class="fas fa-crown"></i><span id="profile-plan-label">Free Plan</span></div></div></div>
-    <div class="profile-tabs">
-        <div class="profile-tab active" data-tab="saved">Saved Content</div>
-        <div class="profile-tab" data-tab="uploads">My Uploads</div>
-        <div class="profile-tab" data-tab="ai-saved">AI Responses</div>
-        <div class="profile-tab" data-tab="questions">My Questions</div>
-        <div class="profile-tab" data-tab="certifications">Certifications</div>
-        <div class="profile-tab" data-tab="training-hours">Training Hours</div>
-        <div class="profile-tab" data-tab="settings">Settings</div>
-    </div>
-    <div id="saved-tab" class="profile-tab-content active"><div id="saved-items-container"><div class="empty-state"><i class="fas fa-bookmark"></i><p>Nothing saved yet. Click Save on any hospital, resource, or FAQ.</p></div></div></div>
-    <div id="uploads-tab" class="profile-tab-content"><h3 style="margin-bottom:1rem;">My Uploaded Files</h3><div id="uploaded-files-list"><div class="empty-state"><i class="fas fa-cloud-upload-alt"></i><p>No uploads yet.</p></div></div><button class="btn btn-primary" id="upload-from-profile-btn" style="margin-top:1rem;"><i class="fas fa-upload"></i> Upload a File</button></div>
-    <div id="ai-saved-tab" class="profile-tab-content"><h3 style="margin-bottom:1rem;">Saved AI Responses</h3><div id="ai-saved-list"><div class="empty-state"><i class="fas fa-robot"></i><p>No saved AI responses yet.</p></div></div></div>
-    <div id="questions-tab" class="profile-tab-content"><h3 style="margin-bottom:1rem;">My Questions</h3><div id="my-questions-list"><div class="empty-state"><i class="fas fa-question-circle"></i><p>No questions asked yet.</p></div></div></div>
-    <div id="certifications-tab" class="profile-tab-content">
-        <h3 style="margin-bottom:1rem;">My Epic Certifications</h3>
-        <div style="background:white;border-radius:10px;padding:1.25rem;box-shadow:0 3px 8px rgba(0,0,0,0.08);margin-bottom:1.5rem;">
-            <h4 style="margin-bottom:1rem;color:var(--epic-purple);">Add Certification</h4>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
-                <div class="form-group" style="margin:0;"><label>Certification Name</label><input type="text" class="form-control" id="cert-name" placeholder="e.g. Epic Physician Trainer"></div>
-                <div class="form-group" style="margin:0;"><label>Cert Number (optional)</label><input type="text" class="form-control" id="cert-number" placeholder="e.g. EPT-2024-1234"></div>
-                <div class="form-group" style="margin:0;"><label>Issue Date</label><input type="date" class="form-control" id="cert-issued"></div>
-                <div class="form-group" style="margin:0;"><label>Expiry Date</label><input type="date" class="form-control" id="cert-expiry"></div>
-            </div>
-            <button class="btn btn-primary" id="add-cert-btn" style="margin-top:1rem;"><i class="fas fa-plus"></i> Add Certification</button>
-        </div>
-        <div id="cert-list"><div class="empty-state"><i class="fas fa-certificate"></i><p>No certifications added yet.</p></div></div>
-    </div>
-    <div id="training-hours-tab" class="profile-tab-content">
-        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;"><h3>Training Hours Log</h3><button class="btn btn-outline" id="export-hours-btn" style="margin-left:auto;font-size:0.85rem;padding:0.4rem 0.9rem;"><i class="fas fa-download"></i> Export CSV</button></div>
-        <div style="background:white;border-radius:10px;padding:1.25rem;box-shadow:0 3px 8px rgba(0,0,0,0.08);margin-bottom:1.5rem;">
-            <h4 style="margin-bottom:1rem;color:var(--epic-purple);">Log Training Activity</h4>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
-                <div class="form-group" style="margin:0;"><label>Activity</label><input type="text" class="form-control" id="hours-activity" placeholder="e.g. Physician go-live support"></div>
-                <div class="form-group" style="margin:0;"><label>Hours</label><input type="number" class="form-control" id="hours-count" placeholder="4" min="0.5" step="0.5"></div>
-                <div class="form-group" style="margin:0;"><label>Date</label><input type="date" class="form-control" id="hours-date"></div>
-                <div class="form-group" style="margin:0;"><label>Notes (optional)</label><input type="text" class="form-control" id="hours-notes" placeholder="e.g. ED department"></div>
-            </div>
-            <button class="btn btn-primary" id="add-hours-btn" style="margin-top:1rem;"><i class="fas fa-plus"></i> Log Hours</button>
-        </div>
-        <div style="background:var(--epic-lighter-purple);border-radius:10px;padding:1rem;margin-bottom:1.5rem;display:flex;gap:2rem;flex-wrap:wrap;">
-            <div style="text-align:center;"><div style="font-size:1.8rem;font-weight:bold;color:var(--epic-purple);" id="total-hours-display">0</div><div class="small">Total Hours</div></div>
-            <div style="text-align:center;"><div style="font-size:1.8rem;font-weight:bold;color:var(--epic-purple);" id="total-sessions-display">0</div><div class="small">Sessions</div></div>
-            <div style="text-align:center;"><div style="font-size:1.8rem;font-weight:bold;color:var(--epic-purple);" id="this-month-hours-display">0</div><div class="small">This Month</div></div>
-        </div>
-        <div id="hours-list"><div class="empty-state"><i class="fas fa-clock"></i><p>No training hours logged yet.</p></div></div>
-    </div>
-    <div id="settings-tab" class="profile-tab-content">
-        <h3 style="margin-bottom:1.5rem;">Account Settings</h3>
-        <div class="form-group"><label>Full Name</label><input type="text" class="form-control" id="set-name"></div>
-        <div class="form-group"><label>Email</label><input type="email" class="form-control" id="set-email"></div>
-        <div class="form-group"><label>Primary Hospital</label><input type="text" class="form-control" id="set-hospital"></div>
-        <div class="form-group"><label>Epic Certification</label><input type="text" class="form-control" id="set-cert" value="Epic Trainer"></div>
-        <button class="btn btn-primary" id="save-settings-btn"><i class="fas fa-save"></i> Save Changes</button>
-    </div>
+<div class="profile-header"><div class="profile-avatar"><i class="fas fa-user"></i></div><div><h2 id="profile-name-display">Epic Trainer</h2><p>Epic Certified Trainer</p><div class="premium-badge" style="margin-top:0.5rem;display:inline-flex;"><i class="fas fa-crown"></i><span id="profile-plan-label">Free Plan</span></div></div></div>
+<div class="profile-tabs">
+<div class="profile-tab active" data-tab="saved">Saved Content</div>
+<div class="profile-tab" data-tab="uploads">My Uploads</div>
+<div class="profile-tab" data-tab="ai-saved">AI Responses</div>
+<div class="profile-tab" data-tab="questions">My Questions</div>
+<div class="profile-tab" data-tab="certifications">Certifications</div>
+<div class="profile-tab" data-tab="training-hours">Training Hours</div>
+<div class="profile-tab" data-tab="settings">Settings</div>
+</div>
+<div id="saved-tab" class="profile-tab-content active"><div id="saved-items-container"><div class="empty-state"><i class="fas fa-bookmark"></i><p>Nothing saved yet. Click Save on any hospital, resource, or FAQ.</p></div></div></div>
+<div id="uploads-tab" class="profile-tab-content"><h3 style="margin-bottom:1rem;">My Uploaded Files</h3><div id="uploaded-files-list"><div class="empty-state"><i class="fas fa-cloud-upload-alt"></i><p>No uploads yet.</p></div></div><button class="btn btn-primary" id="upload-from-profile-btn" style="margin-top:1rem;"><i class="fas fa-upload"></i> Upload a File</button></div>
+<div id="ai-saved-tab" class="profile-tab-content"><h3 style="margin-bottom:1rem;">Saved AI Responses</h3><div id="ai-saved-list"><div class="empty-state"><i class="fas fa-robot"></i><p>No saved AI responses yet.</p></div></div></div>
+<div id="questions-tab" class="profile-tab-content"><h3 style="margin-bottom:1rem;">My Questions</h3><div id="my-questions-list"><div class="empty-state"><i class="fas fa-question-circle"></i><p>No questions asked yet.</p></div></div></div>
+<div id="certifications-tab" class="profile-tab-content">
+<h3 style="margin-bottom:1rem;">My Epic Certifications</h3>
+<div style="background:white;border-radius:10px;padding:1.25rem;box-shadow:0 3px 8px rgba(0,0,0,0.08);margin-bottom:1.5rem;">
+<h4 style="margin-bottom:1rem;color:var(--epic-purple);">Add Certification</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
+<div class="form-group" style="margin:0;"><label>Certification Name</label><input type="text" class="form-control" id="cert-name" placeholder="e.g. Epic Physician Trainer"></div>
+<div class="form-group" style="margin:0;"><label>Cert Number (optional)</label><input type="text" class="form-control" id="cert-number" placeholder="e.g. EPT-2024-1234"></div>
+<div class="form-group" style="margin:0;"><label>Issue Date</label><input type="date" class="form-control" id="cert-issued"></div>
+<div class="form-group" style="margin:0;"><label>Expiry Date</label><input type="date" class="form-control" id="cert-expiry"></div>
+</div>
+<button class="btn btn-primary" id="add-cert-btn" style="margin-top:1rem;"><i class="fas fa-plus"></i> Add Certification</button>
+</div>
+<div id="cert-list"><div class="empty-state"><i class="fas fa-certificate"></i><p>No certifications added yet.</p></div></div>
+</div>
+<div id="training-hours-tab" class="profile-tab-content">
+<div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;"><h3>Training Hours Log</h3><button class="btn btn-outline" id="export-hours-btn" style="margin-left:auto;font-size:0.85rem;padding:0.4rem 0.9rem;"><i class="fas fa-download"></i> Export CSV</button></div>
+<div style="background:white;border-radius:10px;padding:1.25rem;box-shadow:0 3px 8px rgba(0,0,0,0.08);margin-bottom:1.5rem;">
+<h4 style="margin-bottom:1rem;color:var(--epic-purple);">Log Training Activity</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
+<div class="form-group" style="margin:0;"><label>Activity</label><input type="text" class="form-control" id="hours-activity" placeholder="e.g. Physician go-live support"></div>
+<div class="form-group" style="margin:0;"><label>Hours</label><input type="number" class="form-control" id="hours-count" placeholder="4" min="0.5" step="0.5"></div>
+<div class="form-group" style="margin:0;"><label>Date</label><input type="date" class="form-control" id="hours-date"></div>
+<div class="form-group" style="margin:0;"><label>Notes (optional)</label><input type="text" class="form-control" id="hours-notes" placeholder="e.g. ED department"></div>
+</div>
+<button class="btn btn-primary" id="add-hours-btn" style="margin-top:1rem;"><i class="fas fa-plus"></i> Log Hours</button>
+</div>
+<div style="background:var(--epic-lighter-purple);border-radius:10px;padding:1rem;margin-bottom:1.5rem;display:flex;gap:2rem;flex-wrap:wrap;">
+<div style="text-align:center;"><div style="font-size:1.8rem;font-weight:bold;color:var(--epic-purple);" id="total-hours-display">0</div><div class="small">Total Hours</div></div>
+<div style="text-align:center;"><div style="font-size:1.8rem;font-weight:bold;color:var(--epic-purple);" id="total-sessions-display">0</div><div class="small">Sessions</div></div>
+<div style="text-align:center;"><div style="font-size:1.8rem;font-weight:bold;color:var(--epic-purple);" id="this-month-hours-display">0</div><div class="small">This Month</div></div>
+</div>
+<div id="hours-list"><div class="empty-state"><i class="fas fa-clock"></i><p>No training hours logged yet.</p></div></div>
+</div>
+<div id="settings-tab" class="profile-tab-content">
+<h3 style="margin-bottom:1.5rem;">Account Settings</h3>
+<div class="form-group"><label>Full Name</label><input type="text" class="form-control" id="set-name" value="Epic Trainer"></div>
+<div class="form-group"><label>Primary Hospital</label><input type="text" class="form-control" id="set-hospital"></div>
+<div class="form-group"><label>Epic Certification</label><input type="text" class="form-control" id="set-cert" value="Epic Trainer"></div>
+<button class="btn btn-primary" id="save-settings-btn"><i class="fas fa-save"></i> Save Changes</button>
+</div>
 </section>
 <section id="premium" class="tab-content">
-    <h2><i class="fas fa-crown"></i> Epic Trainer Premium</h2><p class="subtitle">Upgrade your experience</p>
-    <div class="premium-upgrade"><h2>Unlock Premium Features</h2><div class="premium-features"><div class="premium-feature"><i class="fas fa-bookmark"></i><span>Save unlimited hospitals, resources &amp; FAQs</span></div><div class="premium-feature"><i class="fas fa-robot"></i><span>Advanced AI tools and web search</span></div><div class="premium-feature"><i class="fas fa-certificate"></i><span>Certification tracker</span></div><div class="premium-feature"><i class="fas fa-clock"></i><span>Training hours log with CSV export</span></div></div></div>
-    <h3 style="margin-bottom:1rem;">Choose Your Plan</h3>
-    <div class="pricing-plans">
-        <div class="pricing-plan"><h4>Free</h4><div class="plan-price">$0<span>/mo</span></div><ul class="plan-features"><li>All hospitals</li><li>Browse resources</li><li>AI Trainer chat</li></ul><button class="btn btn-outline" disabled>Current Plan</button></div>
-        <div class="pricing-plan popular"><div class="popular-badge">MOST POPULAR</div><h4>Premium Monthly</h4><div class="plan-price">$9.99<span>/mo</span></div><ul class="plan-features"><li>Everything in Free</li><li>Unlimited saves</li><li>Cert tracker</li><li>Hours log</li></ul><button class="btn btn-premium upgrade-trigger"><i class="fas fa-crown"></i> Upgrade Now</button></div>
-        <div class="pricing-plan"><h4>Premium Annual</h4><div class="plan-price">$99.99<span>/yr</span></div><ul class="plan-features"><li>Everything in Premium</li><li>Priority support</li></ul><button class="btn btn-premium upgrade-trigger"><i class="fas fa-crown"></i> Upgrade Now</button></div>
-    </div>
+<h2><i class="fas fa-crown"></i> Epic Trainer Premium</h2><p class="subtitle">Upgrade your experience</p>
+<div class="premium-upgrade"><h2>Unlock Premium Features</h2><div class="premium-features"><div class="premium-feature"><i class="fas fa-bookmark"></i><span>Save unlimited items</span></div><div class="premium-feature"><i class="fas fa-robot"></i><span>Advanced AI tools</span></div><div class="premium-feature"><i class="fas fa-certificate"></i><span>Certification tracker</span></div><div class="premium-feature"><i class="fas fa-clock"></i><span>Training hours log</span></div></div></div>
+<h3 style="margin-bottom:1rem;">Choose Your Plan</h3>
+<div class="pricing-plans">
+<div class="pricing-plan"><h4>Free</h4><div class="plan-price">$0<span>/mo</span></div><ul class="plan-features"><li>All hospitals</li><li>Browse resources</li><li>AI Trainer chat</li></ul><button class="btn btn-outline" disabled>Current Plan</button></div>
+<div class="pricing-plan popular"><div class="popular-badge">MOST POPULAR</div><h4>Premium Monthly</h4><div class="plan-price">$9.99<span>/mo</span></div><ul class="plan-features"><li>Everything in Free</li><li>Unlimited saves</li><li>Cert tracker</li><li>Hours log</li></ul><button class="btn btn-premium upgrade-trigger"><i class="fas fa-crown"></i> Upgrade Now</button></div>
+<div class="pricing-plan"><h4>Premium Annual</h4><div class="plan-price">$99.99<span>/yr</span></div><ul class="plan-features"><li>Everything in Premium</li><li>Priority support</li></ul><button class="btn btn-premium upgrade-trigger"><i class="fas fa-crown"></i> Upgrade Now</button></div>
+</div>
 </section>
 </main>
 <div class="modal-overlay" id="upload-modal">
-    <div class="modal"><div class="modal-header"><h2><i class="fas fa-cloud-upload-alt"></i> Upload Documentation</h2><button class="modal-close" data-modal="upload-modal">&times;</button></div>
-    <div class="file-upload" id="file-upload-area"><i class="fas fa-cloud-upload-alt"></i><p>Click to select or drag &amp; drop</p><input type="file" id="file-input" style="display:none" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.mp4,.mov,.png,.jpg,.jpeg"></div>
-    <div id="file-info" style="display:none;background:#f0f0f0;padding:0.75rem;border-radius:6px;margin-bottom:1rem;"><strong><i class="fas fa-file"></i> <span id="file-name"></span></strong> <span style="color:#888;margin-left:1rem;" id="file-size-display"></span></div>
-    <div class="form-group"><label>Document Title *</label><input type="text" class="form-control" id="doc-title" placeholder="Enter a descriptive title"></div>
-    <div class="form-group"><label>Description</label><textarea class="form-control" id="doc-description" placeholder="What does this document contain?"></textarea></div>
-    <div class="form-group"><label>Category</label><select class="form-control" id="doc-category"><option value="">Select a category</option><option>User Guide</option><option>Training Manual</option><option>Release Notes</option><option>Cheat Sheet</option><option>Presentation</option></select></div>
-    <button class="btn btn-primary" id="start-upload-btn" disabled style="width:100%;"><i class="fas fa-upload"></i> Upload Document</button></div>
+<div class="modal"><div class="modal-header"><h2><i class="fas fa-cloud-upload-alt"></i> Upload Documentation</h2><button class="modal-close" data-modal="upload-modal">&times;</button></div>
+<div class="file-upload" id="file-upload-area"><i class="fas fa-cloud-upload-alt"></i><p>Click to select or drag &amp; drop</p><input type="file" id="file-input" style="display:none" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.mp4,.mov,.png,.jpg,.jpeg"></div>
+<div id="file-info" style="display:none;background:#f0f0f0;padding:0.75rem;border-radius:6px;margin-bottom:1rem;"><strong><i class="fas fa-file"></i> <span id="file-name"></span></strong> <span style="color:#888;margin-left:1rem;" id="file-size-display"></span></div>
+<div class="form-group"><label>Document Title *</label><input type="text" class="form-control" id="doc-title" placeholder="Enter a descriptive title"></div>
+<div class="form-group"><label>Description</label><textarea class="form-control" id="doc-description" placeholder="What does this document contain?"></textarea></div>
+<div class="form-group"><label>Category</label><select class="form-control" id="doc-category"><option value="">Select a category</option><option>User Guide</option><option>Training Manual</option><option>Release Notes</option><option>Cheat Sheet</option><option>Presentation</option></select></div>
+<button class="btn btn-primary" id="start-upload-btn" disabled style="width:100%;"><i class="fas fa-upload"></i> Upload Document</button></div>
 </div>
 <div class="modal-overlay" id="upgrade-modal">
-    <div class="modal"><div class="modal-header"><h2><i class="fas fa-crown"></i> Upgrade to Premium</h2><button class="modal-close" data-modal="upgrade-modal">&times;</button></div>
-    <div style="text-align:center;padding:1rem;"><h3>Start Your 7-Day Free Trial</h3><p style="color:#666;margin:0.75rem 0;">Immediate access to all premium features</p><div class="plan-price">$9.99<span>/month after trial</span></div><button class="btn btn-premium" id="start-trial-btn" style="width:100%;padding:1rem;font-size:1rem;margin-top:1rem;"><i class="fas fa-play-circle"></i> Start Free Trial</button><p class="small" style="margin-top:0.75rem;">No credit card required.</p></div></div>
+<div class="modal"><div class="modal-header"><h2><i class="fas fa-crown"></i> Upgrade to Premium</h2><button class="modal-close" data-modal="upgrade-modal">&times;</button></div>
+<div style="text-align:center;padding:1rem;"><h3>Start Your 7-Day Free Trial</h3><div class="plan-price">$9.99<span>/month after trial</span></div><button class="btn btn-premium" id="start-trial-btn" style="width:100%;padding:1rem;margin-top:1rem;"><i class="fas fa-play-circle"></i> Start Free Trial</button><p class="small" style="margin-top:0.75rem;">No credit card required.</p></div></div>
 </div>
-<div id="ask-ai-label">ASK AI</div>
 <button id="ai-fab"><i class="fas fa-robot"></i><span>Ask AI</span></button>
 <div id="ai-panel">
-    <div class="ai-panel-header"><h3><i class="fas fa-robot"></i> AI Epic Trainer</h3><button id="ai-close-btn">&times;</button></div>
-    <div id="ai-messages"><div class="ai-msg assistant">Hi! I'm your AI Epic Trainer. I can search the web for the latest Epic info and help with workflows. What do you need?</div></div>
-    <div class="ai-input-row"><textarea id="ai-input" placeholder="Ask about Epic EMR..." rows="1"></textarea><button id="ai-send"><i class="fas fa-paper-plane"></i></button></div>
+<div class="ai-panel-header"><h3><i class="fas fa-robot"></i> AI Epic Trainer</h3><button id="ai-close-btn">&times;</button></div>
+<div id="ai-messages"><div class="ai-msg assistant">Hi! I am your AI Epic Trainer. Ask me anything about Epic EMR.</div></div>
+<div class="ai-input-row"><textarea id="ai-input" placeholder="Ask about Epic EMR..." rows="1"></textarea><button id="ai-send"><i class="fas fa-paper-plane"></i></button></div>
 </div>
 <footer><p>Epic EMR Trainer Assistant | For training purposes only</p><p>Not affiliated with Epic Systems Corporation</p><p>&copy; 2024 Epic EMR Trainer Assistant. All rights reserved.</p></footer>
 <script>
-var currentUser=null;
-function uKey(k){return(currentUser||'guest')+':'+k;}
-function load(k,d){try{var v=localStorage.getItem(uKey(k));return v!==null?JSON.parse(v):d;}catch(e){return d;}}
-function persist(k,v){localStorage.setItem(uKey(k),JSON.stringify(v));}
-var STATE={savedItems:[],uploadedFiles:[],aiSavedResponses:[],myQuestions:[],aiHistory:[],isPremium:false};
-function loadUserData(){STATE.savedItems=load('saved',[]);STATE.uploadedFiles=load('files',[]);STATE.aiSavedResponses=load('aiSaved',[]);STATE.myQuestions=load('questions',[]);STATE.isPremium=load('premium',false);}
-function persistAll(){persist('saved',STATE.savedItems);persist('files',STATE.uploadedFiles);persist('aiSaved',STATE.aiSavedResponses);persist('questions',STATE.myQuestions);persist('premium',STATE.isPremium);}
-var userCerts=[];var trainingHoursData=[];
-function loadCertifications(){userCerts=load('certs',[]);renderCertifications();}
-function loadTrainingHours(){trainingHoursData=load('hours',[]);renderTrainingHours();}
-var hospitals=[{id:1,name:"Mayo Clinic",version:"Epic 2022",modules:["Radiant","Beaker","OpTime","Research","Cadence","Prelude"],notes:"Uses special billing modules and research functionality. Strong focus on oncology and cardiology.",lastUpdated:"2023-10-15",contact:{name:"Dr. Sarah Johnson",email:"sjohnson@mayoclinic.org"}},{id:2,name:"Johns Hopkins Hospital",version:"Epic 2023",modules:["Care Everywhere","MyChart","Healthy Planet","Research","Cupid"],notes:"Research-focused customization with specialized modules. Early adopter of new Epic features.",lastUpdated:"2023-11-05",contact:{name:"Michael Chen",email:"mchen@jh.edu"}},{id:3,name:"Massachusetts General",version:"Epic 2022",modules:["Cadence","Prelude","Grand Central","Beaker","Radiant"],notes:"Integrated with Partners healthcare system. Strong emphasis on patient portal implementation.",lastUpdated:"2023-09-22",contact:{name:"Emily Rodriguez",email:"erodriguez@mgh.harvard.edu"}},{id:4,name:"Cleveland Clinic",version:"Epic 2023",modules:["Hyperspace","Cupid","Bones","MyChart","Healthy Planet"],notes:"Cardiology specialty focus with custom modules. Strong telemedicine integration.",lastUpdated:"2023-11-12",contact:{name:"Robert Williams",email:"rwilliams@clevelandclinic.org"}},{id:5,name:"UCSF Medical Center",version:"Epic 2022",modules:["Beaker","Willow","Phoenix","Radiant","Care Everywhere"],notes:"Academic medical center configuration with research emphasis. Strong pediatric specialization.",lastUpdated:"2023-08-30",contact:{name:"Jennifer Lee",email:"jlee@ucsf.edu"}},{id:6,name:"NewYork-Presbyterian",version:"Epic 2023",modules:["Healthy Planet","MyChart","Care Companion","Cadence","Prelude"],notes:"Large multi-campus system with unified Epic implementation. Strong population health focus.",lastUpdated:"2023-10-28",contact:{name:"David Kim",email:"dkim@nyp.org"}}];
+var STATE={savedItems:JSON.parse(localStorage.getItem('savedItems')||'[]'),uploadedFiles:JSON.parse(localStorage.getItem('uploadedFiles')||'[]'),aiSavedResponses:JSON.parse(localStorage.getItem('aiSavedResponses')||'[]'),myQuestions:JSON.parse(localStorage.getItem('myQuestions')||'[]'),aiHistory:[],isPremium:JSON.parse(localStorage.getItem('isPremium')||'false')};
+function saveState(){localStorage.setItem('savedItems',JSON.stringify(STATE.savedItems));localStorage.setItem('uploadedFiles',JSON.stringify(STATE.uploadedFiles));localStorage.setItem('aiSavedResponses',JSON.stringify(STATE.aiSavedResponses));localStorage.setItem('myQuestions',JSON.stringify(STATE.myQuestions));localStorage.setItem('isPremium',JSON.stringify(STATE.isPremium));}
+var userCerts=JSON.parse(localStorage.getItem('userCerts')||'[]');
+var trainingHoursData=JSON.parse(localStorage.getItem('trainingHours')||'[]');
+var hospitals=[{id:1,name:"Mayo Clinic",version:"Epic 2022",modules:["Radiant","Beaker","OpTime","Research","Cadence","Prelude"],notes:"Uses special billing modules and research functionality. Strong focus on oncology and cardiology.",lastUpdated:"2023-10-15",contact:{name:"Dr. Sarah Johnson",email:"sjohnson@mayoclinic.org"}},{id:2,name:"Johns Hopkins Hospital",version:"Epic 2023",modules:["Care Everywhere","MyChart","Healthy Planet","Research","Cupid"],notes:"Research-focused customization. Early adopter of new Epic features.",lastUpdated:"2023-11-05",contact:{name:"Michael Chen",email:"mchen@jh.edu"}},{id:3,name:"Massachusetts General",version:"Epic 2022",modules:["Cadence","Prelude","Grand Central","Beaker","Radiant"],notes:"Integrated with Partners healthcare system. Strong patient portal emphasis.",lastUpdated:"2023-09-22",contact:{name:"Emily Rodriguez",email:"erodriguez@mgh.harvard.edu"}},{id:4,name:"Cleveland Clinic",version:"Epic 2023",modules:["Hyperspace","Cupid","Bones","MyChart","Healthy Planet"],notes:"Cardiology specialty focus. Strong telemedicine integration.",lastUpdated:"2023-11-12",contact:{name:"Robert Williams",email:"rwilliams@clevelandclinic.org"}},{id:5,name:"UCSF Medical Center",version:"Epic 2022",modules:["Beaker","Willow","Phoenix","Radiant","Care Everywhere"],notes:"Academic medical center with research emphasis. Strong pediatric specialization.",lastUpdated:"2023-08-30",contact:{name:"Jennifer Lee",email:"jlee@ucsf.edu"}},{id:6,name:"NewYork-Presbyterian",version:"Epic 2023",modules:["Healthy Planet","MyChart","Care Companion","Cadence","Prelude"],notes:"Large multi-campus system. Strong population health focus.",lastUpdated:"2023-10-28",contact:{name:"David Kim",email:"dkim@nyp.org"}}];
 var defaultResources=[{id:"res-001",title:"Epic Fundamentals Training Guide",type:"PDF Document",size:"5.2 MB",description:"Complete guide to Epic fundamentals for new trainers."},{id:"res-002",title:"MyChart Patient Portal Tutorial",type:"Video",size:"22:15 min",description:"Detailed walkthrough of MyChart features."},{id:"res-003",title:"Clinical Documentation Templates",type:"ZIP File",size:"3.7 MB",description:"Collection of customizable clinical documentation templates."},{id:"res-004",title:"Reporting Workbench Guide",type:"PDF Document",size:"4.1 MB",description:"Creating and customizing reports in Epic."},{id:"res-005",title:"Epic 2023 Upgrade Guide",type:"PDF Document",size:"2.4 MB",description:"Complete guide to new features in Epic 2023."},{id:"res-006",title:"Playground Navigation Video",type:"Video Tutorial",size:"15:32 min",description:"Step-by-step guide to using the Epic playground."}];
-var faqs=[{id:1,question:"How do I access the Epic Playground?",answer:"Connect through your organization's VPN using a URL provided by your Epic team. Some organizations require additional authentication from your Epic coordinator.",category:"Access",helpfulCount:24},{id:2,question:"What's the difference between Hyperspace and Hyperdrive?",answer:"Hyperspace is the traditional Epic interface; Hyperdrive is the newer web-based version offering improved performance, faster navigation, and better mobile compatibility.",category:"Navigation",helpfulCount:31},{id:3,question:"How often does Epic release updates?",answer:"Major updates release once a year, typically spring or fall. Smaller patches come throughout the year. Preview environments are available 3-4 months before production upgrades.",category:"Updates",helpfulCount:18},{id:4,question:"How can I customize training for different specialties?",answer:"Create specialized training profiles, build custom environments, and use Training Wheels to guide users. Develop specialty-specific patient scenarios and role-based configurations.",category:"Training",helpfulCount:29},{id:5,question:"How do I get access to Epic UserWeb?",answer:"UserWeb access is provided by your organization's Epic coordinator after completing required training and signing access agreements.",category:"Access",helpfulCount:15},{id:6,question:"What's the best way to train physicians on Epic?",answer:"Keep training specialty-specific, concise, and workflow-focused. Use real clinical scenarios and combine classroom training with one-on-one coaching.",category:"Training",helpfulCount:42}];
-function getAccounts(){try{return JSON.parse(localStorage.getItem('_accounts')||'{}');}catch(e){return{};}}
-function setAccounts(a){localStorage.setItem('_accounts',JSON.stringify(a));}
-function initAuth(){
-    try{var s=JSON.parse(sessionStorage.getItem('_sess'));if(s&&s.email){doLogin(s);return;}}catch(e){}
-    document.getElementById('login-gate').style.display='flex';
-    document.querySelectorAll('.auth-tab').forEach(function(t){t.addEventListener('click',function(){document.querySelectorAll('.auth-tab').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.auth-form').forEach(function(x){x.classList.remove('active');});t.classList.add('active');document.getElementById(t.dataset.auth+'-form').classList.add('active');});});
-    ['si-email','si-password'].forEach(function(id){document.getElementById(id).addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('si-btn').click();});});
-    ['su-name','su-email','su-password'].forEach(function(id){document.getElementById(id).addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('su-btn').click();});});
-    document.getElementById('si-btn').addEventListener('click',function(){
-        var email=document.getElementById('si-email').value.trim().toLowerCase();
-        var password=document.getElementById('si-password').value;
-        var errEl=document.getElementById('si-err');
-        errEl.classList.remove('show');
-        if(!email||!password){errEl.textContent='Please enter email and password.';errEl.classList.add('show');return;}
-        var accounts=getAccounts();
-        if(!accounts[email]||accounts[email].password!==password){errEl.textContent='Invalid email or password.';errEl.classList.add('show');return;}
-        doLogin(accounts[email]);
-    });
-    document.getElementById('su-btn').addEventListener('click',function(){
-        var name=document.getElementById('su-name').value.trim();
-        var email=document.getElementById('su-email').value.trim().toLowerCase();
-        var password=document.getElementById('su-password').value;
-        var errEl=document.getElementById('su-err');
-        errEl.classList.remove('show');
-        if(!name||!email||password.length<6){errEl.textContent='Please fill all fields. Password min 6 chars.';errEl.classList.add('show');return;}
-        var accounts=getAccounts();
-        if(accounts[email]){errEl.textContent='Account already exists. Sign in instead.';errEl.classList.add('show');return;}
-        var user={name:name,email:email,hospital:'',password:password,certification:'Epic Trainer'};
-        accounts[email]=user;setAccounts(accounts);doLogin(user);
-    });
-}
-function doLogin(user){
-    currentUser=user.email;
-    sessionStorage.setItem('_sess',JSON.stringify(user));
-    loadUserData();
-    document.getElementById('login-gate').style.display='none';
-    document.getElementById('greeting-name').textContent=user.name.split(' ')[0];
-    document.getElementById('dashboard-name').textContent=user.name.split(' ')[0];
-    document.getElementById('profile-name-display').textContent=user.name;
-    document.getElementById('profile-hospital-display').textContent=user.hospital||'';
-    document.getElementById('set-name').value=user.name||'';
-    document.getElementById('set-email').value=user.email||'';
-    document.getElementById('set-hospital').value=user.hospital||'';
-    if(STATE.isPremium){document.getElementById('plan-label').textContent='Premium Member';document.getElementById('profile-plan-label').textContent='Premium Member';}
-    renderAll();updateSavedStat();
-    notify('Welcome, '+user.name.split(' ')[0]+'!','success');
-}
-document.getElementById('logout-btn').addEventListener('click',function(){sessionStorage.removeItem('_sess');location.reload();});
-function renderAll(){renderHospitals();renderResources();renderFAQs();renderSavedItems();renderUploadedFiles();renderAISaved();renderMyQuestions();loadCertifications();loadTrainingHours();}
+var faqs=[{id:1,question:"How do I access the Epic Playground?",answer:"Connect through your organization's VPN using a URL provided by your Epic team.",category:"Access",helpfulCount:24},{id:2,question:"What is the difference between Hyperspace and Hyperdrive?",answer:"Hyperspace is the traditional Epic interface; Hyperdrive is the newer web-based version offering improved performance and better mobile compatibility.",category:"Navigation",helpfulCount:31},{id:3,question:"How often does Epic release updates?",answer:"Major updates release once a year, typically spring or fall. Preview environments are available 3-4 months before production upgrades.",category:"Updates",helpfulCount:18},{id:4,question:"How can I customize training for different specialties?",answer:"Create specialized training profiles, build custom environments, and use Training Wheels to guide users.",category:"Training",helpfulCount:29},{id:5,question:"How do I get access to Epic UserWeb?",answer:"UserWeb access is provided by your organization's Epic coordinator after completing required training.",category:"Access",helpfulCount:15},{id:6,question:"What is the best way to train physicians on Epic?",answer:"Keep training specialty-specific, concise, and workflow-focused. Use real clinical scenarios and combine classroom training with one-on-one coaching.",category:"Training",helpfulCount:42}];
 function isSaved(id){return STATE.savedItems.some(function(i){return i.id===id;});}
+function notify(msg,type){var n=document.createElement('div');n.className='notification '+(type||'');n.textContent=msg;document.body.appendChild(n);setTimeout(function(){if(n.parentNode)n.parentNode.removeChild(n);},3000);}
+function fmtSz(b){if(!b)return'0 B';var k=1024,s=['B','KB','MB','GB'],i=Math.floor(Math.log(b)/Math.log(k));return(b/Math.pow(k,i)).toFixed(1)+' '+s[i];}
+function updateSavedStat(){var s=document.getElementById('stat-saved');if(s)s.textContent=STATE.savedItems.length;}
+function attachSaveBtns(){document.querySelectorAll('.save-btn:not([data-w])').forEach(function(btn){btn.dataset.w='1';btn.addEventListener('click',function(e){var b=e.currentTarget,id=b.dataset.id,type=b.dataset.type,name=b.dataset.name;var already=STATE.savedItems.some(function(i){return i.id===id;});if(already){STATE.savedItems=STATE.savedItems.filter(function(i){return i.id!==id;});b.className='btn btn-outline save-btn';b.dataset.w='1';b.innerHTML='<i class="fas fa-bookmark"></i> '+(type==='faq'?'Save this answer':'Save');notify('Removed.');}else{STATE.savedItems.push({id:id,type:type,name:name,savedAt:new Date().toISOString()});b.className='btn saved save-btn';b.dataset.w='1';b.innerHTML='<i class="fas fa-check"></i> Saved';notify('Saved!','success');}saveState();renderSavedItems();updateSavedStat();});});}
 function mkHospitalCard(h){var sv=isSaved('hosp-'+h.id);var c=document.createElement('div');c.className='hospital-card';c.innerHTML='<h3><i class="fas fa-hospital"></i>'+h.name+'</h3><div class="hospital-meta"><span>'+h.version+'</span><span>Updated: '+h.lastUpdated+'</span></div><p style="font-size:0.88rem;color:#555;">'+h.notes+'</p><div class="module-list">'+h.modules.map(function(m){return'<span class="module-tag">'+m+'</span>';}).join('')+'</div><div class="hospital-contact"><i class="fas fa-user" style="margin-right:0.4rem;color:var(--epic-light-purple);"></i>'+h.contact.name+' | '+h.contact.email+'</div><div class="card-actions"><button class="btn btn-primary" style="font-size:0.85rem;padding:0.5rem 1rem;">View Details</button><button class="btn '+(sv?'saved':'btn-outline')+' save-btn" data-id="hosp-'+h.id+'" data-type="hospital" data-name="'+h.name+'"><i class="fas '+(sv?'fa-check':'fa-bookmark')+'"></i> '+(sv?'Saved':'Save')+'</button></div>';return c;}
 function mkResourceCard(r,isUp){var sv=isSaved(r.id);var isVid=(r.type||'').toLowerCase().indexOf('video')>=0;var c=document.createElement('div');c.className='resource-card';c.innerHTML=(isUp?'':'<div style="position:absolute;top:1rem;right:1rem;color:var(--premium-gold);"><i class="fas fa-lock"></i></div>')+'<h3>'+r.title+'</h3><div class="resource-meta"><span>'+(r.type||'Document')+'</span><span>'+(r.size||'')+'</span></div><p style="font-size:0.86rem;color:#555;">'+(r.description||'')+'</p><div class="card-actions" style="margin-top:1rem;"><button class="btn btn-primary" style="font-size:0.85rem;padding:0.5rem 1rem;"><i class="fas '+(isVid?'fa-play-circle':'fa-download')+'"></i> '+(isVid?'Watch':'Download')+'</button><button class="btn '+(sv?'saved':'btn-outline')+' save-btn" data-id="'+r.id+'" data-type="resource" data-name="'+r.title+'"><i class="fas '+(sv?'fa-check':'fa-bookmark')+'"></i> '+(sv?'Saved':'Save')+'</button></div>';return c;}
-function mkFAQItem(f){var sv=isSaved('faq-'+f.id);var el=document.createElement('div');el.className='faq-item';el.innerHTML='<div class="faq-question">'+f.question+' <span>+</span></div><div class="faq-answer"><p style="font-size:0.9rem;">'+f.answer+'</p><div class="faq-meta"><span class="faq-category">'+f.category+'</span><span>'+f.helpfulCount+' found this helpful</span></div><div style="margin-top:0.75rem;"><button class="btn '+(sv?'saved':'btn-outline')+' save-btn" data-id="faq-'+f.id+'" data-type="faq" data-name="'+f.question+'"><i class="fas '+(sv?'fa-check':'fa-bookmark')+'"></i> '+(sv?'Saved':'Save this answer')+'</button></div></div>';el.querySelector('.faq-question').addEventListener('click',function(){var a=this.nextElementSibling;a.classList.toggle('open');this.querySelector('span').textContent=a.classList.contains('open')?'−':'+';});return el;}
+function mkFAQItem(f){var sv=isSaved('faq-'+f.id);var el=document.createElement('div');el.className='faq-item';el.innerHTML='<div class="faq-question">'+f.question+' <span>+</span></div><div class="faq-answer"><p style="font-size:0.9rem;">'+f.answer+'</p><div class="faq-meta"><span class="faq-category">'+f.category+'</span><span>'+f.helpfulCount+' found this helpful</span></div><div style="margin-top:0.75rem;"><button class="btn '+(sv?'saved':'btn-outline')+' save-btn" data-id="faq-'+f.id+'" data-type="faq" data-name="'+f.question+'"><i class="fas '+(sv?'fa-check':'fa-bookmark')+'"></i> '+(sv?'Saved':'Save this answer')+'</button></div></div>';el.querySelector('.faq-question').addEventListener('click',function(){var a=this.nextElementSibling;a.classList.toggle('open');this.querySelector('span').textContent=a.classList.contains('open')?'-':'+';});return el;}
 function renderHospitals(){['hospital-list','dashboard-hospitals'].forEach(function(id){var el=document.getElementById(id);if(!el)return;el.innerHTML='';(id==='dashboard-hospitals'?hospitals.slice(0,2):hospitals).forEach(function(h){el.appendChild(mkHospitalCard(h));});});attachSaveBtns();}
 function renderResources(){var el=document.getElementById('resource-list');if(!el)return;el.innerHTML='';var all=defaultResources.concat(STATE.uploadedFiles.map(function(f){return{id:'upload-'+f.id,title:f.title,type:f.type||'Uploaded',size:f.size,description:f.description||'',uploaded:true};}));all.forEach(function(r){el.appendChild(mkResourceCard(r,r.uploaded));});var de=document.getElementById('dashboard-resources');if(de){de.innerHTML='';defaultResources.slice(0,2).forEach(function(r){de.appendChild(mkResourceCard(r,false));});}var st=document.getElementById('stat-resources');if(st)st.textContent=all.length;attachSaveBtns();}
 function renderFAQs(){['faq-list','playground-faqs'].forEach(function(id){var el=document.getElementById(id);if(!el)return;el.innerHTML='';faqs.forEach(function(f){el.appendChild(mkFAQItem(f));});});attachSaveBtns();}
-function renderSavedItems(){var c=document.getElementById('saved-items-container');if(!c)return;if(!STATE.savedItems.length){c.innerHTML='<div class="empty-state"><i class="fas fa-bookmark"></i><p>Nothing saved yet.</p></div>';return;}c.innerHTML='';var g=document.createElement('div');g.className='saved-items-grid';STATE.savedItems.forEach(function(item){var card=document.createElement('div');card.className='saved-item-card';var icons={hospital:'fa-hospital',resource:'fa-file-alt',faq:'fa-question-circle'};card.innerHTML='<div style="position:absolute;top:0.75rem;right:0.75rem;"><button class="btn btn-danger" style="padding:0.25rem 0.6rem;font-size:0.78rem;" data-rm="'+item.id+'"><i class="fas fa-trash"></i></button></div><h4 style="padding-right:2.5rem;font-size:0.95rem;"><i class="fas '+(icons[item.type]||'fa-file')+'" style="color:var(--epic-light-purple);margin-right:0.4rem;"></i>'+item.name+'</h4><p class="small" style="margin-top:0.4rem;">'+item.type+' • Saved '+new Date(item.savedAt).toLocaleDateString()+'</p>';card.querySelector('[data-rm]').addEventListener('click',function(){STATE.savedItems=STATE.savedItems.filter(function(i){return i.id!==item.id;});persistAll();renderSavedItems();updateSavedStat();notify('Removed.');});g.appendChild(card);});c.appendChild(g);}
-function renderUploadedFiles(){var el=document.getElementById('uploaded-files-list');if(!el)return;if(!STATE.uploadedFiles.length){el.innerHTML='<div class="empty-state"><i class="fas fa-cloud-upload-alt"></i><p>No uploads yet.</p></div>';return;}el.innerHTML='';STATE.uploadedFiles.forEach(function(f){var item=document.createElement('div');item.className='uploaded-file-item';var icon=(f.fileType||'').indexOf('pdf')>=0?'fa-file-pdf':(f.fileType||'').indexOf('video')>=0?'fa-file-video':'fa-file-alt';item.innerHTML='<i class="fas '+icon+'" style="color:var(--epic-light-purple);font-size:1.3rem;"></i><div class="uploaded-file-meta"><strong>'+f.title+'</strong><small>'+(f.type||'File')+' • '+f.size+' • '+new Date(f.uploadedAt).toLocaleDateString()+'</small></div><button class="btn btn-danger" style="padding:0.35rem 0.65rem;font-size:0.8rem;" data-rm="'+f.id+'"><i class="fas fa-trash"></i></button>';item.querySelector('[data-rm]').addEventListener('click',function(){STATE.uploadedFiles=STATE.uploadedFiles.filter(function(u){return u.id!==f.id;});persistAll();renderUploadedFiles();renderResources();notify('File removed.');});el.appendChild(item);});}
-function renderAISaved(){var el=document.getElementById('ai-saved-list');if(!el)return;if(!STATE.aiSavedResponses.length){el.innerHTML='<div class="empty-state"><i class="fas fa-robot"></i><p>No saved AI responses yet.</p></div>';return;}el.innerHTML='';STATE.aiSavedResponses.forEach(function(item,idx){var card=document.createElement('div');card.className='saved-item-card';card.innerHTML='<div style="position:absolute;top:0.75rem;right:0.75rem;"><button class="btn btn-danger" style="padding:0.25rem 0.6rem;font-size:0.78rem;" data-i="'+idx+'"><i class="fas fa-trash"></i></button></div><p style="color:var(--epic-purple);font-weight:600;font-size:0.88rem;padding-right:3rem;">Q: '+item.question+'</p><p style="margin-top:0.5rem;font-size:0.85rem;color:#555;">'+item.answer.substring(0,220)+(item.answer.length>220?'...':"")+'</p><p class="small" style="margin-top:0.4rem;">'+new Date(item.savedAt).toLocaleDateString()+'</p>';card.querySelector('[data-i]').addEventListener('click',function(){STATE.aiSavedResponses.splice(idx,1);persistAll();renderAISaved();});el.appendChild(card);});}
-function renderMyQuestions(){var el=document.getElementById('my-questions-list');if(!el)return;if(!STATE.myQuestions.length){el.innerHTML='<div class="empty-state"><i class="fas fa-question-circle"></i><p>No questions yet.</p></div>';return;}el.innerHTML='';STATE.myQuestions.slice().reverse().forEach(function(q){var item=document.createElement('div');item.className='faq-item';item.innerHTML='<div style="padding:0.4rem;"><strong style="font-size:0.9rem;">'+q.question+'</strong><p class="small" style="margin-top:0.25rem;">'+new Date(q.askedAt).toLocaleDateString()+'</p></div>';el.appendChild(item);});}
-function renderCertifications(){var el=document.getElementById('cert-list');if(!el)return;if(!userCerts.length){el.innerHTML='<div class="empty-state"><i class="fas fa-certificate"></i><p>No certifications added yet.</p></div>';return;}el.innerHTML='';userCerts.forEach(function(cert,idx){var expiry=cert.expiry?new Date(cert.expiry):null;var daysLeft=expiry?Math.ceil((expiry-new Date())/(1000*60*60*24)):null;var bc='cert-active',bt='Active';if(daysLeft!==null){if(daysLeft<0){bc='cert-expired';bt='Expired';}else if(daysLeft<90){bc='cert-expiring';bt='Expiring in '+daysLeft+'d';}}var card=document.createElement('div');card.className='cert-card';card.innerHTML='<div class="cert-info"><h4><i class="fas fa-certificate" style="color:var(--premium-gold);margin-right:0.4rem;"></i>'+cert.name+'</h4><p>'+(cert.number?'ID: '+cert.number+' • ':'')+'Issued: '+(cert.issued||'N/A')+' • Expires: '+(cert.expiry||'N/A')+'</p></div><div style="display:flex;align-items:center;gap:0.75rem;"><span class="cert-badge '+bc+'">'+bt+'</span><button class="btn btn-danger" style="padding:0.3rem 0.6rem;font-size:0.8rem;" data-ci="'+idx+'"><i class="fas fa-trash"></i></button></div>';card.querySelector('[data-ci]').addEventListener('click',function(){userCerts.splice(idx,1);persist('certs',userCerts);renderCertifications();notify('Removed.');});el.appendChild(card);});}
-function renderTrainingHours(){var el=document.getElementById('hours-list');if(!el)return;var total=trainingHoursData.reduce(function(s,h){return s+parseFloat(h.hours||0);},0);var thisMonth=trainingHoursData.filter(function(h){var d=new Date(h.date),n=new Date();return d.getMonth()===n.getMonth()&&d.getFullYear()===n.getFullYear();}).reduce(function(s,h){return s+parseFloat(h.hours||0);},0);var td=document.getElementById('total-hours-display');if(td)td.textContent=total.toFixed(1);var sd=document.getElementById('total-sessions-display');if(sd)sd.textContent=trainingHoursData.length;var md=document.getElementById('this-month-hours-display');if(md)md.textContent=thisMonth.toFixed(1);if(!trainingHoursData.length){el.innerHTML='<div class="empty-state"><i class="fas fa-clock"></i><p>No training hours logged yet.</p></div>';return;}el.innerHTML='';trainingHoursData.forEach(function(entry,idx){var card=document.createElement('div');card.className='hours-card';card.innerHTML='<div class="hours-info"><strong>'+entry.activity+'</strong><span>'+entry.date+(entry.notes?' • '+entry.notes:"")+'</span></div><span class="hours-badge">'+entry.hours+' hrs</span><button class="btn btn-danger" style="padding:0.3rem 0.6rem;font-size:0.8rem;" data-hi="'+idx+'"><i class="fas fa-trash"></i></button>';card.querySelector('[data-hi]').addEventListener('click',function(){trainingHoursData.splice(idx,1);persist('hours',trainingHoursData);renderTrainingHours();notify('Entry removed.');});el.appendChild(card);});}
-function updateSavedStat(){var s=document.getElementById('stat-saved');if(s)s.textContent=STATE.savedItems.length;}
-function attachSaveBtns(){document.querySelectorAll('.save-btn:not([data-w])').forEach(function(btn){btn.dataset.w='1';btn.addEventListener('click',function(e){var b=e.currentTarget,id=b.dataset.id,type=b.dataset.type,name=b.dataset.name;var already=STATE.savedItems.some(function(i){return i.id===id;});if(already){STATE.savedItems=STATE.savedItems.filter(function(i){return i.id!==id;});b.className='btn btn-outline save-btn';b.dataset.w='1';b.innerHTML='<i class="fas fa-bookmark"></i> '+(type==='faq'?'Save this answer':'Save');notify('Removed from saved content.');}else{STATE.savedItems.push({id:id,type:type,name:name,savedAt:new Date().toISOString()});b.className='btn saved save-btn';b.dataset.w='1';b.innerHTML='<i class="fas fa-check"></i> Saved';notify('Saved to your profile!','success');}persistAll();renderSavedItems();updateSavedStat();});});}
-function notify(msg,type){var n=document.createElement('div');n.className='notification '+(type||'');n.textContent=msg;document.body.appendChild(n);setTimeout(function(){if(n.parentNode)n.parentNode.removeChild(n);},3000);}
-function initNav(){document.querySelectorAll('.nav-link').forEach(function(link){link.addEventListener('click',function(e){e.preventDefault();var id=link.getAttribute('href').substring(1);document.querySelectorAll('.nav-link').forEach(function(l){l.classList.remove('active');});link.classList.add('active');document.querySelectorAll('.tab-content').forEach(function(c){c.classList.remove('active');});var t=document.getElementById(id);if(t)t.classList.add('active');});});}
-function initProfileTabs(){document.querySelectorAll('.profile-tab').forEach(function(tab){tab.addEventListener('click',function(){document.querySelectorAll('.profile-tab').forEach(function(t){t.classList.remove('active');});document.querySelectorAll('.profile-tab-content').forEach(function(c){c.classList.remove('active');});tab.classList.add('active');var el=document.getElementById(tab.dataset.tab+'-tab');if(el)el.classList.add('active');if(tab.dataset.tab==='saved')renderSavedItems();if(tab.dataset.tab==='uploads')renderUploadedFiles();if(tab.dataset.tab==='ai-saved')renderAISaved();if(tab.dataset.tab==='questions')renderMyQuestions();if(tab.dataset.tab==='certifications')loadCertifications();if(tab.dataset.tab==='training-hours')loadTrainingHours();});});}
-function initModals(){document.querySelectorAll('.modal-close').forEach(function(btn){btn.addEventListener('click',function(){var m=document.getElementById(btn.dataset.modal);if(m)m.classList.remove('active');});});document.querySelectorAll('.modal-overlay').forEach(function(o){o.addEventListener('click',function(e){if(e.target===o)o.classList.remove('active');});});document.querySelectorAll('.upgrade-trigger').forEach(function(btn){btn.addEventListener('click',function(){document.getElementById('upgrade-modal').classList.add('active');});});document.getElementById('start-trial-btn').addEventListener('click',function(){STATE.isPremium=true;persistAll();document.getElementById('plan-label').textContent='Premium Member';document.getElementById('profile-plan-label').textContent='Premium Member';document.getElementById('upgrade-modal').classList.remove('active');notify('Welcome to Premium!','success');});}
-function initUpload(){['upload-resource-btn','upload-from-profile-btn'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('click',function(){document.getElementById('upload-modal').classList.add('active');});});var area=document.getElementById('file-upload-area'),inp=document.getElementById('file-input'),info=document.getElementById('file-info'),fnEl=document.getElementById('file-name'),fsEl=document.getElementById('file-size-display'),upBtn=document.getElementById('start-upload-btn');var sel=null;area.addEventListener('click',function(){inp.click();});area.addEventListener('dragover',function(e){e.preventDefault();area.classList.add('drag-over');});area.addEventListener('dragleave',function(){area.classList.remove('drag-over');});area.addEventListener('drop',function(e){e.preventDefault();area.classList.remove('drag-over');if(e.dataTransfer.files[0])pick(e.dataTransfer.files[0]);});inp.addEventListener('change',function(e){if(e.target.files[0])pick(e.target.files[0]);});function pick(f){sel=f;fnEl.textContent=f.name;fsEl.textContent=fmtSz(f.size);info.style.display='block';chk();}document.getElementById('doc-title').addEventListener('input',chk);function chk(){upBtn.disabled=!(sel&&document.getElementById('doc-title').value.trim());}upBtn.addEventListener('click',function(){if(!sel)return;upBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Uploading...';upBtn.disabled=true;setTimeout(function(){STATE.uploadedFiles.push({id:Date.now().toString(),title:document.getElementById('doc-title').value.trim(),description:document.getElementById('doc-description').value.trim(),type:document.getElementById('doc-category').value||'Uploaded File',size:fmtSz(sel.size),fileType:sel.type,uploadedAt:new Date().toISOString()});persistAll();renderUploadedFiles();renderResources();document.getElementById('upload-modal').classList.remove('active');upBtn.innerHTML='<i class="fas fa-upload"></i> Upload Document';upBtn.disabled=false;sel=null;inp.value='';info.style.display='none';['doc-title','doc-description'].forEach(function(i){document.getElementById(i).value='';});document.getElementById('doc-category').value='';notify('File uploaded!','success');},1200);});}
-function fmtSz(b){if(!b)return'0 B';var k=1024,s=['B','KB','MB','GB'],i=Math.floor(Math.log(b)/Math.log(k));return(b/Math.pow(k,i)).toFixed(1)+' '+s[i];}
-function initSearch(){var pairs=[['hospital-search','#hospital-list .hospital-card'],['faq-search','#faq-list .faq-item'],['resource-search','#resource-list .resource-card'],['dash-search','#dashboard .hospital-card, #dashboard .resource-card']];pairs.forEach(function(p){var el=document.getElementById(p[0]);if(el)el.addEventListener('input',function(e){var t=e.target.value.toLowerCase();document.querySelectorAll(p[1]).forEach(function(c){c.style.display=c.textContent.toLowerCase().indexOf(t)>=0?'':'none';});});});}
-function initSettings(){var btn=document.getElementById('save-settings-btn');if(btn)btn.addEventListener('click',function(){var name=document.getElementById('set-name').value;var email=document.getElementById('set-email').value.trim().toLowerCase();var hospital=document.getElementById('set-hospital').value;var accounts=getAccounts();if(accounts[email]){accounts[email].name=name;accounts[email].hospital=hospital;setAccounts(accounts);}var sess=JSON.parse(sessionStorage.getItem('_sess')||'{}');sess.name=name;sess.hospital=hospital;sessionStorage.setItem('_sess',JSON.stringify(sess));document.getElementById('greeting-name').textContent=name.split(' ')[0];document.getElementById('profile-name-display').textContent=name;document.getElementById('profile-hospital-display').textContent=hospital;notify('Settings saved!','success');});}
-function initCertifications(){var btn=document.getElementById('add-cert-btn');if(btn)btn.addEventListener('click',function(){var name=document.getElementById('cert-name').value.trim();if(!name)return notify('Please enter a certification name.','error');userCerts.push({name:name,number:document.getElementById('cert-number').value.trim(),issued:document.getElementById('cert-issued').value,expiry:document.getElementById('cert-expiry').value});persist('certs',userCerts);renderCertifications();['cert-name','cert-number','cert-issued','cert-expiry'].forEach(function(id){document.getElementById(id).value='';});notify('Certification added!','success');});}
-function initTrainingHours(){var addBtn=document.getElementById('add-hours-btn');if(addBtn)addBtn.addEventListener('click',function(){var activity=document.getElementById('hours-activity').value.trim(),hours=document.getElementById('hours-count').value,date=document.getElementById('hours-date').value;if(!activity||!hours||!date)return notify('Please fill activity, hours, and date.','error');trainingHoursData.unshift({activity:activity,hours:parseFloat(hours),date:date,notes:document.getElementById('hours-notes').value.trim()});persist('hours',trainingHoursData);renderTrainingHours();['hours-activity','hours-count','hours-date','hours-notes'].forEach(function(id){document.getElementById(id).value='';});notify('Hours logged!','success');});var expBtn=document.getElementById('export-hours-btn');if(expBtn)expBtn.addEventListener('click',function(){if(!trainingHoursData.length)return notify('No hours to export.','error');var rows=[['Activity','Hours','Date','Notes']];trainingHoursData.forEach(function(h){rows.push([h.activity,h.hours,h.date,h.notes||'']);});var csv=rows.map(function(r){return r.map(function(v){return'"'+String(v).replace(/"/g,'""')+'"';}).join(',');}).join('\n');var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='epic-training-hours.csv';a.click();notify('CSV exported!','success');});}
-function mdRender(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/`(.+?)`/g,'<code style="background:#eee;padding:0.1rem 0.3rem;border-radius:3px;">$1</code>').replace(/^### (.+)$/gm,'<strong style="display:block;margin:0.5rem 0 0.2rem;color:#4B286D;">$1</strong>').replace(/^## (.+)$/gm,'<strong style="display:block;margin:0.7rem 0 0.3rem;color:#4B286D;">$1</strong>').replace(/^- (.+)$/gm,'<li style="margin-left:1.2rem;list-style:disc;">$1</li>').replace(/^(\d+)\. (.+)$/gm,'<li style="margin-left:1.2rem;">$2</li>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');}
-async function callAITool(prompt,resultEl){resultEl.style.display='block';resultEl.className='ai-tool-result loading';resultEl.innerHTML='<i class="fas fa-spinner fa-spin"></i> AI is thinking...';try{var resp=await fetch('/.netlify/functions/ai-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:'You are an expert Epic EMR Trainer Assistant. Be specific, practical, and use Epic terminology correctly.',messages:[{role:'user',content:prompt}]})});var data=await resp.json();if(data.error)throw new Error(data.error.message||JSON.stringify(data.error));var text='';if(Array.isArray(data.content))data.content.forEach(function(b){if(b.type==='text')text+=b.text;});if(!text)throw new Error('No response received');resultEl.className='ai-tool-result';var shortQ=prompt.substring(0,80).replace(/'/g,'');resultEl.innerHTML=mdRender(text)+'<div class="ai-result-actions"><button class="ai-save-btn" onclick="saveToolResult(this,''+shortQ+'',this.closest('.ai-tool-result').innerText)"><i class="fas fa-bookmark"></i> Save</button><button class="ai-save-btn" onclick="copyTool(this,this.closest('.ai-tool-result').innerText)"><i class="fas fa-copy"></i> Copy</button></div>';}catch(err){resultEl.className='ai-tool-result error';resultEl.textContent='Error: '+err.message;}}
-function saveToolResult(btn,q,a){STATE.aiSavedResponses.push({question:q,answer:a,savedAt:new Date().toISOString()});persistAll();btn.innerHTML='<i class="fas fa-check"></i> Saved!';btn.disabled=true;notify('Saved!','success');}
-function copyTool(btn,text){navigator.clipboard.writeText(text).then(function(){btn.innerHTML='<i class="fas fa-check"></i> Copied!';setTimeout(function(){btn.innerHTML='<i class="fas fa-copy"></i> Copy';},2000);});}
-function initAITools(){var pdfArea=document.getElementById('pdf-upload-area'),pdfInp=document.getElementById('pdf-file-input'),pdfInfo=document.getElementById('pdf-file-info'),pdfName=document.getElementById('pdf-file-name'),pdfBtn=document.getElementById('pdf-ask-btn');var pdfContent='';pdfArea.addEventListener('click',function(){pdfInp.click();});pdfArea.addEventListener('dragover',function(e){e.preventDefault();pdfArea.classList.add('drag-over');});pdfArea.addEventListener('dragleave',function(){pdfArea.classList.remove('drag-over');});pdfArea.addEventListener('drop',function(e){e.preventDefault();pdfArea.classList.remove('drag-over');if(e.dataTransfer.files[0])readPDF(e.dataTransfer.files[0]);});pdfInp.addEventListener('change',function(e){if(e.target.files[0])readPDF(e.target.files[0]);});function readPDF(f){pdfName.textContent=f.name;pdfInfo.style.display='block';if(f.type==='application/pdf'){pdfContent='PDF: '+f.name;pdfBtn.disabled=false;notify('PDF uploaded!','success');}else{var r=new FileReader();r.onload=function(ev){pdfContent=ev.target.result.substring(0,8000);pdfBtn.disabled=false;notify('Document loaded!','success');};r.readAsText(f);}}pdfBtn.addEventListener('click',function(){var q=document.getElementById('pdf-question').value.trim();if(!q)return notify('Please enter a question.','error');callAITool(pdfContent?'Document:\n'+pdfContent+'\n\nQuestion: '+q:'Answer this Epic question: '+q,document.getElementById('pdf-answer'));});document.getElementById('pdf-question').addEventListener('keydown',function(e){if(e.key==='Enter')pdfBtn.click();});document.getElementById('error-explain-btn').addEventListener('click',function(){var err=document.getElementById('error-input').value.trim(),role=document.getElementById('error-role').value;if(!err)return notify('Please paste an error message.','error');callAITool('I am an Epic EMR '+(role||'user')+' and received this error:\n\n"'+err+'"\n\n1. Explain in plain English\n2. Most likely cause\n3. Step-by-step fix\n4. Who to contact',document.getElementById('error-answer'));});document.getElementById('sp-generate-btn').addEventListener('click',function(){var desc=document.getElementById('sp-description').value.trim();if(!desc)return notify('Please describe the SmartPhrase.','error');callAITool('Create a complete Epic SmartPhrase for '+(document.getElementById('sp-specialty').value||'general')+' use.\nName: '+(document.getElementById('sp-name').value||'CUSTOM')+'\nPurpose: '+desc+'\n\nProvide: 1) Complete text with Epic syntax 2) How to create in Epic 3) Customization tips',document.getElementById('sp-answer'));});document.getElementById('tp-generate-btn').addEventListener('click',function(){var role=document.getElementById('tp-role').value,modules=document.getElementById('tp-modules').value.trim();if(!role||!modules)return notify('Please select a role and enter modules.','error');var golive=document.getElementById('tp-golive').value,hours=document.getElementById('tp-hours').value,notes=document.getElementById('tp-notes').value.trim(),days=golive?Math.ceil((new Date(golive)-new Date())/(1000*60*60*24)):null;callAITool('Create a detailed Epic training plan.\nRole: '+role+'\nModules: '+modules+'\nGo-live: '+(golive||'TBD')+(days?' ('+days+' days away)':'')+'\nHours/week: '+hours+'\nNotes: '+(notes||'None')+'\n\nProvide: week-by-week schedule, objectives, methods, assessments, go-live support',document.getElementById('tp-answer'));});document.getElementById('wf-generate-btn').addEventListener('click',function(){var desc=document.getElementById('wf-description').value.trim();if(!desc)return notify('Please describe the workflow.','error');callAITool('Create step-by-step Epic instructions:\nModule: '+(document.getElementById('wf-module').value||'Epic EMR')+'\nWorkflow: '+desc+'\n\nInclude: prerequisites, numbered steps, common mistakes, keyboard shortcuts',document.getElementById('wf-answer'));});document.getElementById('tip-generate-btn').addEventListener('click',function(){var topic=document.getElementById('tip-topic').value.trim();if(!topic)return notify('Please enter a topic.','error');callAITool('Give me 5 powerful Epic EMR productivity tips for '+topic+(document.getElementById('tip-role').value?' for '+document.getElementById('tip-role').value+' users':'')+'. For each: title, explanation, exact steps/shortcut, why it saves time.',document.getElementById('tip-answer'));});}
-var AI_SYS='You are an expert Epic EMR Trainer Assistant. Help with Epic modules, training strategies, workflows, and best practices. Use web search for current information. Be concise and practical.';
-function initAIChat(){var fab=document.getElementById('ai-fab'),panel=document.getElementById('ai-panel'),closeBtn=document.getElementById('ai-close-btn'),input=document.getElementById('ai-input'),sendBtn=document.getElementById('ai-send'),msgs=document.getElementById('ai-messages');fab.addEventListener('click',function(){panel.classList.toggle('open');if(panel.classList.contains('open'))input.focus();});closeBtn.addEventListener('click',function(){panel.classList.remove('open');});input.addEventListener('input',function(){input.style.height='auto';input.style.height=Math.min(input.scrollHeight,100)+'px';});input.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});sendBtn.addEventListener('click',send);async function send(){var text=input.value.trim();if(!text)return;addMsg('user',text);input.value='';input.style.height='auto';sendBtn.disabled=true;STATE.myQuestions.push({question:text,askedAt:new Date().toISOString()});persistAll();var thinking=addMsg('assistant','⣋ Searching and thinking...',true);STATE.aiHistory.push({role:'user',content:text});try{var resp=await fetch('/.netlify/functions/ai-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1024,system:AI_SYS,tools:[{type:'web_search_20250305',name:'web_search'}],messages:STATE.aiHistory.slice(-12)})});var data=await resp.json();if(data.error)throw new Error(data.error.message||JSON.stringify(data.error));var reply='';if(Array.isArray(data.content))data.content.forEach(function(b){if(b.type==='text')reply+=b.text;});if(!reply)reply='No response received.';thinking.remove();var msgEl=addMsg('assistant',reply);var sb=document.createElement('button');sb.className='ai-save-btn';sb.innerHTML='<i class="fas fa-bookmark"></i> Save Response';sb.addEventListener('click',function(){STATE.aiSavedResponses.push({question:text,answer:reply,savedAt:new Date().toISOString()});persistAll();sb.innerHTML='<i class="fas fa-check"></i> Saved!';sb.disabled=true;notify('AI response saved!','success');});msgEl.appendChild(sb);STATE.aiHistory.push({role:'assistant',content:reply});}catch(err){thinking.remove();addMsg('assistant','⚠️ Error: '+err.message);}sendBtn.disabled=false;input.focus();}function addMsg(role,text,isThinking){var el=document.createElement('div');el.className='ai-msg '+role+(isThinking?' thinking':'');if(role==='assistant'&&!isThinking){el.innerHTML=mdRender(text);}else{el.textContent=text;}msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;return el;}}
+function renderSavedItems(){var c=document.getElementById('saved-items-container');if(!c)return;if(!STATE.savedItems.length){c.innerHTML='<div class="empty-state"><i class="fas fa-bookmark"></i><p>Nothing saved yet.</p></div>';return;}c.innerHTML='';var g=document.createElement('div');g.className='saved-items-grid';STATE.savedItems.forEach(function(item){var card=document.createElement('div');card.className='saved-item-card';var icons={hospital:'fa-hospital',resource:'fa-file-alt',faq:'fa-question-circle'};card.innerHTML='<div style="position:absolute;top:0.75rem;right:0.75rem;"><button class="btn btn-danger" style="padding:0.25rem 0.6rem;font-size:0.78rem;" data-rm="'+item.id+'"><i class="fas fa-trash"></i></button></div><h4 style="padding-right:2.5rem;font-size:0.95rem;"><i class="fas '+(icons[item.type]||'fa-file')+'" style="color:var(--epic-light-purple);margin-right:0.4rem;"></i>'+item.name+'</h4><p class="small" style="margin-top:0.4rem;">'+item.type+' - Saved '+new Date(item.savedAt).toLocaleDateString()+'</p>';card.querySelector('[data-rm]').addEventListener('click',function(){STATE.savedItems=STATE.savedItems.filter(function(i){return i.id!==item.id;});saveState();renderSavedItems();updateSavedStat();notify('Removed.');});g.appendChild(card);});c.appendChild(g);}
+function renderUploadedFiles(){var el=document.getElementById('uploaded-files-list');if(!el)return;if(!STATE.uploadedFiles.length){el.innerHTML='<div class="empty-state"><i class="fas fa-cloud-upload-alt"></i><p>No uploads yet.</p></div>';return;}el.innerHTML='';STATE.uploadedFiles.forEach(function(f){var item=document.createElement('div');item.className='uploaded-file-item';item.innerHTML='<i class="fas fa-file-alt" style="color:var(--epic-light-purple);font-size:1.3rem;"></i><div class="uploaded-file-meta"><strong>'+f.title+'</strong><small>'+(f.type||'File')+' - '+f.size+'</small></div><button class="btn btn-danger" style="padding:0.35rem 0.65rem;font-size:0.8rem;" data-rm="'+f.id+'"><i class="fas fa-trash"></i></button>';item.querySelector('[data-rm]').addEventListener('click',function(){STATE.uploadedFiles=STATE.uploadedFiles.filter(function(u){return u.id!==f.id;});saveState();renderUploadedFiles();renderResources();notify('File removed.');});el.appendChild(item);});}
+function renderAISaved(){var el=document.getElementById('ai-saved-list');if(!el)return;if(!STATE.aiSavedResponses.length){el.innerHTML='<div class="empty-state"><i class="fas fa-robot"></i><p>No saved AI responses yet.</p></div>';return;}el.innerHTML='';STATE.aiSavedResponses.forEach(function(item,idx){var card=document.createElement('div');card.className='saved-item-card';card.innerHTML='<div style="position:absolute;top:0.75rem;right:0.75rem;"><button class="btn btn-danger" style="padding:0.25rem 0.6rem;font-size:0.78rem;" data-i="'+idx+'"><i class="fas fa-trash"></i></button></div><p style="color:var(--epic-purple);font-weight:600;font-size:0.88rem;padding-right:3rem;">Q: '+item.question+'</p><p style="margin-top:0.5rem;font-size:0.85rem;color:#555;">'+item.answer.substring(0,200)+'...</p>';card.querySelector('[data-i]').addEventListener('click',function(){STATE.aiSavedResponses.splice(idx,1);saveState();renderAISaved();});el.appendChild(card);});}
+function renderMyQuestions(){var el=document.getElementById('my-questions-list');if(!el)return;if(!STATE.myQuestions.length){el.innerHTML='<div class="empty-state"><i class="fas fa-question-circle"></i><p>No questions yet.</p></div>';return;}el.innerHTML='';STATE.myQuestions.slice().reverse().forEach(function(q){var item=document.createElement('div');item.className='faq-item';item.innerHTML='<div style="padding:0.4rem;"><strong style="font-size:0.9rem;">'+q.question+'</strong></div>';el.appendChild(item);});}
+function renderCertifications(){var el=document.getElementById('cert-list');if(!el)return;if(!userCerts.length){el.innerHTML='<div class="empty-state"><i class="fas fa-certificate"></i><p>No certifications added yet.</p></div>';return;}el.innerHTML='';userCerts.forEach(function(cert,idx){var expiry=cert.expiry?new Date(cert.expiry):null;var daysLeft=expiry?Math.ceil((expiry-new Date())/(1000*60*60*24)):null;var bc='cert-active',bt='Active';if(daysLeft!==null){if(daysLeft<0){bc='cert-expired';bt='Expired';}else if(daysLeft<90){bc='cert-expiring';bt='Expiring in '+daysLeft+'d';}}var card=document.createElement('div');card.className='cert-card';card.innerHTML='<div class="cert-info"><h4><i class="fas fa-certificate" style="color:var(--premium-gold);margin-right:0.4rem;"></i>'+cert.name+'</h4><p>'+(cert.number?'ID: '+cert.number+' - ':'')+'Issued: '+(cert.issued||'N/A')+' - Expires: '+(cert.expiry||'N/A')+'</p></div><div style="display:flex;align-items:center;gap:0.75rem;"><span class="cert-badge '+bc+'">'+bt+'</span><button class="btn btn-danger" style="padding:0.3rem 0.6rem;font-size:0.8rem;" data-ci="'+idx+'"><i class="fas fa-trash"></i></button></div>';card.querySelector('[data-ci]').addEventListener('click',function(){userCerts.splice(idx,1);localStorage.setItem('userCerts',JSON.stringify(userCerts));renderCertifications();notify('Removed.');});el.appendChild(card);});}
+function renderTrainingHours(){var el=document.getElementById('hours-list');if(!el)return;var total=trainingHoursData.reduce(function(s,h){return s+parseFloat(h.hours||0);},0);var thisMonth=trainingHoursData.filter(function(h){var d=new Date(h.date),n=new Date();return d.getMonth()===n.getMonth()&&d.getFullYear()===n.getFullYear();}).reduce(function(s,h){return s+parseFloat(h.hours||0);},0);var td=document.getElementById('total-hours-display');if(td)td.textContent=total.toFixed(1);var sd=document.getElementById('total-sessions-display');if(sd)sd.textContent=trainingHoursData.length;var md=document.getElementById('this-month-hours-display');if(md)md.textContent=thisMonth.toFixed(1);if(!trainingHoursData.length){el.innerHTML='<div class="empty-state"><i class="fas fa-clock"></i><p>No training hours logged yet.</p></div>';return;}el.innerHTML='';trainingHoursData.forEach(function(entry,idx){var card=document.createElement('div');card.className='hours-card';card.innerHTML='<div class="hours-info"><strong>'+entry.activity+'</strong><span>'+entry.date+(entry.notes?' - '+entry.notes:'')+'</span></div><span class="hours-badge">'+entry.hours+' hrs</span><button class="btn btn-danger" style="padding:0.3rem 0.6rem;font-size:0.8rem;" data-hi="'+idx+'"><i class="fas fa-trash"></i></button>';card.querySelector('[data-hi]').addEventListener('click',function(){trainingHoursData.splice(idx,1);localStorage.setItem('trainingHours',JSON.stringify(trainingHoursData));renderTrainingHours();notify('Removed.');});el.appendChild(card);});}
+function mdRender(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/`(.+?)`/g,'<code style="background:#eee;padding:0.1rem 0.3rem;border-radius:3px;">$1</code>').replace(/^### (.+)$/gm,'<strong style="display:block;margin:0.5rem 0 0.2rem;color:#4B286D;">$1</strong>').replace(/^## (.+)$/gm,'<strong style="display:block;margin:0.7rem 0 0.3rem;color:#4B286D;">$1</strong>').replace(/^- (.+)$/gm,'<li style="margin-left:1.2rem;list-style:disc;">$1</li>').replace(/^(\d+)\. (.+)$/gm,'<li style="margin-left:1.2rem;">$2</li>').replace(/
+
+/g,'<br><br>').replace(/
+/g,'<br>');}
+async function callAITool(prompt,resultEl){resultEl.style.display='block';resultEl.className='ai-tool-result loading';resultEl.innerHTML='<i class="fas fa-spinner fa-spin"></i> AI is thinking...';try{var resp=await fetch('/.netlify/functions/ai-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:'You are an expert Epic EMR Trainer Assistant. Be specific, practical, and use Epic terminology correctly.',messages:[{role:'user',content:prompt}]})});var data=await resp.json();if(data.error)throw new Error(data.error.message||JSON.stringify(data.error));var text='';if(Array.isArray(data.content))data.content.forEach(function(b){if(b.type==='text')text+=b.text;});if(!text)throw new Error('No response received');resultEl.className='ai-tool-result';resultEl.innerHTML=mdRender(text)+'<div class="ai-result-actions"><button class="ai-save-btn" onclick="saveAIResult(this,this.closest('.ai-tool-result').innerText)"><i class="fas fa-bookmark"></i> Save</button><button class="ai-save-btn" onclick="copyAIResult(this,this.closest('.ai-tool-result').innerText)"><i class="fas fa-copy"></i> Copy</button></div>';}catch(err){resultEl.className='ai-tool-result error';resultEl.textContent='Error: '+err.message;}}
+function saveAIResult(btn,text){STATE.aiSavedResponses.push({question:'AI Tool Result',answer:text,savedAt:new Date().toISOString()});saveState();btn.innerHTML='<i class="fas fa-check"></i> Saved!';btn.disabled=true;notify('Saved!','success');}
+function copyAIResult(btn,text){navigator.clipboard.writeText(text).then(function(){btn.innerHTML='<i class="fas fa-check"></i> Copied!';setTimeout(function(){btn.innerHTML='<i class="fas fa-copy"></i> Copy';},2000);});}
 document.addEventListener('DOMContentLoaded',function(){
-    initNav();initProfileTabs();initModals();initUpload();initSearch();initSettings();initAITools();initAIChat();initCertifications();initTrainingHours();
-    // Always render content regardless of auth state
-    renderHospitals();renderResources();renderFAQs();
-    initAuth();renderAll();updateSavedStat();
+document.querySelectorAll('.nav-link').forEach(function(link){link.addEventListener('click',function(e){e.preventDefault();var id=link.getAttribute('href').substring(1);document.querySelectorAll('.nav-link').forEach(function(l){l.classList.remove('active');});link.classList.add('active');document.querySelectorAll('.tab-content').forEach(function(c){c.classList.remove('active');});var t=document.getElementById(id);if(t)t.classList.add('active');});});
+document.querySelectorAll('.profile-tab').forEach(function(tab){tab.addEventListener('click',function(){document.querySelectorAll('.profile-tab').forEach(function(t){t.classList.remove('active');});document.querySelectorAll('.profile-tab-content').forEach(function(c){c.classList.remove('active');});tab.classList.add('active');var el=document.getElementById(tab.dataset.tab+'-tab');if(el)el.classList.add('active');if(tab.dataset.tab==='saved')renderSavedItems();if(tab.dataset.tab==='uploads')renderUploadedFiles();if(tab.dataset.tab==='ai-saved')renderAISaved();if(tab.dataset.tab==='questions')renderMyQuestions();if(tab.dataset.tab==='certifications')renderCertifications();if(tab.dataset.tab==='training-hours')renderTrainingHours();});});
+document.querySelectorAll('.modal-close').forEach(function(btn){btn.addEventListener('click',function(){document.getElementById(btn.dataset.modal).classList.remove('active');});});
+document.querySelectorAll('.modal-overlay').forEach(function(o){o.addEventListener('click',function(e){if(e.target===o)o.classList.remove('active');});});
+document.querySelectorAll('.upgrade-trigger').forEach(function(btn){btn.addEventListener('click',function(){document.getElementById('upgrade-modal').classList.add('active');});});
+document.getElementById('start-trial-btn').addEventListener('click',function(){STATE.isPremium=true;saveState();document.getElementById('plan-label').textContent='Premium Member';document.getElementById('profile-plan-label').textContent='Premium Member';document.getElementById('upgrade-modal').classList.remove('active');notify('Welcome to Premium!','success');});
+var area=document.getElementById('file-upload-area'),inp=document.getElementById('file-input'),info=document.getElementById('file-info'),fnEl=document.getElementById('file-name'),fsEl=document.getElementById('file-size-display'),upBtn=document.getElementById('start-upload-btn');
+var sel=null;
+['upload-resource-btn','upload-from-profile-btn'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('click',function(){document.getElementById('upload-modal').classList.add('active');});});
+area.addEventListener('click',function(){inp.click();});
+area.addEventListener('dragover',function(e){e.preventDefault();area.classList.add('drag-over');});
+area.addEventListener('dragleave',function(){area.classList.remove('drag-over');});
+area.addEventListener('drop',function(e){e.preventDefault();area.classList.remove('drag-over');if(e.dataTransfer.files[0])pick(e.dataTransfer.files[0]);});
+inp.addEventListener('change',function(e){if(e.target.files[0])pick(e.target.files[0]);});
+function pick(f){sel=f;fnEl.textContent=f.name;fsEl.textContent=fmtSz(f.size);info.style.display='block';upBtn.disabled=!document.getElementById('doc-title').value.trim();}
+document.getElementById('doc-title').addEventListener('input',function(){upBtn.disabled=!(sel&&this.value.trim());});
+upBtn.addEventListener('click',function(){if(!sel)return;upBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Uploading...';upBtn.disabled=true;setTimeout(function(){STATE.uploadedFiles.push({id:Date.now().toString(),title:document.getElementById('doc-title').value.trim(),description:document.getElementById('doc-description').value.trim(),type:document.getElementById('doc-category').value||'Uploaded File',size:fmtSz(sel.size),fileType:sel.type,uploadedAt:new Date().toISOString()});saveState();renderUploadedFiles();renderResources();document.getElementById('upload-modal').classList.remove('active');upBtn.innerHTML='<i class="fas fa-upload"></i> Upload Document';upBtn.disabled=false;sel=null;inp.value='';info.style.display='none';document.getElementById('doc-title').value='';document.getElementById('doc-description').value='';document.getElementById('doc-category').value='';notify('File uploaded!','success');},1200);});
+[['hospital-search','#hospital-list .hospital-card'],['faq-search','#faq-list .faq-item'],['resource-search','#resource-list .resource-card'],['dash-search','#dashboard .hospital-card, #dashboard .resource-card']].forEach(function(p){var el=document.getElementById(p[0]);if(el)el.addEventListener('input',function(e){var t=e.target.value.toLowerCase();document.querySelectorAll(p[1]).forEach(function(c){c.style.display=c.textContent.toLowerCase().indexOf(t)>=0?'':'none';});});});
+document.getElementById('save-settings-btn').addEventListener('click',function(){var name=document.getElementById('set-name').value;document.getElementById('greeting-name').textContent=name.split(' ')[0];document.getElementById('dashboard-name').textContent=name.split(' ')[0];document.getElementById('profile-name-display').textContent=name;notify('Settings saved!','success');});
+document.getElementById('add-cert-btn').addEventListener('click',function(){var name=document.getElementById('cert-name').value.trim();if(!name)return notify('Please enter a certification name.','error');userCerts.push({name:name,number:document.getElementById('cert-number').value.trim(),issued:document.getElementById('cert-issued').value,expiry:document.getElementById('cert-expiry').value});localStorage.setItem('userCerts',JSON.stringify(userCerts));renderCertifications();['cert-name','cert-number','cert-issued','cert-expiry'].forEach(function(id){document.getElementById(id).value='';});notify('Certification added!','success');});
+document.getElementById('add-hours-btn').addEventListener('click',function(){var activity=document.getElementById('hours-activity').value.trim(),hours=document.getElementById('hours-count').value,date=document.getElementById('hours-date').value;if(!activity||!hours||!date)return notify('Please fill activity, hours, and date.','error');trainingHoursData.unshift({activity:activity,hours:parseFloat(hours),date:date,notes:document.getElementById('hours-notes').value.trim()});localStorage.setItem('trainingHours',JSON.stringify(trainingHoursData));renderTrainingHours();['hours-activity','hours-count','hours-date','hours-notes'].forEach(function(id){document.getElementById(id).value='';});notify('Hours logged!','success');});
+document.getElementById('export-hours-btn').addEventListener('click',function(){if(!trainingHoursData.length)return notify('No hours to export.','error');var rows=[['Activity','Hours','Date','Notes']];trainingHoursData.forEach(function(h){rows.push([h.activity,h.hours,h.date,h.notes||'']);});var csv=rows.map(function(r){return r.map(function(v){return'"'+String(v).replace(/"/g,'""')+'"';}).join(',');}).join('
+');var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='epic-training-hours.csv';a.click();notify('CSV exported!','success');});
+var pdfArea=document.getElementById('pdf-upload-area'),pdfInp=document.getElementById('pdf-file-input'),pdfInfo=document.getElementById('pdf-file-info'),pdfNameEl=document.getElementById('pdf-file-name'),pdfBtn=document.getElementById('pdf-ask-btn');var pdfContent='';
+pdfArea.addEventListener('click',function(){pdfInp.click();});
+pdfInp.addEventListener('change',function(e){if(!e.target.files[0])return;var f=e.target.files[0];pdfNameEl.textContent=f.name;pdfInfo.style.display='block';if(f.type==='application/pdf'){pdfContent='PDF: '+f.name;pdfBtn.disabled=false;notify('PDF uploaded!','success');}else{var r=new FileReader();r.onload=function(ev){pdfContent=ev.target.result.substring(0,8000);pdfBtn.disabled=false;notify('Document loaded!','success');};r.readAsText(f);}});
+pdfBtn.addEventListener('click',function(){var q=document.getElementById('pdf-question').value.trim();if(!q)return notify('Please enter a question.','error');callAITool(pdfContent?'Document:
+'+pdfContent+'
+
+Question: '+q:'Answer this Epic question: '+q,document.getElementById('pdf-answer'));});
+document.getElementById('error-explain-btn').addEventListener('click',function(){var err=document.getElementById('error-input').value.trim(),role=document.getElementById('error-role').value;if(!err)return notify('Please paste an error message.','error');callAITool('I am an Epic EMR '+(role||'user')+' and received this error:
+
+"'+err+'"
+
+1. Explain in plain English
+2. Most likely cause
+3. Step-by-step fix
+4. Who to contact',document.getElementById('error-answer'));});
+document.getElementById('sp-generate-btn').addEventListener('click',function(){var desc=document.getElementById('sp-description').value.trim();if(!desc)return notify('Please describe the SmartPhrase.','error');callAITool('Create a complete Epic SmartPhrase for '+(document.getElementById('sp-specialty').value||'general')+' use.
+Name: '+(document.getElementById('sp-name').value||'CUSTOM')+'
+Purpose: '+desc+'
+
+Provide: 1) Complete text with Epic syntax 2) How to create in Epic 3) Customization tips',document.getElementById('sp-answer'));});
+document.getElementById('tp-generate-btn').addEventListener('click',function(){var role=document.getElementById('tp-role').value,modules=document.getElementById('tp-modules').value.trim();if(!role||!modules)return notify('Please select a role and enter modules.','error');var golive=document.getElementById('tp-golive').value,hours=document.getElementById('tp-hours').value,notes=document.getElementById('tp-notes').value.trim(),days=golive?Math.ceil((new Date(golive)-new Date())/(1000*60*60*24)):null;callAITool('Create a detailed Epic training plan.
+Role: '+role+'
+Modules: '+modules+'
+Go-live: '+(golive||'TBD')+(days?' ('+days+' days away)':'')+'
+Hours/week: '+hours+'
+Notes: '+(notes||'None'),document.getElementById('tp-answer'));});
+document.getElementById('wf-generate-btn').addEventListener('click',function(){var desc=document.getElementById('wf-description').value.trim();if(!desc)return notify('Please describe the workflow.','error');callAITool('Create step-by-step Epic instructions:
+Module: '+(document.getElementById('wf-module').value||'Epic EMR')+'
+Workflow: '+desc+'
+
+Include: prerequisites, numbered steps, common mistakes, keyboard shortcuts',document.getElementById('wf-answer'));});
+document.getElementById('tip-generate-btn').addEventListener('click',function(){var topic=document.getElementById('tip-topic').value.trim();if(!topic)return notify('Please enter a topic.','error');callAITool('Give me 5 powerful Epic EMR productivity tips for '+topic+(document.getElementById('tip-role').value?' for '+document.getElementById('tip-role').value+' users':'')+'. For each: title, explanation, exact steps, why it saves time.',document.getElementById('tip-answer'));});
+var fab=document.getElementById('ai-fab'),panel=document.getElementById('ai-panel'),closeBtn=document.getElementById('ai-close-btn'),input=document.getElementById('ai-input'),sendBtn=document.getElementById('ai-send'),msgs=document.getElementById('ai-messages');
+fab.addEventListener('click',function(){panel.classList.toggle('open');if(panel.classList.contains('open'))input.focus();});
+closeBtn.addEventListener('click',function(){panel.classList.remove('open');});
+input.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}});
+sendBtn.addEventListener('click',sendChat);
+async function sendChat(){var text=input.value.trim();if(!text)return;addMsg('user',text);input.value='';sendBtn.disabled=true;STATE.myQuestions.push({question:text,askedAt:new Date().toISOString()});saveState();var thinking=addMsg('assistant','Thinking...',true);STATE.aiHistory.push({role:'user',content:text});try{var resp=await fetch('/.netlify/functions/ai-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1024,system:'You are an expert Epic EMR Trainer Assistant. Help with Epic modules, training, and workflows. Be concise and practical.',tools:[{type:'web_search_20250305',name:'web_search'}],messages:STATE.aiHistory.slice(-12)})});var data=await resp.json();if(data.error)throw new Error(data.error.message||JSON.stringify(data.error));var reply='';if(Array.isArray(data.content))data.content.forEach(function(b){if(b.type==='text')reply+=b.text;});if(!reply)reply='No response received.';thinking.remove();var msgEl=addMsg('assistant',reply);var sb=document.createElement('button');sb.className='ai-save-btn';sb.innerHTML='<i class="fas fa-bookmark"></i> Save';sb.addEventListener('click',function(){STATE.aiSavedResponses.push({question:text,answer:reply,savedAt:new Date().toISOString()});saveState();sb.innerHTML='<i class="fas fa-check"></i> Saved!';sb.disabled=true;notify('Saved!','success');});msgEl.appendChild(sb);STATE.aiHistory.push({role:'assistant',content:reply});}catch(err){thinking.remove();addMsg('assistant','Error: '+err.message);}sendBtn.disabled=false;input.focus();}
+function addMsg(role,text,isThinking){var el=document.createElement('div');el.className='ai-msg '+role+(isThinking?' thinking':'');if(role==='assistant'&&!isThinking){el.innerHTML=mdRender(text);}else{el.textContent=text;}msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;return el;}
+renderHospitals();renderResources();renderFAQs();renderSavedItems();renderUploadedFiles();renderAISaved();renderMyQuestions();renderCertifications();renderTrainingHours();updateSavedStat();
 });
 </script>
 </body>
