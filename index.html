@@ -2053,7 +2053,95 @@ function initAIChat() {
 // INIT
 // =====================
 document.addEventListener('DOMContentLoaded', () => {
-    initSupabaseAuth();
+    // Initialize Supabase after DOM is ready
+    try {
+        supabase = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+        console.log('Supabase initialized');
+    } catch(e) {
+        console.error('Supabase init failed:', e);
+    }
+
+    // Check existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+            currentUser = session.user;
+            supabase.from('profiles').select('*').eq('id', currentUser.id).single().then(({ data: profile }) => {
+                const user = { name: profile?.name || currentUser.email, email: currentUser.email, hospital: profile?.hospital || '', certification: profile?.certification || 'Epic Trainer' };
+                doLogin(user);
+                Promise.all([syncSavedItems(), syncAIResponses(), syncUploadedFiles(), syncQuestions(), loadCertifications(), loadTrainingHours()]);
+            });
+        } else {
+            document.getElementById('login-gate').style.display = 'flex';
+        }
+    });
+
+    // Sign In button
+    document.getElementById('si-btn').addEventListener('click', async () => {
+        console.log('Sign in clicked');
+        const email = document.getElementById('si-email').value.trim().toLowerCase();
+        const password = document.getElementById('si-password').value;
+        const errEl = document.getElementById('si-error');
+        errEl.classList.remove('show');
+        if (!email || !password) { errEl.textContent = 'Please enter email and password.'; errEl.classList.add('show'); return; }
+        document.getElementById('si-btn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+        document.getElementById('si-btn').disabled = true;
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            console.log('Sign in result:', data, error);
+            if (error) throw error;
+            currentUser = data.user;
+            const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+            const user = { name: profile?.name || email, email, hospital: profile?.hospital || '', certification: profile?.certification || 'Epic Trainer' };
+            doLogin(user);
+            await Promise.all([syncSavedItems(), syncAIResponses(), syncUploadedFiles(), syncQuestions(), loadCertifications(), loadTrainingHours()]);
+        } catch(err) {
+            console.error('Sign in error:', err);
+            errEl.textContent = err.message === 'Invalid login credentials' ? 'Invalid email or password.' : err.message;
+            errEl.classList.add('show');
+            document.getElementById('si-btn').innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+            document.getElementById('si-btn').disabled = false;
+        }
+    });
+
+    // Create Account button
+    document.getElementById('su-btn').addEventListener('click', async () => {
+        console.log('Sign up clicked');
+        const name = document.getElementById('su-name').value.trim();
+        const email = document.getElementById('su-email').value.trim().toLowerCase();
+        const password = document.getElementById('su-password').value;
+        const errEl = document.getElementById('su-error');
+        errEl.classList.remove('show');
+        if (!name || !email || password.length < 6) { errEl.textContent = 'Please fill all fields. Password min 6 chars.'; errEl.classList.add('show'); return; }
+        document.getElementById('su-btn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+        document.getElementById('su-btn').disabled = true;
+        try {
+            const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name } } });
+            console.log('Sign up result:', data, error);
+            if (error) throw error;
+            if (data.user) {
+                currentUser = data.user;
+                await supabase.from('profiles').upsert({ id: currentUser.id, name, email });
+                doLogin({ name, email, hospital: '', certification: 'Epic Trainer' });
+                showNotification('Account created! Welcome, ' + name.split(' ')[0] + '!', 'success');
+            }
+        } catch(err) {
+            console.error('Sign up error:', err);
+            errEl.textContent = err.message;
+            errEl.classList.add('show');
+            document.getElementById('su-btn').innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+            document.getElementById('su-btn').disabled = false;
+        }
+    });
+
+    // Logout button
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            sessionStorage.removeItem('_sess');
+            location.reload();
+        });
+    }
     initAITools();
     initCertifications();
     initTrainingHours();
