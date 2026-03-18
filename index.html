@@ -2223,43 +2223,7 @@ function initAITools() {
 function getAccounts(){ try{ return JSON.parse(localStorage.getItem('_accounts')||'{}'); }catch{ return {}; } }
 function setAccounts(a){ localStorage.setItem('_accounts',JSON.stringify(a)); }
 
-function initAuth(){
-    try{ const s=JSON.parse(sessionStorage.getItem('_sess')); if(s&&s.email){ doLogin(s); return; } }catch{}
-    document.getElementById('login-gate').style.display='flex';
-    document.querySelectorAll('.auth-tab').forEach(t=>{
-        t.addEventListener('click',()=>{
-            document.querySelectorAll('.auth-tab').forEach(x=>x.classList.remove('active'));
-            document.querySelectorAll('.auth-form').forEach(x=>x.classList.remove('active'));
-            t.classList.add('active');
-            document.getElementById(t.dataset.auth+'-form').classList.add('active');
-        });
-    });
-    ['si-email','si-password'].forEach(id=>{ document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('si-btn').click(); }); });
-    ['su-name','su-email','su-password'].forEach(id=>{ document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('su-btn').click(); }); });
-    document.getElementById('si-btn').addEventListener('click',()=>{
-        const email=document.getElementById('si-email').value.trim().toLowerCase();
-        const password=document.getElementById('si-password').value;
-        const errEl=document.getElementById('si-error');
-        errEl.classList.remove('show');
-        if(!email||!password){ errEl.textContent='Please enter email and password.'; errEl.classList.add('show'); return; }
-        const accounts=getAccounts();
-        if(!accounts[email]||accounts[email].password!==password){ errEl.textContent='Invalid email or password.'; errEl.classList.add('show'); return; }
-        doLogin(accounts[email]);
-    });
-    document.getElementById('su-btn').addEventListener('click',()=>{
-        const name=document.getElementById('su-name').value.trim();
-        const email=document.getElementById('su-email').value.trim().toLowerCase();
-        const password=document.getElementById('su-password').value;
-        const errEl=document.getElementById('su-error');
-        errEl.classList.remove('show');
-        if(!name||!email||password.length<6){ errEl.classList.add('show'); return; }
-        const accounts=getAccounts();
-        if(accounts[email]){ errEl.textContent='Account already exists. Sign in instead.'; errEl.classList.add('show'); return; }
-        const user={name,email,hospital:'',password,certification:'Epic Trainer'};
-        accounts[email]=user; setAccounts(accounts);
-        doLogin(user);
-    });
-}
+
 
 function doLogin(user){
     sessionStorage.setItem('_sess',JSON.stringify(user));
