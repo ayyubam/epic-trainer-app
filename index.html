@@ -392,7 +392,8 @@
                 <i class="fas fa-crown"></i>
                 <span id="plan-label">Free Plan</span>
             </div>
-            <button id="login-btn" class="btn btn-primary"><i class="fas fa-user"></i> Trainer Login</button>
+            <div id="user-greeting" style="color:white;font-size:0.9rem;display:none;align-items:center;gap:0.4rem;"><i class="fas fa-user-circle"></i><span id="greeting-name">Trainer</span></div>
+            <button id="logout-btn" class="btn" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);font-size:0.85rem;padding:0.4rem 0.9rem;display:none;"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </div>
     </div>
 </header>
@@ -1832,22 +1833,36 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize Supabase after DOM is ready
     try {
         supabase = window.supabase.createClient(SUPA_URL, SUPA_KEY);
-        console.log('Supabase initialized');
+        console.log('Supabase initialized:', supabase ? 'OK' : 'FAILED');
     } catch(e) {
         console.error('Supabase init failed:', e);
+        supabase = null;
     }
 
     // Check existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session) {
-            currentUser = session.user;
-            supabase.from('profiles').select('*').eq('id', currentUser.id).single().then(({ data: profile }) => {
+    const trySupabaseSession = async () => {
+        if (!supabase) return false;
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                currentUser = session.user;
+                const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
                 const user = { name: profile?.name || currentUser.email, email: currentUser.email, hospital: profile?.hospital || '', certification: profile?.certification || 'Epic Trainer' };
                 doLogin(user);
                 Promise.all([syncSavedItems(), syncAIResponses(), syncUploadedFiles(), syncQuestions(), loadCertifications(), loadTrainingHours()]);
-            });
-        } else {
-            document.getElementById('login-gate').style.display = 'flex';
+                return true;
+            }
+        } catch(e) { console.error('Session check failed:', e); }
+        return false;
+    };
+
+    // Also check localStorage fallback session
+    const localSess = (() => { try { return JSON.parse(sessionStorage.getItem('_sess')); } catch(e) { return null; } })();
+
+    trySupabaseSession().then(loggedIn => {
+        if (!loggedIn) {
+            if (localSess?.name) { doLogin(localSess); }
+            else { document.getElementById('login-gate').style.display = 'flex'; }
         }
     });
 
@@ -1862,17 +1877,24 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('si-btn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
         document.getElementById('si-btn').disabled = true;
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-            console.log('Sign in result:', data, error);
-            if (error) throw error;
-            currentUser = data.user;
-            const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
-            const user = { name: profile?.name || email, email, hospital: profile?.hospital || '', certification: profile?.certification || 'Epic Trainer' };
-            doLogin(user);
-            await Promise.all([syncSavedItems(), syncAIResponses(), syncUploadedFiles(), syncQuestions(), loadCertifications(), loadTrainingHours()]);
+            if (supabase) {
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                console.log('Sign in result:', data, error);
+                if (error) throw error;
+                currentUser = data.user;
+                const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+                const user = { name: profile?.name || email, email, hospital: profile?.hospital || '', certification: profile?.certification || 'Epic Trainer' };
+                doLogin(user);
+                await Promise.all([syncSavedItems(), syncAIResponses(), syncUploadedFiles(), syncQuestions(), loadCertifications(), loadTrainingHours()]);
+            } else {
+                // Fallback: localStorage auth
+                const accounts = JSON.parse(localStorage.getItem('_accounts')||'{}');
+                if (!accounts[email] || accounts[email].password !== password) throw new Error('Invalid email or password.');
+                doLogin(accounts[email]);
+            }
         } catch(err) {
             console.error('Sign in error:', err);
-            errEl.textContent = err.message === 'Invalid login credentials' ? 'Invalid email or password.' : err.message;
+            errEl.textContent = err.message;
             errEl.classList.add('show');
             document.getElementById('si-btn').innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
             document.getElementById('si-btn').disabled = false;
@@ -1891,13 +1913,25 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('su-btn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
         document.getElementById('su-btn').disabled = true;
         try {
-            const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name } } });
-            console.log('Sign up result:', data, error);
-            if (error) throw error;
-            if (data.user) {
-                currentUser = data.user;
-                await supabase.from('profiles').upsert({ id: currentUser.id, name, email });
-                doLogin({ name, email, hospital: '', certification: 'Epic Trainer' });
+            if (supabase) {
+                const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name } } });
+                console.log('Sign up result:', data, error);
+                if (error) throw error;
+                if (data.user) {
+                    currentUser = data.user;
+                    await supabase.from('profiles').upsert({ id: currentUser.id, name, email });
+                    doLogin({ name, email, hospital: '', certification: 'Epic Trainer' });
+                    showNotification('Account created! Welcome, ' + name.split(' ')[0] + '!', 'success');
+                } else {
+                    throw new Error('Account created but needs email confirmation. Please check your email or disable email confirmation in Supabase.');
+                }
+            } else {
+                // Fallback: localStorage auth
+                const accounts = JSON.parse(localStorage.getItem('_accounts')||'{}');
+                if (accounts[email]) throw new Error('Account already exists. Please sign in.');
+                const user = { name, email, hospital: '', password, certification: 'Epic Trainer' };
+                accounts[email] = user; localStorage.setItem('_accounts', JSON.stringify(accounts));
+                doLogin(user);
                 showNotification('Account created! Welcome, ' + name.split(' ')[0] + '!', 'success');
             }
         } catch(err) {
@@ -2093,9 +2127,11 @@ function doLogin(user){
     sessionStorage.setItem('_sess',JSON.stringify(user));
     document.getElementById('login-gate').style.display='none';
     const g=document.getElementById('user-greeting'); if(g) g.style.display='flex';
+    const lb=document.getElementById('logout-btn'); if(lb) lb.style.display='flex';
     const gn=document.getElementById('greeting-name'); if(gn) gn.textContent=user.name.split(' ')[0];
     const dn=document.getElementById('dashboard-name'); if(dn) dn.textContent=user.name.split(' ')[0];
     const pn=document.getElementById('profile-name-display'); if(pn) pn.textContent=user.name;
+    const ph=document.getElementById('profile-hospital-display'); if(ph) ph.textContent=user.hospital||'';
     showNotification('Welcome, '+user.name.split(' ')[0]+'!','success');
 }
 
