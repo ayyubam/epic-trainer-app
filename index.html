@@ -9,19 +9,6 @@
         :root { --epic-purple: #4B286D; --epic-light-purple: #7B52AB; --epic-lighter-purple: #E6E6FA; --epic-gray: #F5F5F5; --text-dark: #333; --success: #28a745; --danger: #dc3545; --premium-gold: #FFD700; --premium-dark: #D4AF37; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         body { background: var(--epic-gray); color: var(--text-dark); line-height: 1.6; }
-        #login-gate { position:fixed; inset:0; background:rgba(75,40,109,0.97); z-index:9999; display:flex; align-items:center; justify-content:center; }
-        .gate-box { background:white; border-radius:16px; padding:2.5rem; width:90%; max-width:400px; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
-        .gate-logo { text-align:center; margin-bottom:1.5rem; }
-        .gate-logo i { font-size:3rem; color:var(--epic-light-purple); }
-        .gate-logo h2 { color:var(--epic-purple); margin-top:0.5rem; }
-        .gate-logo p { color:#666; font-size:0.88rem; }
-        .auth-tabs { display:flex; border-bottom:2px solid #eee; margin-bottom:1.5rem; }
-        .auth-tab { flex:1; text-align:center; padding:0.75rem; cursor:pointer; font-weight:600; color:#888; border-bottom:3px solid transparent; margin-bottom:-2px; }
-        .auth-tab.active { color:var(--epic-purple); border-bottom-color:var(--epic-purple); }
-        .auth-form { display:none; }
-        .auth-form.active { display:block; }
-        .form-err { color:var(--danger); font-size:0.82rem; margin:0.3rem 0; display:none; }
-        .form-err.show { display:block; }
         header { background:linear-gradient(135deg,var(--epic-purple),var(--epic-light-purple)); color:white; padding:1rem; position:sticky; top:0; z-index:100; box-shadow:0 2px 10px rgba(0,0,0,0.2); }
         .header-content { display:flex; justify-content:space-between; align-items:center; max-width:1400px; margin:0 auto; flex-wrap:wrap; gap:0.5rem; }
         .logo { display:flex; align-items:center; font-size:1.4rem; font-weight:bold; }
@@ -173,26 +160,6 @@
     </style>
 </head>
 <body>
-<div id="login-gate">
-    <div class="gate-box">
-        <div class="gate-logo"><i class="fas fa-hospital-user"></i><h2>Epic EMR Trainer</h2><p>Sign in or create an account to continue</p></div>
-        <div class="auth-tabs"><div class="auth-tab active" data-auth="signin">Sign In</div><div class="auth-tab" data-auth="signup">Create Account</div></div>
-        <div class="auth-form active" id="signin-form">
-            <div class="form-group"><label>Email</label><input type="email" class="form-control" id="si-email" placeholder="your@email.com"></div>
-            <div class="form-group"><label>Password</label><input type="password" class="form-control" id="si-password" placeholder="Your password"></div>
-            <div class="form-err" id="si-err"></div>
-            <button class="btn btn-primary" id="si-btn" style="width:100%;margin-top:0.5rem;padding:0.85rem;"><i class="fas fa-sign-in-alt"></i> Sign In</button>
-            <p class="small" style="text-align:center;margin-top:1rem;">New here? Click Create Account above.</p>
-        </div>
-        <div class="auth-form" id="signup-form">
-            <div class="form-group"><label>Full Name</label><input type="text" class="form-control" id="su-name" placeholder="Your full name"></div>
-            <div class="form-group"><label>Email</label><input type="email" class="form-control" id="su-email" placeholder="your@email.com"></div>
-            <div class="form-group"><label>Password <span class="small">(min 6 chars)</span></label><input type="password" class="form-control" id="su-password" placeholder="Create a password"></div>
-            <div class="form-err" id="su-err"></div>
-            <button class="btn btn-primary" id="su-btn" style="width:100%;margin-top:0.5rem;padding:0.85rem;"><i class="fas fa-user-plus"></i> Create Account</button>
-        </div>
-    </div>
-</div>
 <header>
     <div class="header-content">
         <div class="logo"><i class="fas fa-hospital-user"></i><span>Epic EMR Trainer Assistant</span></div>
@@ -447,7 +414,7 @@ function initAITools(){var pdfArea=document.getElementById('pdf-upload-area'),pd
 var AI_SYS='You are an expert Epic EMR Trainer Assistant. Help with Epic modules, training strategies, workflows, and best practices. Use web search for current information. Be concise and practical.';
 function initAIChat(){var fab=document.getElementById('ai-fab'),panel=document.getElementById('ai-panel'),closeBtn=document.getElementById('ai-close-btn'),input=document.getElementById('ai-input'),sendBtn=document.getElementById('ai-send'),msgs=document.getElementById('ai-messages');fab.addEventListener('click',function(){panel.classList.toggle('open');if(panel.classList.contains('open'))input.focus();});closeBtn.addEventListener('click',function(){panel.classList.remove('open');});input.addEventListener('input',function(){input.style.height='auto';input.style.height=Math.min(input.scrollHeight,100)+'px';});input.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});sendBtn.addEventListener('click',send);async function send(){var text=input.value.trim();if(!text)return;addMsg('user',text);input.value='';input.style.height='auto';sendBtn.disabled=true;STATE.myQuestions.push({question:text,askedAt:new Date().toISOString()});persistAll();var thinking=addMsg('assistant','⣋ Searching and thinking...',true);STATE.aiHistory.push({role:'user',content:text});try{var resp=await fetch('/.netlify/functions/ai-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1024,system:AI_SYS,tools:[{type:'web_search_20250305',name:'web_search'}],messages:STATE.aiHistory.slice(-12)})});var data=await resp.json();if(data.error)throw new Error(data.error.message||JSON.stringify(data.error));var reply='';if(Array.isArray(data.content))data.content.forEach(function(b){if(b.type==='text')reply+=b.text;});if(!reply)reply='No response received.';thinking.remove();var msgEl=addMsg('assistant',reply);var sb=document.createElement('button');sb.className='ai-save-btn';sb.innerHTML='<i class="fas fa-bookmark"></i> Save Response';sb.addEventListener('click',function(){STATE.aiSavedResponses.push({question:text,answer:reply,savedAt:new Date().toISOString()});persistAll();sb.innerHTML='<i class="fas fa-check"></i> Saved!';sb.disabled=true;notify('AI response saved!','success');});msgEl.appendChild(sb);STATE.aiHistory.push({role:'assistant',content:reply});}catch(err){thinking.remove();addMsg('assistant','⚠️ Error: '+err.message);}sendBtn.disabled=false;input.focus();}function addMsg(role,text,isThinking){var el=document.createElement('div');el.className='ai-msg '+role+(isThinking?' thinking':'');if(role==='assistant'&&!isThinking){el.innerHTML=mdRender(text);}else{el.textContent=text;}msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;return el;}}
 document.addEventListener('DOMContentLoaded',function(){
-    initNav();initProfileTabs();initModals();initUpload();initSearch();initSettings();initAITools();initAIChat();initCertifications();initTrainingHours();initAuth();
+    initNav();initProfileTabs();initModals();initUpload();initSearch();initSettings();initAITools();initAIChat();initCertifications();initTrainingHours();initAuth();renderAll();updateSavedStat();
 });
 </script>
 </body>
