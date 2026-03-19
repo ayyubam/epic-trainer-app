@@ -803,7 +803,7 @@ function initTrainingTools() {
 // PHASE 4 - CONTENT EXPANSION
 // =====================
 const tipSheets = [
-    {id:"ts1",module:"Hyperspace / Hyperdrive",icon:"fa-desktop",category:"clinical",description:"Essential navigation tips for Epic's main interface.",tips:["Use Ctrl+Space to open the activity menu quickly","Right-click any tab to pin it to your toolbar","Use the star icon to favorite any activity","F2 opens the patient search from anywhere","Ctrl+W closes the current activity tab","Use the breadcrumb trail to navigate back without losing work"]},
+    {id:"ts1",module:"Hyperspace / Hyperdrive",icon:"fa-desktop",category:"clinical",description:"Essential navigation tips for the Epic main interface.",tips:["Use Ctrl+Space to open the activity menu quickly","Right-click any tab to pin it to your toolbar","Use the star icon to favorite any activity","F2 opens the patient search from anywhere","Ctrl+W closes the current activity tab","Use the breadcrumb trail to navigate back without losing work"]},
     {id:"ts2",module:"MyChart",icon:"fa-user-circle",category:"clinical",description:"Tips for managing the patient portal effectively.",tips:["Use Message Center to respond to patient messages in batches","Set up After Visit Summary templates for common visit types","Use the Broadcast Messaging tool for mass patient communications","Enable proxy access for pediatric and elderly patients","Schedule MyChart activation outreach for new patients","Use questionnaires to collect patient history before visits"]},
     {id:"ts3",module:"Cadence (Scheduling)",icon:"fa-calendar-check",category:"admin",description:"Maximize scheduling efficiency with these Cadence tips.",tips:["Use Find the First Available to quickly locate open slots","Appointment Desk shows all scheduled appointments at once","Use scheduling rules to block time for specific visit types","Double-booking alerts can be customized by appointment type","Use the Wait List feature for high-demand providers","Recurring appointment series saves time for chronic patients"]},
     {id:"ts4",module:"Beaker (Lab)",icon:"fa-flask",category:"lab",description:"Key workflows for the Epic laboratory module.",tips:["Use result routing rules to send critical values automatically","Lab collection lists can be printed by floor or unit","Use the specimen inquiry to track lab status in real time","Result filters help prioritize abnormal values","Interface with analyzers using HL7 for real-time results","Use QC tracking to monitor analyzer performance trends"]},
@@ -1021,8 +1021,7 @@ function renderSPLibrary(filter='all') {
     });
 }
 
-function copySP(btn, text) { navigator.clipboard.writeText(text).then(() => { btn.innerHTML = '<i class="fas fa-check"></i> Copied!'; setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> Copy SmartPhrase', 2000); }); }
-function copyName(btn, name) { navigator.clipboard.writeText(name).then(() => { btn.innerHTML = '<i class="fas fa-check"></i> Copied!'; setTimeout(() => btn.innerHTML = '<i class="fas fa-dot-circle"></i> Copy Name Only', 2000); }); }
+
 
 function initTipSheets() {
     renderTipSheets('all');
