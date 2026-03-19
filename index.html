@@ -173,6 +173,51 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
         .sp-body{background:#f8f9fa;border-radius:6px;padding:0.85rem;font-size:0.82rem;font-family:monospace;white-space:pre-wrap;color:#333;border-left:3px solid var(--elp);margin-bottom:0.75rem;max-height:150px;overflow-y:auto;}
         .sp-desc{font-size:0.83rem;color:#666;margin-bottom:0.75rem;}
 
+
+        body.dark-mode { background: #1a1a2e; color: #e0e0e0; }
+        body.dark-mode header { background: linear-gradient(135deg, #2d1b4e, #4a3080); }
+        body.dark-mode nav { background: #2d1b4e; }
+        body.dark-mode .hospital-card,
+        body.dark-mode .resource-card,
+        body.dark-mode .faq-item,
+        body.dark-mode .stat-card,
+        body.dark-mode .saved-item-card,
+        body.dark-mode .modal,
+        body.dark-mode .tipsheet-card,
+        body.dark-mode .sp-card,
+        body.dark-mode .ai-tool-card,
+        body.dark-mode .cert-card,
+        body.dark-mode .hours-card { background: #16213e; color: #e0e0e0; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        body.dark-mode .hospital-card h3,
+        body.dark-mode .resource-card h3,
+        body.dark-mode .stat-card h3,
+        body.dark-mode .sp-card-header h4,
+        body.dark-mode .tipsheet-card h3 { color: #a78bfa; }
+        body.dark-mode .module-tag { background: #2d1b4e; color: #a78bfa; }
+        body.dark-mode .hospital-contact { background: #2d1b4e; }
+        body.dark-mode .search-box,
+        body.dark-mode .form-control { background: #16213e; color: #e0e0e0; border-color: #444; }
+        body.dark-mode .profile-tabs,
+        body.dark-mode .profile-tab { border-color: #444; color: #aaa; }
+        body.dark-mode .profile-tab.active { color: #a78bfa; border-bottom-color: #a78bfa; }
+        body.dark-mode .profile-tab-content,
+        body.dark-mode main { background: transparent; }
+        body.dark-mode .faq-answer { border-color: #444; }
+        body.dark-mode .sp-body { background: #0f3460; color: #e0e0e0; border-left-color: #a78bfa; }
+        body.dark-mode footer { background: #0f0f23; }
+        body.dark-mode #ai-panel { background: #16213e; }
+        body.dark-mode .ai-msg.assistant { background: #2d1b4e; color: #e0e0e0; }
+        body.dark-mode .ai-input-row { border-color: #444; background: #16213e; }
+        body.dark-mode #ai-input { background: #0f3460; color: #e0e0e0; border-color: #444; }
+        body.dark-mode .modal-overlay { background: rgba(0,0,0,0.7); }
+        body.dark-mode .gate-box { background: #16213e; color: #e0e0e0; }
+        body.dark-mode .gate-logo h2 { color: #a78bfa; }
+        body.dark-mode .auth-tab.active { color: #a78bfa; border-bottom-color: #a78bfa; }
+        body.dark-mode .form-err { color: #ff6b6b; }
+        body.dark-mode .tipsheet-tips li { border-color: #333; }
+        body.dark-mode .plan-features li { border-color: #333; }
+        body.dark-mode .premium-upgrade { background: linear-gradient(135deg, #2d2d1e, #1e2d2d); }
+
 </style>
 </head>
 <body>
@@ -200,6 +245,7 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
 <div class="header-content">
 <div class="logo"><i class="fas fa-hospital-user"></i><span>Epic EMR Trainer Assistant</span></div>
 <div class="user-actions">
+<button id="dark-mode-btn" onclick="toggleDarkMode()" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);border-radius:20px;padding:0.4rem 0.9rem;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;gap:0.4rem;"><i class="fas fa-moon" id="dark-mode-icon"></i> <span id="dark-mode-label">Dark Mode</span></button>
 <div class="premium-badge"><i class="fas fa-crown"></i><span id="plan-label">Free Plan</span></div>
 <div id="user-greeting" style="color:white;font-size:0.9rem;display:none;align-items:center;gap:0.4rem;"><i class="fas fa-user-circle"></i><span id="greeting-name">Trainer</span></div>
 <button id="logout-btn" class="btn" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);font-size:0.85rem;padding:0.4rem 0.9rem;display:none;"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -229,8 +275,23 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
 <div class="stat-card"><i class="fas fa-question-circle"></i><h3>6</h3><p>FAQs</p></div>
 <div class="stat-card"><i class="fas fa-bookmark"></i><h3 id="stat-saved">0</h3><p>Saved Items</p></div>
 </div>
+<div id="tip-of-day" style="background:linear-gradient(135deg,var(--ep),var(--elp));color:white;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:flex-start;gap:1rem;">
+    <i class="fas fa-lightbulb" style="font-size:1.5rem;flex-shrink:0;margin-top:0.2rem;color:#FFD700;"></i>
+    <div>
+        <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;opacity:0.8;margin-bottom:0.3rem;">Tip of the Day</div>
+        <p id="tip-of-day-text" style="font-size:0.92rem;line-height:1.5;margin:0;"></p>
+    </div>
+    <button onclick="newTip()" style="background:rgba(255,255,255,0.2);border:none;color:white;border-radius:20px;padding:0.3rem 0.75rem;cursor:pointer;font-size:0.78rem;white-space:nowrap;flex-shrink:0;"><i class="fas fa-sync-alt"></i> New Tip</button>
+</div>
 <h3 style="margin-bottom:1rem;">Recently Added Hospitals</h3>
 <div class="hospital-grid" id="dashboard-hospitals"></div>
+<h3 style="margin:1.5rem 0 1rem;">Your Activity</h3>
+<div class="stats-grid" style="margin-bottom:1.5rem;" id="personal-stats">
+    <div class="stat-card"><i class="fas fa-bookmark" style="color:#28a745;"></i><h3 id="ps-saved">0</h3><p>Items Saved</p></div>
+    <div class="stat-card"><i class="fas fa-comments" style="color:#17a2b8;"></i><h3 id="ps-questions">0</h3><p>Questions Asked</p></div>
+    <div class="stat-card"><i class="fas fa-cloud-upload-alt" style="color:#fd7e14;"></i><h3 id="ps-uploads">0</h3><p>Files Uploaded</p></div>
+    <div class="stat-card"><i class="fas fa-robot" style="color:#7B52AB;"></i><h3 id="ps-aisaved">0</h3><p>AI Responses Saved</p></div>
+</div>
 <h3 style="margin:1.5rem 0 1rem;">Recent Resources</h3>
 <div class="resource-grid" id="dashboard-resources"></div>
 </section>
@@ -568,6 +629,9 @@ sendBtn.addEventListener('click',sendChat);
 async function sendChat(){const text=input.value.trim();if(!text)return;addMsg('user',text);input.value='';input.style.height='auto';sendBtn.disabled=true;STATE.myQuestions.push({question:text,askedAt:new Date().toISOString()});saveState();const thinking=addMsg('assistant','Thinking...',true);STATE.aiHistory.push({role:'user',content:text});try{const resp=await fetch('/.netlify/functions/ai-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1024,system:'You are an expert Epic EMR Trainer Assistant. Help with Epic modules, training strategies, workflows, and best practices. Be concise and practical.',tools:[{type:'web_search_20250305',name:'web_search'}],messages:STATE.aiHistory.slice(-12)})});const data=await resp.json();if(data.error)throw new Error(data.error.message||JSON.stringify(data.error));let reply='';if(Array.isArray(data.content))data.content.forEach(b=>{if(b.type==='text')reply+=b.text;});if(!reply)reply='No response received.';thinking.remove();const msgEl=addMsg('assistant',reply);const sb=document.createElement('button');sb.className='ai-save-btn';sb.innerHTML='<i class="fas fa-bookmark"></i> Save';sb.addEventListener('click',()=>{STATE.aiSavedResponses.push({question:text,answer:reply,savedAt:new Date().toISOString()});saveState();sb.innerHTML='<i class="fas fa-check"></i> Saved!';sb.disabled=true;notify('Saved!','success');});msgEl.appendChild(sb);STATE.aiHistory.push({role:'assistant',content:reply});}catch(err){thinking.remove();addMsg('assistant','Error: '+err.message);}sendBtn.disabled=false;input.focus();}
 function addMsg(role,text,isThinking=false){const el=document.createElement('div');el.className='ai-msg '+role+(isThinking?' thinking':'');if(role==='assistant'&&!isThinking){el.innerHTML=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/^- (.+)$/gm,'<li style="margin-left:1rem;">$1</li>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');}else{el.textContent=text;}msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;return el;}
 initAuth();
+    loadTip();
+    updatePersonalStats();
+    initDarkMode();
 });
 
 // =====================
@@ -906,6 +970,81 @@ function initSPLibrary() {
         var active = document.querySelector(".sp-filter-btn.btn-primary");
         renderSPLibrary(active ? active.dataset.filter : "all");
     });
+}
+
+
+// =====================
+// PHASE 5 - DASHBOARD UX
+// =====================
+
+// ── TIPS OF THE DAY ──
+var allTips = [
+    "Use Ctrl+Space in Hyperspace to instantly open the activity search menu.",
+    "SmartPhrases can be created with .PHRASENAME - ask your Epic team for build access.",
+    "The In Basket Proxy feature lets you manage messages on behalf of a provider.",
+    "Use the Snapshot activity to get a quick overview of a patient without opening their chart.",
+    "F2 opens patient search from anywhere in Epic without losing your current activity.",
+    "Right-click on any column header in a list to customize which columns are displayed.",
+    "The Favorites toolbar can hold your 10 most-used activities for one-click access.",
+    "Use the Time Saver keyboard shortcut T+Enter to enter today date in any date field.",
+    "Epic care everywhere allows you to pull outside records directly into your documentation.",
+    "Sticky notes in the patient header are visible to all providers and never expire.",
+    "The Storyboard on the right side of Hyperspace gives a quick patient summary at a glance.",
+    "Use the Report Workbench to create custom reports without involving IT.",
+    "SmartLists embedded in notes allow click-to-choose documentation for faster charting.",
+    "The Follow flag on a patient chart notifies you of any updates to their record.",
+    "Haiku and Canto are the mobile versions of Epic for iPhone and iPad respectively.",
+    "Use the Message Patient button in MyChart to send a direct secure message to patients.",
+    "The Schedule Viewer shows a birds-eye view of any provider schedule across any date range.",
+    "Use dot phrases combined with SmartLinks to pull live lab values directly into your notes.",
+    "The Multi-patient task list lets you batch-complete documentation across multiple patients.",
+    "BPA alerts can be acknowledged with a reason code to track clinical decision patterns."
+];
+var currentTipIdx = 0;
+function loadTip() {
+    var el = document.getElementById("tip-of-day-text");
+    if (!el) return;
+    currentTipIdx = Math.floor(Math.random() * allTips.length);
+    el.textContent = allTips[currentTipIdx];
+}
+function newTip() {
+    var el = document.getElementById("tip-of-day-text");
+    if (!el) return;
+    var newIdx = Math.floor(Math.random() * allTips.length);
+    while (newIdx === currentTipIdx) { newIdx = Math.floor(Math.random() * allTips.length); }
+    currentTipIdx = newIdx;
+    el.textContent = allTips[currentTipIdx];
+}
+
+// ── PERSONAL STATS ──
+function updatePersonalStats() {
+    var saved = document.getElementById("ps-saved");
+    var questions = document.getElementById("ps-questions");
+    var uploads = document.getElementById("ps-uploads");
+    var aisaved = document.getElementById("ps-aisaved");
+    if (saved) saved.textContent = STATE.savedItems.length;
+    if (questions) questions.textContent = STATE.myQuestions.length;
+    if (uploads) uploads.textContent = STATE.uploadedFiles.length;
+    if (aisaved) aisaved.textContent = STATE.aiSavedResponses.length;
+}
+
+// ── DARK MODE ──
+function toggleDarkMode() {
+    var isDark = document.body.classList.toggle("dark-mode");
+    localStorage.setItem("darkMode", isDark ? "1" : "0");
+    var icon = document.getElementById("dark-mode-icon");
+    var label = document.getElementById("dark-mode-label");
+    if (icon) icon.className = isDark ? "fas fa-sun" : "fas fa-moon";
+    if (label) label.textContent = isDark ? "Light Mode" : "Dark Mode";
+}
+function initDarkMode() {
+    if (localStorage.getItem("darkMode") === "1") {
+        document.body.classList.add("dark-mode");
+        var icon = document.getElementById("dark-mode-icon");
+        var label = document.getElementById("dark-mode-label");
+        if (icon) icon.className = "fas fa-sun";
+        if (label) label.textContent = "Light Mode";
+    }
 }
 
 </script>
