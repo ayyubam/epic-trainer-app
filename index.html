@@ -157,6 +157,22 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
         .agenda-item-time { background: var(--epic-lighter-purple); color: var(--epic-purple); padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.78rem; font-weight: bold; white-space: nowrap; }
         .agenda-item-text { flex: 1; font-size: 0.9rem; }
 
+
+        .tipsheet-card { background: white; border-radius: 10px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        .tipsheet-card:hover { transform: translateY(-4px); }
+        .tipsheet-card h3 { color: var(--ep); margin-bottom: 0.5rem; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .tipsheet-card p { font-size: 0.86rem; color: #555; margin-bottom: 0.75rem; }
+        .tipsheet-tips { list-style: none; margin-bottom: 1rem; }
+        .tipsheet-tips li { font-size: 0.83rem; padding: 0.3rem 0; border-bottom: 1px solid #f0f0f0; display: flex; align-items: flex-start; gap: 0.5rem; }
+        .tipsheet-tips li::before { content: "→"; color: var(--elp); font-weight: bold; flex-shrink: 0; }
+        .sp-card { background: white; border-radius: 10px; padding: 1.25rem; box-shadow: 0 3px 8px rgba(0,0,0,0.08); margin-bottom: 1rem; }
+        .sp-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem; }
+        .sp-card-header h4 { color: var(--ep); font-size: 0.95rem; margin: 0; }
+        .sp-name { background: var(--elpr); color: var(--ep); padding: 0.2rem 0.6rem; border-radius: 4px; font-family: monospace; font-size: 0.85rem; font-weight: bold; }
+        .sp-specialty { background: #e8f5e9; color: #2e7d32; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.75rem; }
+        .sp-body { background: #f8f9fa; border-radius: 6px; padding: 0.85rem; font-size: 0.82rem; font-family: monospace; white-space: pre-wrap; color: #333; border-left: 3px solid var(--elp); margin-bottom: 0.75rem; max-height: 150px; overflow-y: auto; }
+        .sp-desc { font-size: 0.83rem; color: #666; margin-bottom: 0.75rem; }
+
 </style>
 </head>
 <body>
@@ -197,6 +213,8 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
 <li><a href="#resources" class="nav-link"><i class="fas fa-book"></i> Resources</a></li>
 <li><a href="#faq" class="nav-link"><i class="fas fa-question-circle"></i> FAQ</a></li>
 <li><a href="#profile" class="nav-link"><i class="fas fa-user"></i> My Profile</a></li>
+<li><a href="#tipsheets" class="nav-link"><i class="fas fa-lightbulb"></i> Tip Sheets</a></li>
+<li><a href="#smartphrases" class="nav-link"><i class="fas fa-pen-fancy"></i> SmartPhrases</a></li>
 <li><a href="#training" class="nav-link"><i class="fas fa-graduation-cap"></i> Training Tools</a></li>
 <li><a href="#premium" class="nav-link"><i class="fas fa-crown"></i> Premium</a></li>
 </ul></nav>
@@ -206,7 +224,7 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
 <p class="subtitle">Your central hub for Epic EMR training resources</p>
 <div class="search-container"><i class="fas fa-search search-icon"></i><input type="text" class="search-box" id="dash-search" placeholder="Search hospitals, resources, FAQs..."></div>
 <div class="stats-grid">
-<div class="stat-card"><i class="fas fa-hospital"></i><h3>6</h3><p>Hospital Systems</p></div>
+<div class="stat-card"><i class="fas fa-hospital"></i><h3>24</h3><p>Hospital Systems</p></div>
 <div class="stat-card"><i class="fas fa-file-alt"></i><h3 id="stat-resources">6</h3><p>Training Resources</p></div>
 <div class="stat-card"><i class="fas fa-question-circle"></i><h3>6</h3><p>FAQs</p></div>
 <div class="stat-card"><i class="fas fa-bookmark"></i><h3 id="stat-saved">0</h3><p>Saved Items</p></div>
@@ -382,6 +400,35 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
         </div>
     </section>
 
+
+    <section id="tipsheets" class="tab-content">
+        <h2><i class="fas fa-lightbulb"></i> Module Tip Sheets</h2>
+        <p class="subtitle">Quick reference guides for every Epic module</p>
+        <div class="search-container"><i class="fas fa-search search-icon"></i><input type="text" class="search-box" id="tipsheet-search" placeholder="Search tip sheets..."></div>
+        <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;" id="tipsheet-filter">
+            <button class="btn btn-primary ts-filter-btn" data-filter="all">All</button>
+            <button class="btn btn-outline ts-filter-btn" data-filter="clinical">Clinical</button>
+            <button class="btn btn-outline ts-filter-btn" data-filter="admin">Admin</button>
+            <button class="btn btn-outline ts-filter-btn" data-filter="pharmacy">Pharmacy</button>
+            <button class="btn btn-outline ts-filter-btn" data-filter="lab">Lab</button>
+        </div>
+        <div class="resource-grid" id="tipsheet-list"></div>
+    </section>
+
+    <section id="smartphrases" class="tab-content">
+        <h2><i class="fas fa-pen-fancy"></i> SmartPhrase Library</h2>
+        <p class="subtitle">Ready-to-use SmartPhrases organized by specialty</p>
+        <div class="search-container"><i class="fas fa-search search-icon"></i><input type="text" class="search-box" id="sp-lib-search" placeholder="Search SmartPhrases..."></div>
+        <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;" id="sp-filter">
+            <button class="btn btn-primary sp-filter-btn" data-filter="all">All</button>
+            <button class="btn btn-outline sp-filter-btn" data-filter="primary">Primary Care</button>
+            <button class="btn btn-outline sp-filter-btn" data-filter="cardiology">Cardiology</button>
+            <button class="btn btn-outline sp-filter-btn" data-filter="emergency">Emergency</button>
+            <button class="btn btn-outline sp-filter-btn" data-filter="nursing">Nursing</button>
+        </div>
+        <div id="sp-lib-list"></div>
+    </section>
+
 </main>
 <div class="modal-overlay" id="upload-modal">
 <div class="modal"><div class="modal-header"><h2><i class="fas fa-cloud-upload-alt"></i> Upload Documentation</h2><button class="modal-close" data-modal="upload-modal">&times;</button></div>
@@ -406,7 +453,32 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
 <script>
 const STATE={savedItems:JSON.parse(localStorage.getItem('savedItems')||'[]'),uploadedFiles:JSON.parse(localStorage.getItem('uploadedFiles')||'[]'),aiSavedResponses:JSON.parse(localStorage.getItem('aiSavedResponses')||'[]'),myQuestions:JSON.parse(localStorage.getItem('myQuestions')||'[]'),aiHistory:[],isPremium:false};
 function saveState(){localStorage.setItem('savedItems',JSON.stringify(STATE.savedItems));localStorage.setItem('uploadedFiles',JSON.stringify(STATE.uploadedFiles));localStorage.setItem('aiSavedResponses',JSON.stringify(STATE.aiSavedResponses));localStorage.setItem('myQuestions',JSON.stringify(STATE.myQuestions));}
-const hospitals=[{id:1,name:"Mayo Clinic",version:"Epic 2022",modules:["Radiant","Beaker","OpTime","Research","Cadence","Prelude"],notes:"Uses special billing modules and research functionality. Strong focus on oncology and cardiology.",lastUpdated:"2023-10-15",contact:{name:"Dr. Sarah Johnson",email:"sjohnson@mayoclinic.org"}},{id:2,name:"Johns Hopkins Hospital",version:"Epic 2023",modules:["Care Everywhere","MyChart","Healthy Planet","Research","Cupid"],notes:"Research-focused customization with specialized modules. Early adopter of new Epic features.",lastUpdated:"2023-11-05",contact:{name:"Michael Chen",email:"mchen@jh.edu"}},{id:3,name:"Massachusetts General",version:"Epic 2022",modules:["Cadence","Prelude","Grand Central","Beaker","Radiant"],notes:"Integrated with Partners healthcare system. Strong patient portal emphasis.",lastUpdated:"2023-09-22",contact:{name:"Emily Rodriguez",email:"erodriguez@mgh.harvard.edu"}},{id:4,name:"Cleveland Clinic",version:"Epic 2023",modules:["Hyperspace","Cupid","Bones","MyChart","Healthy Planet"],notes:"Cardiology specialty focus with custom modules. Strong telemedicine integration.",lastUpdated:"2023-11-12",contact:{name:"Robert Williams",email:"rwilliams@clevelandclinic.org"}},{id:5,name:"UCSF Medical Center",version:"Epic 2022",modules:["Beaker","Willow","Phoenix","Radiant","Care Everywhere"],notes:"Academic medical center with research emphasis. Strong pediatric specialization.",lastUpdated:"2023-08-30",contact:{name:"Jennifer Lee",email:"jlee@ucsf.edu"}},{id:6,name:"NewYork-Presbyterian",version:"Epic 2023",modules:["Healthy Planet","MyChart","Care Companion","Cadence","Prelude"],notes:"Large multi-campus system with unified Epic implementation. Strong population health focus.",lastUpdated:"2023-10-28",contact:{name:"David Kim",email:"dkim@nyp.org"}}];
+const hospitals=[
+{id:1,name:"Mayo Clinic",version:"Epic 2022",modules:["Radiant","Beaker","OpTime","Research","Cadence","Prelude"],notes:"Uses special billing modules and research functionality. Strong focus on oncology and cardiology.",lastUpdated:"2023-10-15",contact:{name:"Dr. Sarah Johnson",email:"sjohnson@mayoclinic.org"}},
+{id:2,name:"Johns Hopkins Hospital",version:"Epic 2023",modules:["Care Everywhere","MyChart","Healthy Planet","Research","Cupid"],notes:"Research-focused customization with specialized modules. Early adopter of new Epic features.",lastUpdated:"2023-11-05",contact:{name:"Michael Chen",email:"mchen@jh.edu"}},
+{id:3,name:"Massachusetts General Hospital",version:"Epic 2022",modules:["Cadence","Prelude","Grand Central","Beaker","Radiant"],notes:"Integrated with Partners healthcare system. Strong emphasis on patient portal implementation.",lastUpdated:"2023-09-22",contact:{name:"Emily Rodriguez",email:"erodriguez@mgh.harvard.edu"}},
+{id:4,name:"Cleveland Clinic",version:"Epic 2023",modules:["Hyperspace","Cupid","Bones","MyChart","Healthy Planet"],notes:"Cardiology specialty focus with custom modules. Strong telemedicine integration.",lastUpdated:"2023-11-12",contact:{name:"Robert Williams",email:"rwilliams@clevelandclinic.org"}},
+{id:5,name:"UCSF Medical Center",version:"Epic 2022",modules:["Beaker","Willow","Phoenix","Radiant","Care Everywhere"],notes:"Academic medical center with research emphasis. Strong pediatric specialization.",lastUpdated:"2023-08-30",contact:{name:"Jennifer Lee",email:"jlee@ucsf.edu"}},
+{id:6,name:"NewYork-Presbyterian",version:"Epic 2023",modules:["Healthy Planet","MyChart","Care Companion","Cadence","Prelude"],notes:"Large multi-campus system with unified Epic implementation. Strong population health focus.",lastUpdated:"2023-10-28",contact:{name:"David Kim",email:"dkim@nyp.org"}},
+{id:7,name:"Cedars-Sinai Medical Center",version:"Epic 2023",modules:["Hyperspace","MyChart","Cadence","Prelude","Willow","Beaker"],notes:"Large academic medical center in Los Angeles. Strong focus on cardiology and oncology programs.",lastUpdated:"2024-01-10",contact:{name:"Amanda Torres",email:"atorres@csmc.edu"}},
+{id:8,name:"Duke University Hospital",version:"Epic 2022",modules:["Research","Beaker","Radiant","OpTime","Cupid"],notes:"Major academic medical center with strong research integration. Uses Epic for clinical trials management.",lastUpdated:"2023-12-05",contact:{name:"James Wilson",email:"jwilson@duke.edu"}},
+{id:9,name:"Vanderbilt University Medical Center",version:"Epic 2023",modules:["MyChart","Beaker","Radiant","Cadence","Healthy Planet"],notes:"Pioneer in health informatics. Custom-built analytics dashboards integrated with Epic.",lastUpdated:"2024-01-22",contact:{name:"Sarah Park",email:"spark@vumc.org"}},
+{id:10,name:"Stanford Health Care",version:"Epic 2023",modules:["Care Everywhere","MyChart","OpTime","Radiant","Beaker"],notes:"Silicon Valley academic medical center. Heavy use of Epic APIs for custom integrations.",lastUpdated:"2024-02-01",contact:{name:"Kevin Zhang",email:"kzhang@stanfordhealthcare.org"}},
+{id:11,name:"Northwestern Memorial Hospital",version:"Epic 2022",modules:["Cadence","Grand Central","Willow","Prelude","MyChart"],notes:"Chicago-based academic medical center. Strong ambulatory and inpatient integration.",lastUpdated:"2023-11-30",contact:{name:"Patricia Moore",email:"pmoore@nm.org"}},
+{id:12,name:"University of Michigan Health",version:"Epic 2023",modules:["Beaker","Radiant","Cupid","OpTime","Healthy Planet"],notes:"Large Big Ten university health system. Advanced population health management programs.",lastUpdated:"2024-01-15",contact:{name:"Thomas Anderson",email:"tanderson@med.umich.edu"}},
+{id:13,name:"Brigham and Women's Hospital",version:"Epic 2022",modules:["Research","Care Everywhere","MyChart","Beaker","Radiant"],notes:"Harvard-affiliated teaching hospital. Extensive use of Epic for clinical research workflows.",lastUpdated:"2023-10-20",contact:{name:"Lisa Chen",email:"lchen@bwh.harvard.edu"}},
+{id:14,name:"Houston Methodist Hospital",version:"Epic 2023",modules:["Cadence","Willow","OpTime","Beaker","MyChart"],notes:"Texas Medical Center flagship. Strong surgical program with advanced OpTime workflows.",lastUpdated:"2024-02-10",contact:{name:"Carlos Rivera",email:"crivera@houstonmethodist.org"}},
+{id:15,name:"Emory University Hospital",version:"Epic 2022",modules:["Beaker","Radiant","Healthy Planet","Care Everywhere","Cadence"],notes:"Southeast regional referral center. Strong infectious disease and transplant programs.",lastUpdated:"2023-12-15",contact:{name:"Angela Davis",email:"adavis@emory.edu"}},
+{id:16,name:"University of Pittsburgh Medical Center",version:"Epic 2023",modules:["MyChart","Willow","Beaker","OpTime","Grand Central"],notes:"Large integrated health system across Pennsylvania. Advanced pharmacy automation integration.",lastUpdated:"2024-01-08",contact:{name:"Michael Brown",email:"mbrown@upmc.edu"}},
+{id:17,name:"Mayo Clinic - Florida",version:"Epic 2022",modules:["Radiant","Beaker","Cadence","Research","MyChart"],notes:"Florida campus of Mayo Clinic system. Shares Epic instance with Rochester campus.",lastUpdated:"2023-11-18",contact:{name:"Susan White",email:"swhite@mayo.edu"}},
+{id:18,name:"Yale New Haven Hospital",version:"Epic 2023",modules:["Care Everywhere","Research","Beaker","Radiant","Cupid"],notes:"Connecticut flagship academic medical center. Strong cardiology and cancer programs.",lastUpdated:"2024-01-30",contact:{name:"Richard Hall",email:"rhall@ynhh.org"}},
+{id:19,name:"Rush University Medical Center",version:"Epic 2022",modules:["Cadence","MyChart","Willow","Grand Central","Prelude"],notes:"Chicago academic medical center. Known for orthopedics and neurology programs.",lastUpdated:"2023-12-22",contact:{name:"Maria Garcia",email:"mgarcia@rush.edu"}},
+{id:20,name:"Ochsner Health System",version:"Epic 2023",modules:["Healthy Planet","MyChart","Beaker","Cadence","Willow"],notes:"Largest nonprofit health system in Louisiana. Pioneer in digital health and telehealth integration.",lastUpdated:"2024-02-05",contact:{name:"John Martin",email:"jmartin@ochsner.org"}},
+{id:21,name:"Banner Health",version:"Epic 2023",modules:["Grand Central","Cadence","Prelude","MyChart","Beaker"],notes:"Large Western US health system across 6 states. Standardized Epic implementation across all facilities.",lastUpdated:"2024-01-25",contact:{name:"Rachel Thompson",email:"rthompson@bannerhealth.com"}},
+{id:22,name:"Intermountain Health",version:"Epic 2022",modules:["Healthy Planet","Care Everywhere","Beaker","Radiant","OpTime"],notes:"Utah-based integrated health system. Known for evidence-based medicine and clinical protocols.",lastUpdated:"2023-12-10",contact:{name:"Daniel Lee",email:"dlee@imail.org"}},
+{id:23,name:"Providence Health System",version:"Epic 2023",modules:["MyChart","Willow","Cadence","Grand Central","Beaker"],notes:"West Coast Catholic health system spanning 7 states. Focus on community health and social determinants.",lastUpdated:"2024-02-15",contact:{name:"Catherine Walsh",email:"cwalsh@providence.org"}},
+{id:24,name:"Ascension Health",version:"Epic 2022",modules:["Prelude","Cadence","Willow","Beaker","MyChart"],notes:"Largest Catholic and largest nonprofit health system in the US. Standardizing Epic across 140+ hospitals.",lastUpdated:"2024-01-12",contact:{name:"Joseph Martinez",email:"jmartinez@ascension.org"}}
+];
 const defaultResources=[{id:"res-001",title:"Epic Fundamentals Training Guide",type:"PDF Document",size:"5.2 MB",description:"Complete guide to Epic fundamentals for new trainers."},{id:"res-002",title:"MyChart Patient Portal Tutorial",type:"Video",size:"22:15 min",description:"Detailed walkthrough of MyChart features."},{id:"res-003",title:"Clinical Documentation Templates",type:"ZIP File",size:"3.7 MB",description:"Collection of customizable clinical documentation templates."},{id:"res-004",title:"Reporting Workbench Guide",type:"PDF Document",size:"4.1 MB",description:"Creating and customizing reports in Epic."},{id:"res-005",title:"Epic 2023 Upgrade Guide",type:"PDF Document",size:"2.4 MB",description:"Complete guide to new features in Epic 2023."},{id:"res-006",title:"Playground Navigation Video",type:"Video Tutorial",size:"15:32 min",description:"Step-by-step guide to using the Epic playground."}];
 const faqs=[{id:1,question:"How do I access the Epic Playground?",answer:"Connect through your VPN using a URL provided by your Epic team. Some organizations require additional authentication from your Epic coordinator.",category:"Access",helpfulCount:24},{id:2,question:"What's the difference between Hyperspace and Hyperdrive?",answer:"Hyperspace is the traditional Epic interface; Hyperdrive is the newer web-based version offering improved performance, faster navigation, and better mobile compatibility.",category:"Navigation",helpfulCount:31},{id:3,question:"How often does Epic release updates?",answer:"Major updates release once a year, typically spring or fall. Preview environments are available 3-4 months before production upgrades.",category:"Updates",helpfulCount:18},{id:4,question:"How can I customize training for different specialties?",answer:"Create specialized training profiles, use Training Wheels to guide users, and develop specialty-specific patient scenarios.",category:"Training",helpfulCount:29},{id:5,question:"How do I get access to Epic UserWeb?",answer:"UserWeb access is provided by your Epic coordinator after completing required training and signing access agreements.",category:"Access",helpfulCount:15},{id:6,question:"What's the best way to train physicians on Epic?",answer:"Keep training specialty-specific and workflow-focused. Use real clinical scenarios and combine classroom training with one-on-one coaching.",category:"Training",helpfulCount:42}];
 function notify(msg,type=''){const n=document.createElement('div');n.className='notification '+type;n.textContent=msg;document.body.appendChild(n);setTimeout(()=>{if(n.parentNode)n.parentNode.removeChild(n);},3000);}
@@ -469,7 +541,7 @@ notify('Welcome, '+user.name.split(' ')[0]+'!','success');
 }
 document.getElementById('logout-btn').addEventListener('click',()=>{sessionStorage.removeItem('_sess');location.reload();});
 document.addEventListener('DOMContentLoaded',()=>{
-document.querySelectorAll('.nav-link').forEach(link=>{link.addEventListener('click',e=>{e.preventDefault();const id=link.getAttribute('href').substring(1);document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));link.classList.add('active');document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));const t=document.getElementById(id);if(t)t.classList.add('active');if(id==='training')initTrainingTools();});});
+document.querySelectorAll('.nav-link').forEach(link=>{link.addEventListener('click',e=>{e.preventDefault();const id=link.getAttribute('href').substring(1);document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));link.classList.add('active');document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));const t=document.getElementById(id);if(t)t.classList.add('active');if(id==='training')initTrainingTools();if(id==='tipsheets')initTipSheets();if(id==='smartphrases')initSPLibrary();});});
 document.querySelectorAll('.profile-tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.profile-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.profile-tab-content').forEach(c=>c.classList.remove('active'));tab.classList.add('active');const el=document.getElementById(tab.dataset.tab+'-tab');if(el)el.classList.add('active');if(tab.dataset.tab==='saved')renderSaved();if(tab.dataset.tab==='uploads')renderUploads();if(tab.dataset.tab==='ai-saved')renderAISaved();if(tab.dataset.tab==='questions')renderQuestions();});});
 document.querySelectorAll('.modal-close').forEach(btn=>{btn.addEventListener('click',()=>{const m=document.getElementById(btn.dataset.modal);if(m)m.classList.remove('active');});});
 document.querySelectorAll('.modal-overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('active');});});
@@ -724,6 +796,262 @@ function initTrainingTools() {
     loadFlashcard();
     renderChecklist();
     renderAgenda();
+}
+
+
+// =====================
+// PHASE 4 - CONTENT EXPANSION
+// =====================
+const tipSheets = [
+    {id:"ts1",module:"Hyperspace / Hyperdrive",icon:"fa-desktop",category:"clinical",description:"Essential navigation tips for Epic's main interface.",tips:["Use Ctrl+Space to open the activity menu quickly","Right-click any tab to pin it to your toolbar","Use the star icon to favorite any activity","F2 opens the patient search from anywhere","Ctrl+W closes the current activity tab","Use the breadcrumb trail to navigate back without losing work"]},
+    {id:"ts2",module:"MyChart",icon:"fa-user-circle",category:"clinical",description:"Tips for managing the patient portal effectively.",tips:["Use Message Center to respond to patient messages in batches","Set up After Visit Summary templates for common visit types","Use the Broadcast Messaging tool for mass patient communications","Enable proxy access for pediatric and elderly patients","Schedule MyChart activation outreach for new patients","Use questionnaires to collect patient history before visits"]},
+    {id:"ts3",module:"Cadence (Scheduling)",icon:"fa-calendar-check",category:"admin",description:"Maximize scheduling efficiency with these Cadence tips.",tips:["Use Find the First Available to quickly locate open slots","Appointment Desk shows all scheduled appointments at once","Use scheduling rules to block time for specific visit types","Double-booking alerts can be customized by appointment type","Use the Wait List feature for high-demand providers","Recurring appointment series saves time for chronic patients"]},
+    {id:"ts4",module:"Beaker (Lab)",icon:"fa-flask",category:"lab",description:"Key workflows for the Epic laboratory module.",tips:["Use result routing rules to send critical values automatically","Lab collection lists can be printed by floor or unit","Use the specimen inquiry to track lab status in real time","Result filters help prioritize abnormal values","Interface with analyzers using HL7 for real-time results","Use QC tracking to monitor analyzer performance trends"]},
+    {id:"ts5",module:"Willow (Pharmacy)",icon:"fa-pills",category:"pharmacy",description:"Pharmacy workflow optimization tips.",tips:["Use the pharmacist verification queue to prioritize STAT orders","Medication reconciliation at transitions reduces errors","Use clinical decision support alerts to catch interactions","Dispense history helps track controlled substance patterns","Use the formulary manager to streamline drug approvals","Automatic refill protocols reduce phone call volume"]},
+    {id:"ts6",module:"Radiant (Radiology)",icon:"fa-x-ray",category:"lab",description:"Streamline radiology workflows in Epic.",tips:["Use the worklist to prioritize studies by urgency","Critical result management ensures timely communication","Structured reporting templates speed up dictation","Use the comparison viewer to compare prior studies","Protocol manager automates order routing to modalities","Use stat flags to expedite emergency imaging reads"]},
+    {id:"ts7",module:"OpTime (Surgery)",icon:"fa-procedures",category:"clinical",description:"Surgical workflow tips for OpTime users.",tips:["Use the scheduling board to visualize OR utilization","Preference cards save time by pre-loading surgeon preferences","Count reconciliation tools prevent retained item events","Use the timeline view for real-time case tracking","Implant tracking captures device information for recalls","Post-op order sets speed up recovery room workflows"]},
+    {id:"ts8",module:"Grand Central (ADT)",icon:"fa-hospital",category:"admin",description:"Patient flow management with Grand Central.",tips:["Use the bed board to visualize real-time bed availability","Predicted discharge dates help plan capacity","Use the transfer center to coordinate inter-facility moves","Housekeeping integration speeds up bed turnover","Surge management tools help during high-census periods","Use the patient tracking board for at-a-glance status"]},
+    {id:"ts9",module:"Healthy Planet",icon:"fa-heartbeat",category:"clinical",description:"Population health management using Healthy Planet.",tips:["Use registries to identify care gaps across patient populations","Outreach tools automate reminders for preventive care","Risk stratification identifies high-risk patients needing intervention","Use dashboards to track quality measure performance","Care gap reports show what screenings are overdue","Use the patient outreach workqueue for targeted campaigns"]},
+    {id:"ts10",module:"SmartTools",icon:"fa-magic",category:"clinical",description:"Documentation speed tips using Epic SmartTools.",tips:["SmartPhrases (.phrase) insert reusable text blocks","SmartLists offer pick-lists embedded in notes","SmartLinks pull live patient data into documentation","Use dot phrases for common assessments and plans","SmartForms create structured data entry templates","Voice recognition integrates directly with SmartTools for dictation"]}
+];
+
+const smartPhraseLib = [
+    {id:"sp1",name:".HPINOTE",title:"History & Physical - Initial Note",specialty:"primary",category:"Primary Care",description:"Complete H&P template for initial patient encounters",body:".CHIEFCOMPLAINT
+Chief Complaint: ***
+
+History of Present Illness:
+*** is a *** year old *** who presents with ***. Onset: ***. Duration: ***. Quality: ***. Severity: ***/10. Modifying factors: ***.
+
+Past Medical History:
+.PMHLIST
+
+Medications:
+.MEDLIST
+
+Allergies:
+.ALLERGYLIST
+
+Review of Systems:
+Constitutional: *** fever, *** chills, *** fatigue
+Cardiovascular: *** chest pain, *** palpitations
+Respiratory: *** shortness of breath, *** cough
+
+Physical Exam:
+Vitals: .VITALS
+General: Alert and oriented, in *** distress
+Cardiovascular: Regular rate and rhythm
+Respiratory: Clear to auscultation bilaterally
+
+Assessment and Plan:
+1. ***
+   - ***"},
+    {id:"sp2",name:".DIABFU",title:"Diabetes Follow-Up Note",specialty:"primary",category:"Primary Care",description:"Template for diabetic patient follow-up visits",body:"Diabetes Follow-Up Visit
+
+Patient reports: *** adherence with medications, diet *** compliant
+Home glucose readings: fasting *** mg/dL, post-prandial *** mg/dL
+Hypoglycemic episodes: ***
+
+Last HbA1c: *** (dated: ***)
+Last eye exam: ***
+Last foot exam: ***
+Last nephrology referral: ***
+
+Current Medications:
+.MEDLIST
+
+Assessment:
+Type *** Diabetes Mellitus - .LIST{Controlled;Uncontrolled;Improving;Worsening}
+
+Plan:
+- HbA1c ordered: .LIST{Yes;No;Already recent}
+- Medication adjustment: ***
+- Referrals: ***
+- Follow up in *** weeks/months"},
+    {id:"sp3",name:".CHESTPAIN",title:"Chest Pain Assessment",specialty:"cardiology",category:"Cardiology",description:"Structured chest pain evaluation template",body:"Chest Pain Evaluation
+
+Character: .LIST{Sharp;Dull;Pressure;Burning;Squeezing;Tearing}
+Location: .LIST{Central;Left-sided;Right-sided;Diffuse;Substernal}
+Radiation: .LIST{None;Left arm;Right arm;Jaw;Back;Shoulder}
+Severity: ***/10
+Duration: ***
+Onset: .LIST{Sudden;Gradual;Exertional;At rest;Positional}
+Relieving factors: .LIST{Rest;Nitroglycerin;Position change;Antacids;Nothing}
+
+Associated Symptoms:
+.LIST{Dyspnea;Diaphoresis;Nausea;Vomiting;Palpitations;Syncope;None}
+
+Cardiac Risk Factors:
+.LIST{Hypertension;Diabetes;Hyperlipidemia;Smoking;Family history;Prior MI;None}
+
+EKG findings: ***
+Troponin: ***
+
+Impression: .LIST{ACS;Stable angina;GERD;MSK;Anxiety;Other}
+Plan: ***"},
+    {id:"sp4",name:".EDTRIAGE",title:"ED Triage Note",specialty:"emergency",category:"Emergency Medicine",description:"Emergency department triage documentation template",body:"ED Triage Note
+Arrival: .NOW
+Mode of arrival: .LIST{Walk-in;EMS;Private vehicle;Transfer}
+Triage level: .LIST{ESI 1 - Immediate;ESI 2 - Emergent;ESI 3 - Urgent;ESI 4 - Less Urgent;ESI 5 - Non-Urgent}
+
+Chief Complaint: ***
+Onset: ***
+
+Vital Signs: .VITALS
+
+Allergies: .ALLERGYLIST
+Current Medications: .MEDLIST
+
+Brief History:
+***
+
+Initial Assessment:
+Airway: .LIST{Patent;Compromised}
+Breathing: .LIST{Unlabored;Labored;Assisted}
+Circulation: .List{Stable;Unstable}
+Level of consciousness: .LIST{Alert;Confused;Lethargic;Unresponsive}
+
+Nursing Interventions:
+- IV access: .List{Established;Attempted;Not indicated}
+- O2 applied: .List{Yes - *** L/min;No}
+- Monitor: .List{Applied;Not indicated}
+
+Disposition: .List{Waiting room;Treatment room;Trauma bay}"},
+    {id:"sp5",name:".NURSESHIFT",title:"Nursing Shift Assessment",specialty:"nursing",category:"Nursing",description:"Complete nursing shift assessment documentation",body:"Nursing Shift Assessment - .LIST{Day;Evening;Night} Shift
+Time: .NOW
+
+Vital Signs: .VITALS
+Pain Score: ***/10 - Location: *** - Character: ***
+
+Neurological:
+Orientation: .LIST{Alert and oriented x4;Confused;Lethargic;Unresponsive}
+Pupils: .LIST{Equal and reactive;Unequal;Non-reactive}
+
+Cardiovascular:
+Heart rhythm: .LIST{Regular;Irregular;Paced}
+Edema: .LIST{None;1+;2+;3+;4+} - Location: ***
+
+Respiratory:
+Breath sounds: .LIST{Clear bilaterally;Diminished;Wheezing;Crackles} - Location: ***
+O2 delivery: .LIST{Room air;Nasal cannula *** L;Face mask *** L;High flow}
+
+Gastrointestinal:
+Abdomen: .LIST{Soft;Firm;Distended;Tender}
+Bowel sounds: .LIST{Present;Absent;Hyperactive}
+Last BM: ***
+
+Genitourinary:
+Urine output: *** mL last shift
+Urine character: .LIST{Clear;Cloudy;Dark;Hematuria}
+
+Skin:
+Integrity: .LIST{Intact;Wound present - see wound note;Rash;Bruising}
+Pressure injury risk: Braden score ***
+
+Activity:
+Mobility: .LIST{Ambulatory;Bedrest;Up with assist;Chair}
+Fall risk: .LIST{Low;Moderate;High}
+
+Plan for shift:
+***"},
+    {id:"sp6",name:".DISCHARGESUM",title:"Discharge Summary",specialty:"primary",category:"Primary Care",description:"Complete discharge summary template",body:"DISCHARGE SUMMARY
+
+Patient: .PNAME
+Admission Date: .ADMITDATE
+Discharge Date: .TODAY
+Attending: .MYPROVIDER
+
+Admitting Diagnosis: ***
+Discharge Diagnosis: ***
+
+Hospital Course:
+***
+
+Significant Results:
+- Labs: ***
+- Imaging: ***
+- Procedures: ***
+
+Discharge Condition: .LIST{Stable;Improved;Good;Fair}
+
+Discharge Medications:
+.MEDLIST
+
+Discharge Instructions:
+- Activity: ***
+- Diet: ***
+- Wound care: ***
+- When to call or return to ED: ***
+
+Follow-up Appointments:
+1. *** with *** in *** days/weeks
+2. ***
+
+Pending Results at Discharge:
+***"}
+];
+
+function renderTipSheets(filter='all') {
+    const el = document.getElementById('tipsheet-list');
+    if (!el) return;
+    el.innerHTML = '';
+    const term = (document.getElementById('tipsheet-search')?.value || '').toLowerCase();
+    const filtered = tipSheets.filter(ts => (filter === 'all' || ts.category === filter) && (!term || ts.module.toLowerCase().includes(term) || ts.description.toLowerCase().includes(term) || ts.tips.some(t => t.toLowerCase().includes(term))));
+    if (!filtered.length) { el.innerHTML = '<div class="empty-state"><i class="fas fa-lightbulb"></i><p>No tip sheets match your search.</p></div>'; return; }
+    filtered.forEach(ts => {
+        const card = document.createElement('div');
+        card.className = 'tipsheet-card';
+        card.innerHTML = '<h3><i class="fas ' + ts.icon + '" style="color:var(--elp);"></i>' + ts.module + '</h3><p>' + ts.description + '</p><ul class="tipsheet-tips">' + ts.tips.map(t => '<li>' + t + '</li>').join('') + '</ul>';
+        el.appendChild(card);
+    });
+}
+
+function renderSPLibrary(filter='all') {
+    const el = document.getElementById('sp-lib-list');
+    if (!el) return;
+    el.innerHTML = '';
+    const term = (document.getElementById('sp-lib-search')?.value || '').toLowerCase();
+    const filtered = smartPhraseLib.filter(sp => (filter === 'all' || sp.specialty === filter) && (!term || sp.name.toLowerCase().includes(term) || sp.title.toLowerCase().includes(term) || sp.description.toLowerCase().includes(term)));
+    if (!filtered.length) { el.innerHTML = '<div class="empty-state"><i class="fas fa-pen-fancy"></i><p>No SmartPhrases match your search.</p></div>'; return; }
+    filtered.forEach(sp => {
+        const card = document.createElement('div');
+        card.className = 'sp-card';
+        card.innerHTML = '<div class="sp-card-header"><h4>' + sp.title + '</h4><div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;"><span class="sp-name">' + sp.name + '</span><span class="sp-specialty">' + sp.category + '</span></div></div><p class="sp-desc">' + sp.description + '</p><div class="sp-body">' + sp.body.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div><div style="display:flex;gap:0.5rem;flex-wrap:wrap;"><button class="btn btn-primary" style="font-size:0.82rem;padding:0.4rem 0.9rem;" onclick="copySP(this,'' + sp.name + '\n\n' + sp.body.replace(/'/g,"\'").replace(/
+/g,'\n') + '')"><i class="fas fa-copy"></i> Copy SmartPhrase</button><button class="btn btn-outline" style="font-size:0.82rem;padding:0.4rem 0.9rem;" onclick="copyName(this,'' + sp.name + '')"><i class="fas fa-dot-circle"></i> Copy Name Only</button></div>';
+        el.appendChild(card);
+    });
+}
+
+function copySP(btn, text) { navigator.clipboard.writeText(text).then(() => { btn.innerHTML = '<i class="fas fa-check"></i> Copied!'; setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> Copy SmartPhrase', 2000); }); }
+function copyName(btn, name) { navigator.clipboard.writeText(name).then(() => { btn.innerHTML = '<i class="fas fa-check"></i> Copied!'; setTimeout(() => btn.innerHTML = '<i class="fas fa-dot-circle"></i> Copy Name Only', 2000); }); }
+
+function initTipSheets() {
+    renderTipSheets('all');
+    document.querySelectorAll('.ts-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.ts-filter-btn').forEach(b => b.className = 'btn btn-outline ts-filter-btn');
+            btn.className = 'btn btn-primary ts-filter-btn';
+            renderTipSheets(btn.dataset.filter);
+        });
+    });
+    document.getElementById('tipsheet-search')?.addEventListener('input', () => {
+        const active = document.querySelector('.ts-filter-btn.btn-primary');
+        renderTipSheets(active ? active.dataset.filter : 'all');
+    });
+}
+
+function initSPLibrary() {
+    renderSPLibrary('all');
+    document.querySelectorAll('.sp-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.sp-filter-btn').forEach(b => b.className = 'btn btn-outline sp-filter-btn');
+            btn.className = 'btn btn-primary sp-filter-btn';
+            renderSPLibrary(btn.dataset.filter);
+        });
+    });
+    document.getElementById('sp-lib-search')?.addEventListener('input', () => {
+        const active = document.querySelector('.sp-filter-btn.btn-primary');
+        renderSPLibrary(active ? active.dataset.filter : 'all');
+    });
 }
 
 </script>
