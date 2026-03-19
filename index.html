@@ -140,6 +140,23 @@ textarea.form-control{min-height:90px;resize:vertical;}
 .small{font-size:0.82rem;color:#888;}
 footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-top:3rem;font-size:0.88rem;line-height:2;}
 @media(max-width:768px){.hospital-grid,.resource-grid,.saved-items-grid,.pricing-plans{grid-template-columns:1fr;}.header-content{flex-direction:column;text-align:center;}.stats-grid{grid-template-columns:1fr 1fr;}.profile-header{flex-direction:column;text-align:center;}.pricing-plan.popular{transform:none;}#ai-panel{width:calc(100vw - 32px);right:16px;}#ai-fab{right:16px;}}
+
+        .training-tool { display: none; }
+        .training-tool.active { display: block; }
+        .quiz-option { background: white; border: 2px solid #e0e0e0; border-radius: 8px; padding: 0.85rem 1rem; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; text-align: left; }
+        .quiz-option:hover { border-color: var(--epic-light-purple); background: var(--epic-lighter-purple); }
+        .quiz-option.correct { border-color: #28a745; background: #d4edda; color: #155724; }
+        .quiz-option.wrong { border-color: #dc3545; background: #f8d7da; color: #721c24; }
+        .checklist-item { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.85rem; border-bottom: 1px solid #f0f0f0; }
+        .checklist-item:last-child { border-bottom: none; }
+        .checklist-item input[type=checkbox] { width: 18px; height: 18px; margin-top: 2px; cursor: pointer; flex-shrink: 0; accent-color: var(--epic-purple); }
+        .checklist-item label { cursor: pointer; font-size: 0.9rem; flex: 1; }
+        .checklist-item label.done { text-decoration: line-through; color: #888; }
+        .checklist-section { font-weight: bold; color: var(--epic-purple); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.75rem 0.85rem 0.25rem; background: #f8f9fa; margin-top: 0.5rem; border-radius: 6px 6px 0 0; }
+        .agenda-item-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: #f8f9fa; border-radius: 8px; margin-bottom: 0.5rem; }
+        .agenda-item-time { background: var(--epic-lighter-purple); color: var(--epic-purple); padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.78rem; font-weight: bold; white-space: nowrap; }
+        .agenda-item-text { flex: 1; font-size: 0.9rem; }
+
 </style>
 </head>
 <body>
@@ -180,6 +197,7 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
 <li><a href="#resources" class="nav-link"><i class="fas fa-book"></i> Resources</a></li>
 <li><a href="#faq" class="nav-link"><i class="fas fa-question-circle"></i> FAQ</a></li>
 <li><a href="#profile" class="nav-link"><i class="fas fa-user"></i> My Profile</a></li>
+<li><a href="#training" class="nav-link"><i class="fas fa-graduation-cap"></i> Training Tools</a></li>
 <li><a href="#premium" class="nav-link"><i class="fas fa-crown"></i> Premium</a></li>
 </ul></nav>
 <main>
@@ -258,6 +276,112 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
 <div class="pricing-plan"><h4>Premium Annual</h4><div class="plan-price">$99.99<span>/yr</span></div><ul class="plan-features"><li>Everything in Premium</li><li>Priority support</li></ul><button class="btn btn-premium upgrade-trigger"><i class="fas fa-crown"></i> Upgrade Now</button></div>
 </div>
 </section>
+
+    <section id="training" class="tab-content">
+        <h2><i class="fas fa-graduation-cap"></i> Training Tools</h2>
+        <p class="subtitle">Interactive tools to test and improve your Epic knowledge</p>
+
+        <!-- Tool selector tabs -->
+        <div style="display:flex;gap:0.75rem;margin-bottom:2rem;flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="showTrainingTool('quiz')" id="tt-quiz-btn"><i class="fas fa-question-circle"></i> Epic Quiz</button>
+            <button class="btn btn-outline" onclick="showTrainingTool('flashcards')" id="tt-flash-btn"><i class="fas fa-clone"></i> Flashcards</button>
+            <button class="btn btn-outline" onclick="showTrainingTool('checklist')" id="tt-check-btn"><i class="fas fa-tasks"></i> Go-Live Checklist</button>
+            <button class="btn btn-outline" onclick="showTrainingTool('agenda')" id="tt-agenda-btn"><i class="fas fa-calendar-alt"></i> Training Agenda</button>
+        </div>
+
+        <!-- QUIZ -->
+        <div id="tt-quiz" class="training-tool active">
+            <div style="background:white;border-radius:12px;padding:1.5rem;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:0.75rem;">
+                    <h3>Epic Navigation Quiz</h3>
+                    <div style="display:flex;align-items:center;gap:1rem;">
+                        <span style="font-size:0.88rem;color:#666;" id="quiz-progress">Question 1 of 10</span>
+                        <span style="background:var(--epic-lighter-purple);color:var(--epic-purple);padding:0.3rem 0.75rem;border-radius:20px;font-weight:bold;font-size:0.85rem;" id="quiz-score">Score: 0</span>
+                    </div>
+                </div>
+                <div style="background:#f8f9fa;border-radius:8px;padding:1.25rem;margin-bottom:1.5rem;">
+                    <p style="font-size:1rem;font-weight:600;color:#333;" id="quiz-question">Loading question...</p>
+                </div>
+                <div id="quiz-options" style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1.5rem;"></div>
+                <div id="quiz-feedback" style="display:none;padding:1rem;border-radius:8px;margin-bottom:1rem;font-size:0.9rem;"></div>
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <button class="btn btn-outline" onclick="restartQuiz()"><i class="fas fa-redo"></i> Restart</button>
+                    <button class="btn btn-primary" id="quiz-next-btn" onclick="nextQuestion()" style="display:none;"><i class="fas fa-arrow-right"></i> Next Question</button>
+                </div>
+                <div id="quiz-results" style="display:none;text-align:center;padding:2rem;">
+                    <i class="fas fa-trophy" style="font-size:3rem;color:var(--premium-gold);margin-bottom:1rem;display:block;"></i>
+                    <h3 id="quiz-final-score"></h3>
+                    <p id="quiz-final-msg" style="color:#666;margin:0.75rem 0;"></p>
+                    <button class="btn btn-primary" onclick="restartQuiz()" style="margin-top:1rem;"><i class="fas fa-redo"></i> Take Quiz Again</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- FLASHCARDS -->
+        <div id="tt-flashcards" class="training-tool" style="display:none;">
+            <div style="background:white;border-radius:12px;padding:1.5rem;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:0.75rem;">
+                    <h3>Epic Terminology Flashcards</h3>
+                    <span style="font-size:0.88rem;color:#666;" id="flash-progress">Card 1 of 12</span>
+                </div>
+                <div id="flashcard" onclick="flipCard()" style="background:linear-gradient(135deg,var(--epic-purple),var(--epic-light-purple));color:white;border-radius:12px;padding:2.5rem;text-align:center;cursor:pointer;min-height:200px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;margin-bottom:1.5rem;transition:all 0.3s;">
+                    <p style="font-size:0.82rem;opacity:0.8;text-transform:uppercase;letter-spacing:0.05em;" id="flash-side">Click to reveal answer</p>
+                    <p style="font-size:1.3rem;font-weight:bold;" id="flash-content">Loading...</p>
+                </div>
+                <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
+                    <button class="btn btn-outline" onclick="prevCard()"><i class="fas fa-arrow-left"></i> Previous</button>
+                    <button class="btn btn-primary" onclick="flipCard()"><i class="fas fa-sync-alt"></i> Flip Card</button>
+                    <button class="btn btn-outline" onclick="nextCard()">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- GO-LIVE CHECKLIST -->
+        <div id="tt-checklist" class="training-tool" style="display:none;">
+            <div style="background:white;border-radius:12px;padding:1.5rem;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:0.75rem;">
+                    <h3>Go-Live Readiness Checklist</h3>
+                    <div style="display:flex;align-items:center;gap:0.75rem;">
+                        <span style="font-size:0.88rem;color:#666;" id="checklist-progress">0% complete</span>
+                        <button class="btn btn-outline" style="font-size:0.82rem;padding:0.35rem 0.75rem;" onclick="resetChecklist()"><i class="fas fa-redo"></i> Reset</button>
+                    </div>
+                </div>
+                <div style="background:#f8f9fa;border-radius:8px;padding:0.75rem;margin-bottom:1rem;">
+                    <div style="height:8px;background:#e0e0e0;border-radius:4px;overflow:hidden;">
+                        <div id="checklist-bar" style="height:100%;background:linear-gradient(135deg,var(--epic-purple),var(--epic-light-purple));width:0%;transition:width 0.3s;border-radius:4px;"></div>
+                    </div>
+                </div>
+                <div id="checklist-items"></div>
+            </div>
+        </div>
+
+        <!-- TRAINING AGENDA -->
+        <div id="tt-agenda" class="training-tool" style="display:none;">
+            <div style="background:white;border-radius:12px;padding:1.5rem;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+                <h3 style="margin-bottom:1rem;">Training Session Agenda Builder</h3>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem;">
+                    <div class="form-group" style="margin:0;"><label>Session Title</label><input type="text" class="form-control" id="agenda-title" placeholder="e.g. Physician Epic Training"></div>
+                    <div class="form-group" style="margin:0;"><label>Date</label><input type="date" class="form-control" id="agenda-date"></div>
+                    <div class="form-group" style="margin:0;"><label>Duration (hours)</label><select class="form-control" id="agenda-duration"><option value="1">1 hour</option><option value="2" selected>2 hours</option><option value="4">4 hours</option><option value="8">Full day (8 hrs)</option></select></div>
+                    <div class="form-group" style="margin:0;"><label>Audience</label><input type="text" class="form-control" id="agenda-audience" placeholder="e.g. ED Physicians"></div>
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="font-weight:600;font-size:0.9rem;display:block;margin-bottom:0.5rem;">Add Agenda Item</label>
+                    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                        <input type="text" class="form-control" id="agenda-item-text" placeholder="e.g. Epic login and navigation basics" style="flex:1;min-width:200px;">
+                        <select class="form-control" id="agenda-item-mins" style="width:130px;"><option value="15">15 min</option><option value="30" selected>30 min</option><option value="45">45 min</option><option value="60">60 min</option></select>
+                        <button class="btn btn-primary" onclick="addAgendaItem()"><i class="fas fa-plus"></i> Add</button>
+                    </div>
+                </div>
+                <div id="agenda-list" style="margin-bottom:1.5rem;"></div>
+                <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+                    <button class="btn btn-primary" onclick="printAgenda()"><i class="fas fa-print"></i> Print Agenda</button>
+                    <button class="btn btn-outline" onclick="clearAgenda()"><i class="fas fa-trash"></i> Clear</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
 </main>
 <div class="modal-overlay" id="upload-modal">
 <div class="modal"><div class="modal-header"><h2><i class="fas fa-cloud-upload-alt"></i> Upload Documentation</h2><button class="modal-close" data-modal="upload-modal">&times;</button></div>
@@ -345,7 +469,7 @@ notify('Welcome, '+user.name.split(' ')[0]+'!','success');
 }
 document.getElementById('logout-btn').addEventListener('click',()=>{sessionStorage.removeItem('_sess');location.reload();});
 document.addEventListener('DOMContentLoaded',()=>{
-document.querySelectorAll('.nav-link').forEach(link=>{link.addEventListener('click',e=>{e.preventDefault();const id=link.getAttribute('href').substring(1);document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));link.classList.add('active');document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));const t=document.getElementById(id);if(t)t.classList.add('active');});});
+document.querySelectorAll('.nav-link').forEach(link=>{link.addEventListener('click',e=>{e.preventDefault();const id=link.getAttribute('href').substring(1);document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));link.classList.add('active');document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));const t=document.getElementById(id);if(t)t.classList.add('active');if(id==='training')initTrainingTools();});});
 document.querySelectorAll('.profile-tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.profile-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.profile-tab-content').forEach(c=>c.classList.remove('active'));tab.classList.add('active');const el=document.getElementById(tab.dataset.tab+'-tab');if(el)el.classList.add('active');if(tab.dataset.tab==='saved')renderSaved();if(tab.dataset.tab==='uploads')renderUploads();if(tab.dataset.tab==='ai-saved')renderAISaved();if(tab.dataset.tab==='questions')renderQuestions();});});
 document.querySelectorAll('.modal-close').forEach(btn=>{btn.addEventListener('click',()=>{const m=document.getElementById(btn.dataset.modal);if(m)m.classList.remove('active');});});
 document.querySelectorAll('.modal-overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('active');});});
@@ -374,6 +498,234 @@ async function sendChat(){const text=input.value.trim();if(!text)return;addMsg('
 function addMsg(role,text,isThinking=false){const el=document.createElement('div');el.className='ai-msg '+role+(isThinking?' thinking':'');if(role==='assistant'&&!isThinking){el.innerHTML=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/^- (.+)$/gm,'<li style="margin-left:1rem;">$1</li>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');}else{el.textContent=text;}msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;return el;}
 initAuth();
 });
+
+// =====================
+// PHASE 3 - TRAINING TOOLS
+// =====================
+function showTrainingTool(tool) {
+    document.querySelectorAll('.training-tool').forEach(t => t.style.display = 'none');
+    document.getElementById('tt-' + tool).style.display = 'block';
+    ['quiz','flashcards','checklist','agenda'].forEach(t => {
+        const btn = document.getElementById('tt-' + t + '-btn');
+        if (btn) { btn.className = t === tool ? 'btn btn-primary' : 'btn btn-outline'; }
+    });
+}
+
+// ── QUIZ ──
+const quizQuestions = [
+    {q:"What does ADT stand for in Epic?",options:["Admission, Discharge, Transfer","Advanced Data Tool","Automated Document Tracking","Admin Data Terminal"],answer:0},
+    {q:"Which Epic module handles laboratory results?",options:["Radiant","Willow","Beaker","Cupid"],answer:2},
+    {q:"What is a SmartPhrase in Epic?",options:["A quick keyboard shortcut","A reusable text template inserted with a dot command","A billing code","A patient search filter"],answer:1},
+    {q:"Which module is Epic's pharmacy system?",options:["Beaker","Willow","OpTime","Prelude"],answer:1},
+    {q:"What is Hyperspace?",options:["Epic's mobile app","Epic's radiology module","Epic's main desktop application","Epic's billing system"],answer:2},
+    {q:"What does the 'BPA' acronym stand for in Epic?",options:["Best Practice Alert","Billing Payment Authorization","Basic Patient Assessment","Background Process Analyzer"],answer:0},
+    {q:"Which Epic module handles surgical scheduling?",options:["Cadence","OpTime","Grand Central","Radiant"],answer:1},
+    {q:"What is MyChart?",options:["Epic's internal reporting tool","Epic's patient-facing portal","Epic's scheduling module","Epic's pharmacy system"],answer:1},
+    {q:"What is Hyperdrive?",options:["Epic's mobile application","Epic's web-based interface replacing Hyperspace","Epic's data analytics tool","Epic's training environment"],answer:1},
+    {q:"What does 'Care Everywhere' enable?",options:["Remote patient monitoring","Sharing patient records across different Epic organizations","Video telemedicine visits","Automated care plan generation"],answer:1}
+];
+let quizCurrent = 0, quizScore = 0, quizAnswered = false;
+function loadQuestion() {
+    if (quizCurrent >= quizQuestions.length) { showQuizResults(); return; }
+    const q = quizQuestions[quizCurrent];
+    document.getElementById('quiz-question').textContent = q.q;
+    document.getElementById('quiz-progress').textContent = 'Question ' + (quizCurrent+1) + ' of ' + quizQuestions.length;
+    document.getElementById('quiz-feedback').style.display = 'none';
+    document.getElementById('quiz-next-btn').style.display = 'none';
+    document.getElementById('quiz-results').style.display = 'none';
+    const opts = document.getElementById('quiz-options');
+    opts.innerHTML = '';
+    q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-option';
+        btn.textContent = opt;
+        btn.addEventListener('click', () => answerQuestion(idx));
+        opts.appendChild(btn);
+    });
+    quizAnswered = false;
+}
+function answerQuestion(idx) {
+    if (quizAnswered) return;
+    quizAnswered = true;
+    const q = quizQuestions[quizCurrent];
+    const opts = document.querySelectorAll('.quiz-option');
+    opts[q.answer].classList.add('correct');
+    if (idx !== q.answer) { opts[idx].classList.add('wrong'); }
+    else { quizScore++; }
+    document.getElementById('quiz-score').textContent = 'Score: ' + quizScore;
+    const fb = document.getElementById('quiz-feedback');
+    fb.style.display = 'block';
+    fb.style.background = idx === q.answer ? '#d4edda' : '#f8d7da';
+    fb.style.color = idx === q.answer ? '#155724' : '#721c24';
+    fb.textContent = idx === q.answer ? '✓ Correct!' : '✗ Incorrect. The correct answer is: ' + q.options[q.answer];
+    document.getElementById('quiz-next-btn').style.display = 'inline-flex';
+    opts.forEach(o => o.style.pointerEvents = 'none');
+}
+function nextQuestion() {
+    quizCurrent++;
+    loadQuestion();
+}
+function showQuizResults() {
+    document.getElementById('quiz-options').innerHTML = '';
+    document.getElementById('quiz-feedback').style.display = 'none';
+    document.getElementById('quiz-next-btn').style.display = 'none';
+    const pct = Math.round((quizScore / quizQuestions.length) * 100);
+    const results = document.getElementById('quiz-results');
+    results.style.display = 'block';
+    document.getElementById('quiz-final-score').textContent = quizScore + ' / ' + quizQuestions.length + ' (' + pct + '%)';
+    document.getElementById('quiz-final-msg').textContent = pct >= 80 ? 'Excellent! You have strong Epic knowledge.' : pct >= 60 ? 'Good effort! Review the questions you missed.' : 'Keep studying! Review Epic fundamentals and try again.';
+    document.getElementById('quiz-progress').textContent = 'Quiz Complete!';
+}
+function restartQuiz() { quizCurrent = 0; quizScore = 0; quizAnswered = false; document.getElementById('quiz-score').textContent = 'Score: 0'; document.getElementById('quiz-results').style.display = 'none'; loadQuestion(); }
+
+// ── FLASHCARDS ──
+const flashcards = [
+    {term:"ADT",def:"Admission, Discharge, Transfer — the workflow for managing patient movement in a hospital"},
+    {term:"BPA",def:"Best Practice Alert — a pop-up reminder that appears to guide clinical decision making"},
+    {term:"SmartPhrase",def:"A reusable text template triggered by a dot command (e.g. .GREETING) to speed up documentation"},
+    {term:"SmartList",def:"A pre-defined list of options embedded in a SmartPhrase using the .LIST. syntax"},
+    {term:"Hyperspace",def:"Epic's traditional thick-client desktop application — the main clinical interface"},
+    {term:"Hyperdrive",def:"Epic's newer web-based interface that replaces Hyperspace with improved performance"},
+    {term:"In Basket",def:"Epic's internal messaging system for patient messages, results, referrals, and staff communication"},
+    {term:"Care Everywhere",def:"Epic's interoperability feature allowing records to be shared between different Epic organizations"},
+    {term:"Beaker",def:"Epic's laboratory information system (LIS) module"},
+    {term:"Willow",def:"Epic's pharmacy management module for inpatient and outpatient dispensing"},
+    {term:"Cadence",def:"Epic's scheduling module used to book patient appointments"},
+    {term:"MyChart",def:"Epic's patient-facing portal for viewing records, messaging providers, and scheduling"}
+];
+let flashCurrent = 0, flashShowing = 'term';
+function loadFlashcard() {
+    const card = flashcards[flashCurrent];
+    document.getElementById('flash-progress').textContent = 'Card ' + (flashCurrent+1) + ' of ' + flashcards.length;
+    document.getElementById('flash-content').textContent = card[flashShowing];
+    document.getElementById('flash-side').textContent = flashShowing === 'term' ? 'TERM — Click to see definition' : 'DEFINITION — Click to see term';
+    document.getElementById('flashcard').style.background = flashShowing === 'term' ? 'linear-gradient(135deg,var(--epic-purple),var(--epic-light-purple))' : 'linear-gradient(135deg,#28a745,#1e7e34)';
+}
+function flipCard() { flashShowing = flashShowing === 'term' ? 'def' : 'term'; loadFlashcard(); }
+function nextCard() { flashCurrent = (flashCurrent + 1) % flashcards.length; flashShowing = 'term'; loadFlashcard(); }
+function prevCard() { flashCurrent = (flashCurrent - 1 + flashcards.length) % flashcards.length; flashShowing = 'term'; loadFlashcard(); }
+
+// ── GO-LIVE CHECKLIST ──
+const checklistData = [
+    {section:"Training Preparation"},
+    {id:"cl1",text:"Training environment (playground) is set up and accessible"},
+    {id:"cl2",text:"Training accounts created for all end users"},
+    {id:"cl3",text:"Training materials and tip sheets prepared for each role"},
+    {id:"cl4",text:"Training schedule communicated to all staff"},
+    {id:"cl5",text:"Super users identified and trained"},
+    {section:"Technical Readiness"},
+    {id:"cl6",text:"Workstations and devices are set up with correct Epic version"},
+    {id:"cl7",text:"Printers and label printers configured in Epic"},
+    {id:"cl8",text:"Downtime procedures reviewed and printed"},
+    {id:"cl9",text:"VPN and remote access tested for remote staff"},
+    {id:"cl10",text:"Epic Help Desk number distributed to all users"},
+    {section:"Go-Live Day"},
+    {id:"cl11",text:"At-the-elbow support scheduled for first 3 days"},
+    {id:"cl12",text:"Command center staffed with Epic analysts"},
+    {id:"cl13",text:"Issue tracking process in place"},
+    {id:"cl14",text:"Escalation path defined for critical issues"},
+    {id:"cl15",text:"Post go-live rounding schedule created"},
+    {section:"Post Go-Live"},
+    {id:"cl16",text:"1-week follow-up training sessions scheduled"},
+    {id:"cl17",text:"User feedback collected and reviewed"},
+    {id:"cl18",text:"Outstanding issues logged and prioritized"},
+    {id:"cl19",text:"Super users meeting scheduled for week 2"},
+    {id:"cl20",text:"Training materials updated based on feedback"}
+];
+let checklistState = JSON.parse(localStorage.getItem('checklistState') || '{}');
+function renderChecklist() {
+    const el = document.getElementById('checklist-items');
+    if (!el) return;
+    el.innerHTML = '';
+    checklistData.forEach(item => {
+        if (item.section) {
+            const sec = document.createElement('div');
+            sec.className = 'checklist-section';
+            sec.textContent = item.section;
+            el.appendChild(sec);
+        } else {
+            const row = document.createElement('div');
+            row.className = 'checklist-item';
+            const checked = checklistState[item.id] || false;
+            row.innerHTML = '<input type="checkbox" id="' + item.id + '"' + (checked?' checked':'') + '><label for="' + item.id + '"' + (checked?' class="done"':'') + '>' + item.text + '</label>';
+            row.querySelector('input').addEventListener('change', function() {
+                checklistState[item.id] = this.checked;
+                localStorage.setItem('checklistState', JSON.stringify(checklistState));
+                const label = this.nextElementSibling;
+                label.className = this.checked ? 'done' : '';
+                updateChecklistProgress();
+            });
+            el.appendChild(row);
+        }
+    });
+    updateChecklistProgress();
+}
+function updateChecklistProgress() {
+    const total = checklistData.filter(i => i.id).length;
+    const done = Object.values(checklistState).filter(Boolean).length;
+    const pct = Math.round((done/total)*100);
+    const prog = document.getElementById('checklist-progress');
+    if (prog) prog.textContent = pct + '% complete (' + done + '/' + total + ')';
+    const bar = document.getElementById('checklist-bar');
+    if (bar) bar.style.width = pct + '%';
+}
+function resetChecklist() { checklistState = {}; localStorage.removeItem('checklistState'); renderChecklist(); }
+
+// ── TRAINING AGENDA ──
+let agendaItems = [];
+function addAgendaItem() {
+    const text = document.getElementById('agenda-item-text').value.trim();
+    const mins = document.getElementById('agenda-item-mins').value;
+    if (!text) return;
+    agendaItems.push({text, mins: parseInt(mins)});
+    document.getElementById('agenda-item-text').value = '';
+    renderAgenda();
+}
+function renderAgenda() {
+    const el = document.getElementById('agenda-list');
+    if (!el) return;
+    if (!agendaItems.length) { el.innerHTML = '<p style="color:#888;font-size:0.88rem;text-align:center;padding:1rem;">No items added yet. Add agenda items above.</p>'; return; }
+    let totalMins = 0;
+    el.innerHTML = '';
+    agendaItems.forEach((item, idx) => {
+        totalMins += item.mins;
+        const row = document.createElement('div');
+        row.className = 'agenda-item-row';
+        row.innerHTML = '<span class="agenda-item-time">' + item.mins + ' min</span><span class="agenda-item-text">' + item.text + '</span><button class="btn btn-danger" style="padding:0.25rem 0.6rem;font-size:0.78rem;" onclick="removeAgendaItem(' + idx + ')"><i class="fas fa-trash"></i></button>';
+        el.appendChild(row);
+    });
+    const total = document.createElement('div');
+    total.style.cssText = 'text-align:right;font-size:0.85rem;color:#666;margin-top:0.5rem;padding-top:0.5rem;border-top:1px solid #eee;';
+    total.textContent = 'Total: ' + totalMins + ' minutes (' + (totalMins/60).toFixed(1) + ' hours)';
+    el.appendChild(total);
+}
+function removeAgendaItem(idx) { agendaItems.splice(idx, 1); renderAgenda(); }
+function clearAgenda() { agendaItems = []; renderAgenda(); }
+function printAgenda() {
+    const title = document.getElementById('agenda-title').value || 'Epic Training Agenda';
+    const date = document.getElementById('agenda-date').value || '';
+    const audience = document.getElementById('agenda-audience').value || '';
+    let html = '<html><head><title>' + title + '</title><style>body{font-family:Arial,sans-serif;padding:2rem;max-width:700px;margin:0 auto;}h1{color:#4B286D;}table{width:100%;border-collapse:collapse;margin-top:1rem;}th{background:#4B286D;color:white;padding:0.75rem;text-align:left;}td{padding:0.65rem;border-bottom:1px solid #eee;}tr:nth-child(even){background:#f9f9f9;}</style></head><body>';
+    html += '<h1>' + title + '</h1>';
+    if (date) html += '<p><strong>Date:</strong> ' + date + '</p>';
+    if (audience) html += '<p><strong>Audience:</strong> ' + audience + '</p>';
+    html += '<table><tr><th>Duration</th><th>Topic</th></tr>';
+    agendaItems.forEach(item => { html += '<tr><td>' + item.mins + ' min</td><td>' + item.text + '</td></tr>'; });
+    html += '</table></body></html>';
+    const win = window.open('', '_blank');
+    win.document.write(html);
+    win.document.close();
+    win.print();
+}
+
+// Initialize training tools when tab is clicked
+function initTrainingTools() {
+    loadQuestion();
+    loadFlashcard();
+    renderChecklist();
+    renderAgenda();
+}
+
 </script>
 </body>
 </html>
