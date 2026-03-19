@@ -218,6 +218,20 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
         body.dark-mode .plan-features li { border-color: #333; }
         body.dark-mode .premium-upgrade { background: linear-gradient(135deg, #2d2d1e, #1e2d2d); }
 
+
+        .ai-tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:1.5rem;}
+        .ai-tool-card{background:white;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);overflow:hidden;}
+        .ai-tool-header{display:flex;align-items:center;gap:1rem;padding:1.25rem 1.5rem;border-bottom:1px solid #eee;}
+        .ai-tool-icon{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.3rem;flex-shrink:0;}
+        .ai-tool-header h3{margin:0;font-size:1rem;color:var(--ep);}
+        .ai-tool-header p{margin:0;font-size:0.82rem;color:#666;}
+        .ai-tool-body{padding:1.25rem 1.5rem;}
+        .ai-tool-result{margin-top:1rem;padding:1rem;background:#f8f9fa;border-radius:8px;border-left:4px solid var(--elp);font-size:0.88rem;line-height:1.6;max-height:400px;overflow-y:auto;}
+        .ai-tool-result.loading{color:#888;font-style:italic;border-left-color:#ccc;}
+        .ai-tool-result.error{border-left-color:var(--dan);background:#fff5f5;color:var(--dan);}
+        .ai-result-actions{display:flex;gap:0.5rem;margin-top:0.75rem;}
+        @media(max-width:768px){.ai-tools-grid{grid-template-columns:1fr;}}
+
 </style>
 </head>
 <body>
@@ -259,6 +273,7 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
 <li><a href="#resources" class="nav-link"><i class="fas fa-book"></i> Resources</a></li>
 <li><a href="#faq" class="nav-link"><i class="fas fa-question-circle"></i> FAQ</a></li>
 <li><a href="#profile" class="nav-link"><i class="fas fa-user"></i> My Profile</a></li>
+<li><a href="#ai-tools" class="nav-link"><i class="fas fa-robot"></i> AI Tools</a></li>
 <li><a href="#tipsheets" class="nav-link"><i class="fas fa-lightbulb"></i> Tip Sheets</a></li>
 <li><a href="#smartphrases" class="nav-link"><i class="fas fa-pen-fancy"></i> SmartPhrases</a></li>
 <li><a href="#training" class="nav-link"><i class="fas fa-graduation-cap"></i> Training Tools</a></li>
@@ -489,6 +504,98 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
         <div id="sp-lib-list"></div>
     </section>
 
+
+    <section id="ai-tools" class="tab-content">
+        <h2><i class="fas fa-robot"></i> AI Tools</h2>
+        <p class="subtitle">Powerful AI tools built specifically for Epic trainers</p>
+        <div class="ai-tools-grid">
+
+            <div class="ai-tool-card">
+                <div class="ai-tool-header">
+                    <div class="ai-tool-icon" style="background:linear-gradient(135deg,#4B286D,#7B52AB);"><i class="fas fa-file-pdf"></i></div>
+                    <div><h3>Document Q&amp;A</h3><p>Upload any Epic document and ask questions about it</p></div>
+                </div>
+                <div class="ai-tool-body">
+                    <div class="file-upload" id="pdf-upload-area"><i class="fas fa-cloud-upload-alt"></i><p>Click to upload a PDF or text file</p><input type="file" id="pdf-file-input" style="display:none" accept=".pdf,.doc,.docx,.txt"></div>
+                    <div id="pdf-file-info" style="display:none;background:#f0f0f0;padding:0.6rem;border-radius:6px;margin:0.5rem 0;font-size:0.88rem;"><i class="fas fa-file"></i> <span id="pdf-file-name"></span></div>
+                    <div class="form-group" style="margin-top:0.75rem;"><input type="text" class="form-control" id="pdf-question" placeholder="Ask a question about your document..."></div>
+                    <button class="btn btn-primary" id="pdf-ask-btn" style="width:100%;" disabled><i class="fas fa-search"></i> Ask AI About This Document</button>
+                    <div id="pdf-answer" class="ai-tool-result" style="display:none;"></div>
+                </div>
+            </div>
+
+            <div class="ai-tool-card">
+                <div class="ai-tool-header">
+                    <div class="ai-tool-icon" style="background:linear-gradient(135deg,#dc3545,#c82333);"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div><h3>Error Message Explainer</h3><p>Paste any Epic error and get a plain-English fix</p></div>
+                </div>
+                <div class="ai-tool-body">
+                    <div class="form-group"><label>Epic error message:</label><textarea class="form-control" id="error-input" placeholder="Paste your Epic error here..."></textarea></div>
+                    <div class="form-group"><label>Your role (optional):</label><select class="form-control" id="error-role"><option value="">Select role</option><option>Trainer</option><option>Physician</option><option>Nurse</option><option>Pharmacist</option><option>Billing Specialist</option><option>IT/Analyst</option></select></div>
+                    <button class="btn btn-primary" id="error-explain-btn" style="width:100%;"><i class="fas fa-magic"></i> Explain This Error</button>
+                    <div id="error-answer" class="ai-tool-result" style="display:none;"></div>
+                </div>
+            </div>
+
+            <div class="ai-tool-card">
+                <div class="ai-tool-header">
+                    <div class="ai-tool-icon" style="background:linear-gradient(135deg,#28a745,#1e7e34);"><i class="fas fa-pen-fancy"></i></div>
+                    <div><h3>SmartPhrase Generator</h3><p>Describe a workflow, get a ready-to-use SmartPhrase</p></div>
+                </div>
+                <div class="ai-tool-body">
+                    <div class="form-group"><label>Specialty:</label><select class="form-control" id="sp-specialty"><option value="">Select specialty</option><option>Primary Care</option><option>Cardiology</option><option>Oncology</option><option>Emergency Medicine</option><option>Surgery</option><option>Pediatrics</option><option>Psychiatry</option><option>Radiology</option><option>Pharmacy</option><option>Nursing</option></select></div>
+                    <div class="form-group"><label>Describe what this SmartPhrase should do:</label><textarea class="form-control" id="sp-gen-description" placeholder="e.g. A progress note template for diabetic patient follow-up..."></textarea></div>
+                    <div class="form-group"><label>SmartPhrase name (optional):</label><input type="text" class="form-control" id="sp-gen-name" placeholder="e.g. DIABETICFU"></div>
+                    <button class="btn btn-primary" id="sp-generate-btn" style="width:100%;"><i class="fas fa-pen"></i> Generate SmartPhrase</button>
+                    <div id="sp-answer" class="ai-tool-result" style="display:none;"></div>
+                </div>
+            </div>
+
+            <div class="ai-tool-card">
+                <div class="ai-tool-header">
+                    <div class="ai-tool-icon" style="background:linear-gradient(135deg,#17a2b8,#138496);"><i class="fas fa-calendar-alt"></i></div>
+                    <div><h3>Training Plan Generator</h3><p>Get a complete go-live training plan in seconds</p></div>
+                </div>
+                <div class="ai-tool-body">
+                    <div class="form-group"><label>Role being trained:</label><select class="form-control" id="tp-role"><option value="">Select role</option><option>Physician</option><option>Nurse / RN</option><option>Medical Assistant</option><option>Pharmacist</option><option>Billing Specialist</option><option>Registration / Front Desk</option><option>Lab Technician</option><option>Radiology Technician</option><option>Scheduler</option><option>Executive / Leadership</option></select></div>
+                    <div class="form-group"><label>Epic modules:</label><input type="text" class="form-control" id="tp-modules" placeholder="e.g. Cadence, MyChart, Beaker"></div>
+                    <div class="form-group"><label>Go-live date:</label><input type="date" class="form-control" id="tp-golive"></div>
+                    <div class="form-group"><label>Training hours per week:</label><select class="form-control" id="tp-hours"><option value="2">2 hrs/week</option><option value="4" selected>4 hrs/week</option><option value="8">8 hrs/week</option><option value="16">16+ hrs/week</option></select></div>
+                    <div class="form-group"><label>Special notes (optional):</label><input type="text" class="form-control" id="tp-notes" placeholder="e.g. Remote workforce..."></div>
+                    <button class="btn btn-primary" id="tp-generate-btn" style="width:100%;"><i class="fas fa-calendar-check"></i> Generate Training Plan</button>
+                    <div id="tp-answer" class="ai-tool-result" style="display:none;"></div>
+                </div>
+            </div>
+
+            <div class="ai-tool-card">
+                <div class="ai-tool-header">
+                    <div class="ai-tool-icon" style="background:linear-gradient(135deg,#fd7e14,#e55a00);"><i class="fas fa-project-diagram"></i></div>
+                    <div><h3>Epic Workflow Builder</h3><p>Describe a process, get step-by-step Epic instructions</p></div>
+                </div>
+                <div class="ai-tool-body">
+                    <div class="form-group"><label>Epic module:</label><select class="form-control" id="wf-module"><option value="">Select module</option><option>Hyperspace / Hyperdrive</option><option>MyChart</option><option>Cadence (Scheduling)</option><option>Prelude (Registration)</option><option>Beaker (Lab)</option><option>Radiant (Radiology)</option><option>OpTime (Surgery)</option><option>Willow (Pharmacy)</option><option>Cupid (Cardiology)</option><option>Healthy Planet</option><option>Grand Central (ADT)</option></select></div>
+                    <div class="form-group"><label>Describe the workflow:</label><textarea class="form-control" id="wf-description" placeholder="e.g. How does a nurse document vital signs in Epic?"></textarea></div>
+                    <button class="btn btn-primary" id="wf-generate-btn" style="width:100%;"><i class="fas fa-sitemap"></i> Build This Workflow</button>
+                    <div id="wf-answer" class="ai-tool-result" style="display:none;"></div>
+                </div>
+            </div>
+
+            <div class="ai-tool-card">
+                <div class="ai-tool-header">
+                    <div class="ai-tool-icon" style="background:linear-gradient(135deg,#FFD700,#D4AF37);"><i class="fas fa-lightbulb"></i></div>
+                    <div><h3>Epic Tip Generator</h3><p>Get productivity tips for any Epic module or role</p></div>
+                </div>
+                <div class="ai-tool-body">
+                    <div class="form-group"><label>Module or topic:</label><input type="text" class="form-control" id="tip-gen-topic" placeholder="e.g. Hyperdrive, SmartTools, physician documentation..."></div>
+                    <div class="form-group"><label>Role:</label><select class="form-control" id="tip-gen-role"><option value="">Any role</option><option>Physician</option><option>Nurse</option><option>Pharmacist</option><option>Trainer</option><option>Billing</option><option>Admin</option></select></div>
+                    <button class="btn btn-premium" id="tip-generate-btn" style="width:100%;"><i class="fas fa-lightbulb"></i> Get Epic Tips</button>
+                    <div id="tip-gen-answer" class="ai-tool-result" style="display:none;"></div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
 </main>
 <div class="modal-overlay" id="upload-modal">
 <div class="modal"><div class="modal-header"><h2><i class="fas fa-cloud-upload-alt"></i> Upload Documentation</h2><button class="modal-close" data-modal="upload-modal">&times;</button></div>
@@ -601,7 +708,7 @@ notify('Welcome, '+user.name.split(' ')[0]+'!','success');
 }
 document.getElementById('logout-btn').addEventListener('click',()=>{sessionStorage.removeItem('_sess');location.reload();});
 document.addEventListener('DOMContentLoaded',()=>{
-document.querySelectorAll('.nav-link').forEach(link=>{link.addEventListener('click',e=>{e.preventDefault();const id=link.getAttribute('href').substring(1);document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));link.classList.add('active');document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));const t=document.getElementById(id);if(t)t.classList.add('active');if(id==="training")initTrainingTools();if(id==="tipsheets")initTipSheets();if(id==="smartphrases")initSPLibrary();});});
+document.querySelectorAll('.nav-link').forEach(link=>{link.addEventListener('click',e=>{e.preventDefault();const id=link.getAttribute('href').substring(1);document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));link.classList.add('active');document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));const t=document.getElementById(id);if(t)t.classList.add('active');if(id==="training")initTrainingTools();if(id==="tipsheets")initTipSheets();if(id==="ai-tools")initAITools();if(id==="smartphrases")initSPLibrary();});});
 document.querySelectorAll('.profile-tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.profile-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.profile-tab-content').forEach(c=>c.classList.remove('active'));tab.classList.add('active');const el=document.getElementById(tab.dataset.tab+'-tab');if(el)el.classList.add('active');if(tab.dataset.tab==='saved')renderSaved();if(tab.dataset.tab==='uploads')renderUploads();if(tab.dataset.tab==='ai-saved')renderAISaved();if(tab.dataset.tab==='questions')renderQuestions();});});
 document.querySelectorAll('.modal-close').forEach(btn=>{btn.addEventListener('click',()=>{const m=document.getElementById(btn.dataset.modal);if(m)m.classList.remove('active');});});
 document.querySelectorAll('.modal-overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('active');});});
@@ -1045,6 +1152,143 @@ function initDarkMode() {
         if (icon) icon.className = "fas fa-sun";
         if (label) label.textContent = "Light Mode";
     }
+}
+
+
+// =====================
+// PHASE 1 REDUX - AI TOOLS
+// =====================
+function mdRenderTool(t) {
+    return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+        .replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>")
+        .replace(/\*(.+?)\*/g,"<em>$1</em>")
+        .replace(/`(.+?)`/g,"<code style=\"background:#eee;padding:0.1rem 0.3rem;border-radius:3px;\">$1</code>")
+        .replace(/^### (.+)$/gm,"<strong style=\"display:block;margin:0.5rem 0 0.2rem;color:#4B286D;\">$1</strong>")
+        .replace(/^## (.+)$/gm,"<strong style=\"display:block;margin:0.7rem 0 0.3rem;color:#4B286D;\">$1</strong>")
+        .replace(/^- (.+)$/gm,"<li style=\"margin-left:1.2rem;list-style:disc;\">$1</li>")
+        .replace(/^(\d+)\. (.+)$/gm,"<li style=\"margin-left:1.2rem;\">$2</li>")
+        .replace(/\n\n/g,"<br><br>").replace(/\n/g,"<br>");
+}
+
+async function callAITool(prompt, resultEl) {
+    resultEl.style.display = "block";
+    resultEl.className = "ai-tool-result loading";
+    resultEl.innerHTML = "<i class=\"fas fa-spinner fa-spin\"></i> AI is thinking...";
+    try {
+        var resp = await fetch("/.netlify/functions/ai-chat", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                system: "You are an expert Epic EMR Trainer Assistant. Be specific, practical, and use Epic terminology correctly.",
+                messages: [{role: "user", content: prompt}]
+            })
+        });
+        var data = await resp.json();
+        if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+        var text = "";
+        if (Array.isArray(data.content)) data.content.forEach(function(b) { if (b.type === "text") text += b.text; });
+        if (!text) throw new Error("No response received");
+        resultEl.className = "ai-tool-result";
+        resultEl.innerHTML = mdRenderTool(text) + "<div class=\"ai-result-actions\"><button class=\"ai-save-btn\" id=\"save-tool-result\"><i class=\"fas fa-bookmark\"></i> Save</button><button class=\"ai-save-btn\" id=\"copy-tool-result\"><i class=\"fas fa-copy\"></i> Copy</button></div>";
+        var savedText = text;
+        var savedPrompt = prompt.substring(0, 80);
+        resultEl.querySelector("#save-tool-result").addEventListener("click", function() {
+            STATE.aiSavedResponses.push({question: savedPrompt, answer: savedText, savedAt: new Date().toISOString()});
+            saveState();
+            this.innerHTML = "<i class=\"fas fa-check\"></i> Saved!";
+            this.disabled = true;
+            notify("Saved!", "success");
+        });
+        resultEl.querySelector("#copy-tool-result").addEventListener("click", function() {
+            var btn = this;
+            navigator.clipboard.writeText(savedText).then(function() {
+                btn.innerHTML = "<i class=\"fas fa-check\"></i> Copied!";
+                setTimeout(function() { btn.innerHTML = "<i class=\"fas fa-copy\"></i> Copy"; }, 2000);
+            });
+        });
+    } catch(err) {
+        resultEl.className = "ai-tool-result error";
+        resultEl.textContent = "Error: " + err.message;
+    }
+}
+
+function initAITools() {
+    // PDF Q&A
+    var pdfArea = document.getElementById("pdf-upload-area");
+    var pdfInp = document.getElementById("pdf-file-input");
+    var pdfInfo = document.getElementById("pdf-file-info");
+    var pdfNameEl = document.getElementById("pdf-file-name");
+    var pdfBtn = document.getElementById("pdf-ask-btn");
+    var pdfContent = "";
+    pdfArea.addEventListener("click", function() { pdfInp.click(); });
+    pdfArea.addEventListener("dragover", function(e) { e.preventDefault(); pdfArea.classList.add("drag-over"); });
+    pdfArea.addEventListener("dragleave", function() { pdfArea.classList.remove("drag-over"); });
+    pdfArea.addEventListener("drop", function(e) { e.preventDefault(); pdfArea.classList.remove("drag-over"); if (e.dataTransfer.files[0]) readPDF(e.dataTransfer.files[0]); });
+    pdfInp.addEventListener("change", function(e) { if (e.target.files[0]) readPDF(e.target.files[0]); });
+    function readPDF(f) {
+        pdfNameEl.textContent = f.name;
+        pdfInfo.style.display = "block";
+        if (f.type === "application/pdf") {
+            pdfContent = "PDF: " + f.name;
+            pdfBtn.disabled = false;
+            notify("PDF uploaded!", "success");
+        } else {
+            var r = new FileReader();
+            r.onload = function(ev) { pdfContent = ev.target.result.substring(0, 8000); pdfBtn.disabled = false; notify("Document loaded!", "success"); };
+            r.readAsText(f);
+        }
+    }
+    pdfBtn.addEventListener("click", function() {
+        var q = document.getElementById("pdf-question").value.trim();
+        if (!q) return notify("Please enter a question.", "error");
+        callAITool(pdfContent ? "Document:\n" + pdfContent + "\n\nQuestion: " + q : "Answer this Epic question: " + q, document.getElementById("pdf-answer"));
+    });
+    document.getElementById("pdf-question").addEventListener("keydown", function(e) { if (e.key === "Enter") pdfBtn.click(); });
+
+    // Error Explainer
+    document.getElementById("error-explain-btn").addEventListener("click", function() {
+        var err = document.getElementById("error-input").value.trim();
+        var role = document.getElementById("error-role").value;
+        if (!err) return notify("Please paste an error message.", "error");
+        callAITool("I am an Epic EMR " + (role || "user") + " and received this error:\n\n" + err + "\n\n1. Explain in plain English\n2. Most likely cause\n3. Step-by-step fix\n4. Who to contact", document.getElementById("error-answer"));
+    });
+
+    // SmartPhrase Generator
+    document.getElementById("sp-generate-btn").addEventListener("click", function() {
+        var desc = document.getElementById("sp-gen-description").value.trim();
+        if (!desc) return notify("Please describe the SmartPhrase.", "error");
+        var specialty = document.getElementById("sp-specialty").value || "general";
+        var name = document.getElementById("sp-gen-name").value.trim() || "CUSTOM";
+        callAITool("Create a complete Epic SmartPhrase for " + specialty + " use.\nName: " + name + "\nPurpose: " + desc + "\n\nProvide: 1) Complete text with Epic syntax 2) How to create in Epic 3) Customization tips", document.getElementById("sp-answer"));
+    });
+
+    // Training Plan Generator
+    document.getElementById("tp-generate-btn").addEventListener("click", function() {
+        var role = document.getElementById("tp-role").value;
+        var modules = document.getElementById("tp-modules").value.trim();
+        if (!role || !modules) return notify("Please select a role and enter modules.", "error");
+        var golive = document.getElementById("tp-golive").value;
+        var hours = document.getElementById("tp-hours").value;
+        var notes = document.getElementById("tp-notes").value.trim();
+        var days = golive ? Math.ceil((new Date(golive) - new Date()) / (1000 * 60 * 60 * 24)) : null;
+        callAITool("Create a detailed Epic training plan.\nRole: " + role + "\nModules: " + modules + "\nGo-live: " + (golive || "TBD") + (days ? " (" + days + " days away)" : "") + "\nHours/week: " + hours + "\nNotes: " + (notes || "None") + "\n\nProvide: week-by-week schedule, objectives, methods, assessments, go-live support", document.getElementById("tp-answer"));
+    });
+
+    // Workflow Builder
+    document.getElementById("wf-generate-btn").addEventListener("click", function() {
+        var desc = document.getElementById("wf-description").value.trim();
+        if (!desc) return notify("Please describe the workflow.", "error");
+        var mod = document.getElementById("wf-module").value || "Epic EMR";
+        callAITool("Create step-by-step Epic instructions:\nModule: " + mod + "\nWorkflow: " + desc + "\n\nInclude: prerequisites, numbered steps with exact navigation, common mistakes, keyboard shortcuts", document.getElementById("wf-answer"));
+    });
+
+    // Tip Generator
+    document.getElementById("tip-generate-btn").addEventListener("click", function() {
+        var topic = document.getElementById("tip-gen-topic").value.trim();
+        if (!topic) return notify("Please enter a topic.", "error");
+        var role = document.getElementById("tip-gen-role").value;
+        callAITool("Give me 5 powerful Epic EMR productivity tips for " + topic + (role ? " for " + role + " users" : "") + ". For each: title, 2-3 sentence explanation, exact steps or shortcut, why it saves time. Focus on tips most users do not know.", document.getElementById("tip-gen-answer"));
+    });
 }
 
 </script>
