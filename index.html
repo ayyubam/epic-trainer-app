@@ -233,7 +233,6 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
         @media(max-width:768px){.ai-tools-grid{grid-template-columns:1fr;}}
 
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
 <div id="login-gate">
@@ -948,8 +947,7 @@ function printAgenda() {
     const title = document.getElementById('agenda-title').value || 'Epic Training Agenda';
     const date = document.getElementById('agenda-date').value || '';
     const audience = document.getElementById('agenda-audience').value || '';
-    let html = '<html><head><title>' + title + '</title><style>body{font-family:Arial,sans-serif;padding:2rem;max-width:700px;margin:0 auto;}h1{color:#4B286D;}table{width:100%;border-collapse:collapse;margin-top:1rem;}th{background:#4B286D;color:white;padding:0.75rem;text-align:left;}td{padding:0.65rem;border-bottom:1px solid #eee;}tr:nth-child(even){background:#f9f9f9;}</style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-</head><body>';
+    let html = '<html><head><title>' + title + '</title><style>body{font-family:Arial,sans-serif;padding:2rem;max-width:700px;margin:0 auto;}h1{color:#4B286D;}table{width:100%;border-collapse:collapse;margin-top:1rem;}th{background:#4B286D;color:white;padding:0.75rem;text-align:left;}td{padding:0.65rem;border-bottom:1px solid #eee;}tr:nth-child(even){background:#f9f9f9;}</style></head><body>';
     html += '<h1>' + title + '</h1>';
     if (date) html += '<p><strong>Date:</strong> ' + date + '</p>';
     if (audience) html += '<p><strong>Audience:</strong> ' + audience + '</p>';
@@ -1079,134 +1077,6 @@ function initSPLibrary() {
         var active = document.querySelector(".sp-filter-btn.btn-primary");
         renderSPLibrary(active ? active.dataset.filter : "all");
     });
-}
-
-
-
-// =====================
-// SUPABASE BACKEND
-// =====================
-var SUPA_URL = "https://rrfcukkvdsraukybkxzc.supabase.co";
-var SUPA_KEY = "sb_publishable_hIWPVlBUD_5ACnZ58Xaqcw_gjfzq355";
-var supa = null;
-var supaUser = null;
-
-function initSupabase() {
-    try {
-        supa = window.supabase.createClient(SUPA_URL, SUPA_KEY);
-        return true;
-    } catch(e) {
-        console.warn("Supabase init failed:", e);
-        supa = null;
-        return false;
-    }
-}
-
-async function supaSignUp(name, email, password) {
-    if (!supa) throw new Error("Backend unavailable");
-    var res = await supa.auth.signUp({
-        email: email,
-        password: password,
-        options: { data: { name: name } }
-    });
-    if (res.error) throw res.error;
-    if (res.data && res.data.user) {
-        await supa.from("profiles").upsert({
-            id: res.data.user.id,
-            name: name,
-            email: email
-        });
-    }
-    return res.data;
-}
-
-async function supaSignIn(email, password) {
-    if (!supa) throw new Error("Backend unavailable");
-    var res = await supa.auth.signInWithPassword({ email: email, password: password });
-    if (res.error) throw res.error;
-    return res.data;
-}
-
-async function supaSignOut() {
-    if (supa) await supa.auth.signOut();
-    supaUser = null;
-    sessionStorage.removeItem("_sess");
-    location.reload();
-}
-
-async function supaGetProfile(userId) {
-    if (!supa) return null;
-    var res = await supa.from("profiles").select("*").eq("id", userId).single();
-    return res.data || null;
-}
-
-async function syncToCloud() {
-    if (!supa || !supaUser) return;
-    try {
-        await supa.from("profiles").upsert({
-            id: supaUser.id,
-            name: STATE.currentUserName || supaUser.email,
-            email: supaUser.email
-        });
-    } catch(e) { console.warn("Sync error:", e); }
-}
-
-async function loadFromCloud() {
-    if (!supa || !supaUser) return;
-    try {
-        var saved = await supa.from("saved_items").select("*").eq("user_id", supaUser.id);
-        if (saved.data && saved.data.length) {
-            STATE.savedItems = saved.data.map(function(d) {
-                return { id: d.item_id, type: d.item_type, name: d.item_name, savedAt: d.saved_at };
-            });
-        }
-        var ai = await supa.from("ai_responses").select("*").eq("user_id", supaUser.id).order("saved_at", { ascending: false });
-        if (ai.data && ai.data.length) {
-            STATE.aiSavedResponses = ai.data.map(function(d) {
-                return { question: d.question, answer: d.answer, savedAt: d.saved_at };
-            });
-        }
-        var questions = await supa.from("my_questions").select("*").eq("user_id", supaUser.id).order("asked_at", { ascending: false }).limit(50);
-        if (questions.data && questions.data.length) {
-            STATE.myQuestions = questions.data.map(function(d) {
-                return { question: d.question, askedAt: d.asked_at };
-            });
-        }
-        saveState();
-    } catch(e) { console.warn("Load from cloud error:", e); }
-}
-
-async function saveItemToCloud(item) {
-    if (!supa || !supaUser) return;
-    try {
-        await supa.from("saved_items").upsert({
-            user_id: supaUser.id,
-            item_id: item.id,
-            item_type: item.type,
-            item_name: item.name
-        });
-    } catch(e) { console.warn("Save item error:", e); }
-}
-
-async function removeItemFromCloud(itemId) {
-    if (!supa || !supaUser) return;
-    try {
-        await supa.from("saved_items").delete().eq("user_id", supaUser.id).eq("item_id", itemId);
-    } catch(e) { console.warn("Remove item error:", e); }
-}
-
-async function saveQuestionToCloud(question) {
-    if (!supa || !supaUser) return;
-    try {
-        await supa.from("my_questions").insert({ user_id: supaUser.id, question: question });
-    } catch(e) { console.warn("Save question error:", e); }
-}
-
-async function saveAIResponseToCloud(question, answer) {
-    if (!supa || !supaUser) return;
-    try {
-        await supa.from("ai_responses").insert({ user_id: supaUser.id, question: question, answer: answer });
-    } catch(e) { console.warn("Save AI response error:", e); }
 }
 
 
