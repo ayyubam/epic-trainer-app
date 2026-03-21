@@ -1,6 +1,6 @@
 {
-  "name": "Epic EMR Trainer Assistant",
-  "short_name": "Epic Trainer",
+  "name": "EMR Trainer App",
+  "short_name": "EMR Trainer App",
   "description": "The ultimate tool for Epic EMR trainers",
   "start_url": "/",
   "display": "standalone",

@@ -5,12 +5,12 @@
     <meta name="theme-color" content="#4B286D">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Epic Trainer">
+    <meta name="apple-mobile-web-app-title" content="EMR Trainer App">
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Epic EMR Trainer Assistant</title>
+<title>EMR Trainer App</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root{--ep:#4B286D;--elp:#7B52AB;--elpr:#E6E6FA;--eg:#F5F5F5;--td:#333;--suc:#28a745;--dan:#dc3545;--gold:#FFD700;--dark:#D4AF37;}
@@ -257,7 +257,7 @@ if ('serviceWorker' in navigator) {
 <body>
 <div id="login-gate">
 <div class="gate-box">
-<div class="gate-logo"><i class="fas fa-hospital-user"></i><h2>Epic EMR Trainer</h2><p>Sign in or create an account to continue</p></div>
+<div class="gate-logo"><i class="fas fa-hospital-user"></i><h2>EMR Trainer App</h2><p>Sign in or create an account to continue</p></div>
 <div class="auth-tabs"><div class="auth-tab active" data-auth="signin">Sign In</div><div class="auth-tab" data-auth="signup">Create Account</div></div>
 <div class="auth-form active" id="signin-form">
 <div class="form-group"><label>Email</label><input type="email" class="form-control" id="si-email" placeholder="your@email.com"></div>
@@ -277,7 +277,7 @@ if ('serviceWorker' in navigator) {
 </div>
 <header>
 <div class="header-content">
-<div class="logo"><i class="fas fa-hospital-user"></i><span>Epic EMR Trainer Assistant</span></div>
+<div class="logo"><i class="fas fa-hospital-user"></i><span>EMR Trainer App</span></div>
 <div class="user-actions">
 <button id="dark-mode-btn" onclick="toggleDarkMode()" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);border-radius:20px;padding:0.4rem 0.9rem;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;gap:0.4rem;"><i class="fas fa-moon" id="dark-mode-icon"></i> <span id="dark-mode-label">Dark Mode</span></button>
 <div class="premium-badge"><i class="fas fa-crown"></i><span id="plan-label">Free Plan</span></div>
@@ -371,12 +371,12 @@ if ('serviceWorker' in navigator) {
 <div class="form-group"><label>Full Name</label><input type="text" class="form-control" id="set-name"></div>
 <div class="form-group"><label>Email</label><input type="email" class="form-control" id="set-email"></div>
 <div class="form-group"><label>Primary Hospital</label><input type="text" class="form-control" id="set-hospital"></div>
-<div class="form-group"><label>Epic Certification</label><input type="text" class="form-control" id="set-cert" value="Epic Trainer"></div>
+<div class="form-group"><label>Epic Certification</label><input type="text" class="form-control" id="set-cert" value="EMR Trainer App"></div>
 <button class="btn btn-primary" id="save-settings-btn"><i class="fas fa-save"></i> Save Changes</button>
 </div>
 </section>
 <section id="premium" class="tab-content">
-<h2><i class="fas fa-crown"></i> Epic Trainer Premium</h2><p class="subtitle">Upgrade your experience</p>
+<h2><i class="fas fa-crown"></i> EMR Trainer App Premium</h2><p class="subtitle">Upgrade your experience</p>
 <div class="premium-upgrade"><h2>Unlock Premium Features</h2><div class="premium-features">
 <div class="premium-feature"><i class="fas fa-bookmark"></i><span>Save unlimited items</span></div>
 <div class="premium-feature"><i class="fas fa-robot"></i><span>Advanced AI tools</span></div>
@@ -527,7 +527,7 @@ if ('serviceWorker' in navigator) {
 
     <section id="ai-tools" class="tab-content">
         <h2><i class="fas fa-robot"></i> AI Tools</h2>
-        <p class="subtitle">Powerful AI tools built specifically for Epic trainers</p>
+        <p class="subtitle">Powerful AI tools built specifically for EMR Trainer Apps</p>
         <div class="ai-tools-grid">
 
             <div class="ai-tool-card">
@@ -632,11 +632,11 @@ if ('serviceWorker' in navigator) {
 </div></div>
 <button id="ai-fab"><i class="fas fa-robot"></i></button>
 <div id="ai-panel">
-<div class="ai-panel-header"><h3><i class="fas fa-robot"></i> AI Epic Trainer</h3><button id="ai-close-btn">&times;</button></div>
-<div id="ai-messages"><div class="ai-msg assistant">Hi! I am your AI Epic Trainer. Ask me anything about Epic EMR workflows, training strategies, or modules.</div></div>
+<div class="ai-panel-header"><h3><i class="fas fa-robot"></i> AI EMR Trainer App</h3><button id="ai-close-btn">&times;</button></div>
+<div id="ai-messages"><div class="ai-msg assistant">Hi! I am your AI EMR Trainer App. Ask me anything about Epic EMR workflows, training strategies, or modules.</div></div>
 <div class="ai-input-row"><textarea id="ai-input" placeholder="Ask about Epic EMR..." rows="1"></textarea><button id="ai-send"><i class="fas fa-paper-plane"></i></button></div>
 </div>
-<footer><p>Epic EMR Trainer Assistant | For training purposes only</p><p>Not affiliated with Epic Systems Corporation</p><p>&copy; 2024 Epic EMR Trainer Assistant. All rights reserved.</p></footer>
+<footer><p>EMR Trainer App | For training purposes only</p><p>Not affiliated with Epic Systems Corporation</p><p>&copy; 2024 EMR Trainer App. All rights reserved.</p></footer>
 <script>
 // =====================
 // SUPABASE BACKEND
@@ -756,7 +756,7 @@ function initAuth(){
             if(res.data&&res.data.session){
                 supaUser=res.data.session.user;
                 var name=supaUser.user_metadata&&supaUser.user_metadata.name?supaUser.user_metadata.name:supaUser.email;
-                doLogin({name:name,email:supaUser.email,hospital:'',certification:'Epic Trainer'});
+                doLogin({name:name,email:supaUser.email,hospital:'',certification:'EMR Trainer App'});
                 loadFromCloud().then(function(){renderSaved();renderUploads();renderAISaved();renderQuestions();updatePersonalStats();});
             } else { showGate(); }
         }).catch(function(){ showGate(); });
@@ -782,7 +782,7 @@ function initAuth(){
                 supaSignIn(email,password).then(function(data){
                     supaUser=data.user;
                     const name=supaUser.user_metadata&&supaUser.user_metadata.name?supaUser.user_metadata.name:email;
-                    doLogin({name:name,email:email,hospital:'',certification:'Epic Trainer'});
+                    doLogin({name:name,email:email,hospital:'',certification:'EMR Trainer App'});
                     loadFromCloud().then(function(){renderSaved();renderUploads();renderAISaved();renderQuestions();updatePersonalStats();});
                 }).catch(function(err){
                     errEl.textContent=err.message==='Invalid login credentials'?'Invalid email or password.':err.message;
@@ -811,7 +811,7 @@ function initAuth(){
                 supaSignUp(name,email,password).then(function(data){
                     if(data&&data.user){
                         supaUser=data.user;
-                        doLogin({name:name,email:email,hospital:'',certification:'Epic Trainer'});
+                        doLogin({name:name,email:email,hospital:'',certification:'EMR Trainer App'});
                         notify('Welcome, '+name.split(' ')[0]+'!','success');
                     } else {
                         errEl.textContent='Check your email to confirm your account.';
@@ -828,7 +828,7 @@ function initAuth(){
             } else {
                 const accounts=getAccounts();
                 if(accounts[email]){errEl.textContent='Account already exists. Sign in instead.';errEl.classList.add('show');btn.innerHTML='<i class="fas fa-user-plus"></i> Create Account';btn.disabled=false;return;}
-                const user={name:name,email:email,hospital:'',password:password,certification:'Epic Trainer'};
+                const user={name:name,email:email,hospital:'',password:password,certification:'EMR Trainer App'};
                 accounts[email]=user;setAccounts(accounts);doLogin(user);
             }
         });
@@ -875,7 +875,7 @@ closeBtn.addEventListener('click',()=>panel.classList.remove('open'));
 input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,100)+'px';});
 input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}});
 sendBtn.addEventListener('click',sendChat);
-async function sendChat(){const text=input.value.trim();if(!text)return;addMsg('user',text);input.value='';input.style.height='auto';sendBtn.disabled=true;STATE.myQuestions.push({question:text,askedAt:new Date().toISOString()});saveState();saveQuestionToCloud(text);const thinking=addMsg('assistant','Thinking...',true);STATE.aiHistory.push({role:'user',content:text});try{const resp=await fetch('/.netlify/functions/ai-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1024,system:'You are an expert Epic EMR Trainer Assistant. Help with Epic modules, training strategies, workflows, and best practices. Be concise and practical.',tools:[{type:'web_search_20250305',name:'web_search'}],messages:STATE.aiHistory.slice(-12)})});const data=await resp.json();if(data.error)throw new Error(data.error.message||JSON.stringify(data.error));let reply='';if(Array.isArray(data.content))data.content.forEach(b=>{if(b.type==='text')reply+=b.text;});if(!reply)reply='No response received.';thinking.remove();const msgEl=addMsg('assistant',reply);const sb=document.createElement('button');sb.className='ai-save-btn';sb.innerHTML='<i class="fas fa-bookmark"></i> Save';sb.addEventListener('click',()=>{STATE.aiSavedResponses.push({question:text,answer:reply,savedAt:new Date().toISOString()});saveState();sb.innerHTML='<i class="fas fa-check"></i> Saved!';sb.disabled=true;notify('Saved!','success');saveAIResponseToCloud(text,reply);});msgEl.appendChild(sb);STATE.aiHistory.push({role:'assistant',content:reply});}catch(err){thinking.remove();addMsg('assistant','Error: '+err.message);}sendBtn.disabled=false;input.focus();}
+async function sendChat(){const text=input.value.trim();if(!text)return;addMsg('user',text);input.value='';input.style.height='auto';sendBtn.disabled=true;STATE.myQuestions.push({question:text,askedAt:new Date().toISOString()});saveState();saveQuestionToCloud(text);const thinking=addMsg('assistant','Thinking...',true);STATE.aiHistory.push({role:'user',content:text});try{const resp=await fetch('/.netlify/functions/ai-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1024,system:'You are an expert EMR Trainer App. Help with Epic modules, training strategies, workflows, and best practices. Be concise and practical.',tools:[{type:'web_search_20250305',name:'web_search'}],messages:STATE.aiHistory.slice(-12)})});const data=await resp.json();if(data.error)throw new Error(data.error.message||JSON.stringify(data.error));let reply='';if(Array.isArray(data.content))data.content.forEach(b=>{if(b.type==='text')reply+=b.text;});if(!reply)reply='No response received.';thinking.remove();const msgEl=addMsg('assistant',reply);const sb=document.createElement('button');sb.className='ai-save-btn';sb.innerHTML='<i class="fas fa-bookmark"></i> Save';sb.addEventListener('click',()=>{STATE.aiSavedResponses.push({question:text,answer:reply,savedAt:new Date().toISOString()});saveState();sb.innerHTML='<i class="fas fa-check"></i> Saved!';sb.disabled=true;notify('Saved!','success');saveAIResponseToCloud(text,reply);});msgEl.appendChild(sb);STATE.aiHistory.push({role:'assistant',content:reply});}catch(err){thinking.remove();addMsg('assistant','Error: '+err.message);}sendBtn.disabled=false;input.focus();}
 function addMsg(role,text,isThinking=false){const el=document.createElement('div');el.className='ai-msg '+role+(isThinking?' thinking':'');if(role==='assistant'&&!isThinking){el.innerHTML=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/^- (.+)$/gm,'<li style="margin-left:1rem;">$1</li>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');}else{el.textContent=text;}msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;return el;}
 initAuth();
     loadTip();
@@ -1321,7 +1321,7 @@ async function callAITool(prompt, resultEl) {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
-                system: "You are an expert Epic EMR Trainer Assistant. Be specific, practical, and use Epic terminology correctly.",
+                system: "You are an expert EMR Trainer App. Be specific, practical, and use Epic terminology correctly.",
                 messages: [{role: "user", content: prompt}]
             })
         });
