@@ -244,20 +244,23 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
         .emr-meditech{background:#fce8ff;color:#7e22ce;}
         .emr-cerner{background:#fff0e8;color:#c2410c;}
         .emr-other{background:#f0f0f0;color:#444;}
+
+        .video-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:2000;display:none;align-items:center;justify-content:center;}
+        .video-modal-overlay.active{display:flex;}
+        .video-modal{background:black;border-radius:12px;width:90%;max-width:900px;position:relative;overflow:hidden;}
+        .video-modal-header{display:flex;justify-content:space-between;align-items:center;padding:0.75rem 1rem;background:#111;}
+        .video-modal-header h3{color:white;font-size:0.95rem;margin:0;}
+        .video-modal-close{background:none;border:none;color:white;font-size:1.4rem;cursor:pointer;}
+        .video-wrapper{position:relative;padding-bottom:56.25%;height:0;}
+        .video-wrapper iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;}
+        .resource-admin-panel{background:white;border-radius:10px;padding:1.5rem;box-shadow:0 4px 6px rgba(0,0,0,0.1);margin-bottom:1.5rem;border-left:4px solid var(--ep);}
+        .resource-admin-panel h3{color:var(--ep);margin-bottom:1rem;font-size:1rem;}
+        .resource-row{display:grid;grid-template-columns:1fr 1fr auto;gap:0.75rem;margin-bottom:0.75rem;align-items:center;}
+        .resource-row input{font-size:0.85rem;}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script>
-// ── SERVICE WORKER REGISTRATION ──
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/sw.js').then(function(reg) {
-            console.log('SW registered:', reg.scope);
-        }).catch(function(err) {
-            console.log('SW registration failed:', err);
-        });
-    });
-}
-</script>
+
 </head>
 <body>
 <div id="login-gate">
@@ -355,7 +358,8 @@ if ('serviceWorker' in navigator) {
 <section id="resources" class="tab-content">
 <h2>Epic Resources</h2><p class="subtitle">Training materials, guides, and documentation</p>
 <div class="search-container"><i class="fas fa-search search-icon"></i><input type="text" class="search-box" id="resource-search" placeholder="Search resources..."></div>
-<div style="margin-bottom:1.5rem;"><button class="btn btn-primary" id="upload-resource-btn"><i class="fas fa-upload"></i> Upload New Resource</button></div>
+<div style="margin-bottom:1.5rem;display:flex;gap:0.75rem;flex-wrap:wrap;"><button class="btn btn-primary" id="upload-resource-btn"><i class="fas fa-upload"></i> Upload New Resource</button><button class="btn btn-outline" id="toggle-admin-btn"><i class="fas fa-cog"></i> Edit Resource Links</button></div>
+<div class="resource-admin-panel" id="resource-admin-panel" style="display:none;"><h3><i class="fas fa-cog"></i> Edit Resource Links</h3><p style="font-size:0.85rem;color:#666;margin-bottom:1rem;">Update video URLs. Use YouTube embed URLs (youtube.com/embed/VIDEO_ID) for in-app playback.</p><div id="resource-admin-list"></div><button class="btn btn-primary" id="save-resource-links-btn" style="margin-top:0.75rem;"><i class="fas fa-save"></i> Save All Links</button></div>
 <div class="resource-grid" id="resource-list"></div>
 </section>
 <section id="faq" class="tab-content">
@@ -643,6 +647,19 @@ if ('serviceWorker' in navigator) {
 <div class="modal"><div class="modal-header"><h2><i class="fas fa-crown"></i> Upgrade to Premium</h2><button class="modal-close" data-modal="upgrade-modal">&times;</button></div>
 <div style="text-align:center;padding:1rem;"><h3>Start Your 7-Day Free Trial</h3><div class="plan-price">$19.99<span>/month after trial</span></div><button class="btn btn-premium" id="start-trial-btn" style="width:100%;padding:1rem;margin-top:1rem;"><i class="fas fa-play-circle"></i> Start Free Trial</button><p class="small" style="margin-top:0.75rem;">No credit card required.</p></div>
 </div></div>
+
+<div class="video-modal-overlay" id="video-modal">
+    <div class="video-modal">
+        <div class="video-modal-header">
+            <h3 id="video-modal-title">Video</h3>
+            <button class="video-modal-close" id="video-modal-close">&times;</button>
+        </div>
+        <div class="video-wrapper">
+            <iframe id="video-modal-iframe" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+        </div>
+    </div>
+</div>
+
 <button id="ai-fab"><i class="fas fa-robot"></i></button>
 <div id="ai-panel">
 <div class="ai-panel-header"><h3><i class="fas fa-robot"></i> AI EMR Trainer App</h3><button id="ai-close-btn">&times;</button></div>
@@ -839,7 +856,18 @@ const hospitals=[
 {id:119,name:"Kareo - Independent Practices",emr:"Kareo",version:"Kareo Clinical 2023",modules:["Clinical","Billing","Patient Engagement","Telehealth","Analytics"],notes:"Independent physician practices using Kareo platform. Strong ambulatory and billing workflows.",lastUpdated:"2024-01-20",contact:{name:"Kareo Support",email:"support@kareo.com",phone:"888-775-2736"}},
 {id:120,name:"Practice Fusion - Small Practices",emr:"Practice Fusion",version:"Practice Fusion 2023",modules:["Clinical","Revenue Cycle","Patient Engagement","e-Prescribing","Lab Integration"],notes:"Small independent practice network using Practice Fusion. Strong ambulatory documentation and e-prescribing.",lastUpdated:"2024-02-04",contact:{name:"Support Team",email:"support@practicefusion.com",phone:"415-346-7700"}}
 ];
-const defaultResources=[{id:"res-001",title:"Epic Fundamentals Training Guide",type:"PDF Document",size:"5.2 MB",description:"Complete guide to Epic fundamentals for new trainers."},{id:"res-002",title:"MyChart Patient Portal Tutorial",type:"Video",size:"22:15 min",description:"Detailed walkthrough of MyChart features."},{id:"res-003",title:"Clinical Documentation Templates",type:"ZIP File",size:"3.7 MB",description:"Collection of customizable clinical documentation templates."},{id:"res-004",title:"Reporting Workbench Guide",type:"PDF Document",size:"4.1 MB",description:"Creating and customizing reports in Epic."},{id:"res-005",title:"Epic 2023 Upgrade Guide",type:"PDF Document",size:"2.4 MB",description:"Complete guide to new features in Epic 2023."},{id:"res-006",title:"Playground Navigation Video",type:"Video Tutorial",size:"15:32 min",description:"Step-by-step guide to using the Epic playground."}];
+const defaultResources=[
+{id:"res-001",title:"Epic Fundamentals - Getting Started",type:"Video",size:"YouTube",description:"Introduction to Epic EMR fundamentals for new users and trainers.",url:"https://www.youtube.com/watch?v=dQw4w9WgXcQ",embed:"https://www.youtube.com/embed/dQw4w9WgXcQ"},
+{id:"res-002",title:"MyChart Patient Portal Overview",type:"Video",size:"YouTube",description:"Complete walkthrough of MyChart features for patients and providers.",url:"https://www.youtube.com/watch?v=dQw4w9WgXcQ",embed:"https://www.youtube.com/embed/dQw4w9WgXcQ"},
+{id:"res-003",title:"Epic Hyperspace Navigation Tips",type:"Video",size:"YouTube",description:"Key navigation tips and shortcuts for Hyperspace and Hyperdrive.",url:"https://www.youtube.com/watch?v=dQw4w9WgXcQ",embed:"https://www.youtube.com/embed/dQw4w9WgXcQ"},
+{id:"res-004",title:"Epic SmartPhrases and SmartTools",type:"Video",size:"YouTube",description:"How to create and use SmartPhrases, SmartLists, and SmartLinks.",url:"https://www.youtube.com/watch?v=dQw4w9WgXcQ",embed:"https://www.youtube.com/embed/dQw4w9WgXcQ"},
+{id:"res-005",title:"Epic Go-Live Training Best Practices",type:"Video",size:"YouTube",description:"Proven strategies for successful Epic go-live training programs.",url:"https://www.youtube.com/watch?v=dQw4w9WgXcQ",embed:"https://www.youtube.com/embed/dQw4w9WgXcQ"},
+{id:"res-006",title:"Epic Playground Navigation Guide",type:"Video",size:"YouTube",description:"Step-by-step guide to setting up and using the Epic training playground.",url:"https://www.youtube.com/watch?v=dQw4w9WgXcQ",embed:"https://www.youtube.com/embed/dQw4w9WgXcQ"},
+{id:"res-007",title:"Epic In Basket and Messaging",type:"Video",size:"YouTube",description:"Managing In Basket messages, patient portal messages, and results.",url:"https://www.youtube.com/watch?v=dQw4w9WgXcQ",embed:"https://www.youtube.com/embed/dQw4w9WgXcQ"},
+{id:"res-008",title:"Epic Physician Documentation",type:"Video",size:"YouTube",description:"Clinical documentation workflows for physicians in Epic.",url:"https://www.youtube.com/watch?v=dQw4w9WgXcQ",embed:"https://www.youtube.com/embed/dQw4w9WgXcQ"},
+{id:"res-009",title:"Epic Nursing Workflows",type:"Video",size:"YouTube",description:"Essential nursing workflows including documentation and medication administration.",url:"https://www.youtube.com/watch?v=dQw4w9WgXcQ",embed:"https://www.youtube.com/embed/dQw4w9WgXcQ"},
+{id:"res-010",title:"Epic Scheduling with Cadence",type:"Video",size:"YouTube",description:"Patient scheduling, appointment management, and wait list workflows.",url:"https://www.youtube.com/watch?v=dQw4w9WgXcQ",embed:"https://www.youtube.com/embed/dQw4w9WgXcQ"}
+];
 const faqs=[{id:1,question:"How do I access the Epic Playground?",answer:"Connect through your VPN using a URL provided by your Epic team. Some organizations require additional authentication from your Epic coordinator.",category:"Access",helpfulCount:24},{id:2,question:"What's the difference between Hyperspace and Hyperdrive?",answer:"Hyperspace is the traditional Epic interface; Hyperdrive is the newer web-based version offering improved performance, faster navigation, and better mobile compatibility.",category:"Navigation",helpfulCount:31},{id:3,question:"How often does Epic release updates?",answer:"Major updates release once a year, typically spring or fall. Preview environments are available 3-4 months before production upgrades.",category:"Updates",helpfulCount:18},{id:4,question:"How can I customize training for different specialties?",answer:"Create specialized training profiles, use Training Wheels to guide users, and develop specialty-specific patient scenarios.",category:"Training",helpfulCount:29},{id:5,question:"How do I get access to Epic UserWeb?",answer:"UserWeb access is provided by your Epic coordinator after completing required training and signing access agreements.",category:"Access",helpfulCount:15},{id:6,question:"What's the best way to train physicians on Epic?",answer:"Keep training specialty-specific and workflow-focused. Use real clinical scenarios and combine classroom training with one-on-one coaching.",category:"Training",helpfulCount:42}];
 function notify(msg,type=''){const n=document.createElement('div');n.className='notification '+type;n.textContent=msg;document.body.appendChild(n);setTimeout(()=>{if(n.parentNode)n.parentNode.removeChild(n);},3000);}
 function fmtSz(b){if(!b)return'0 B';const k=1024,s=['B','KB','MB','GB'],i=Math.floor(Math.log(b)/Math.log(k));return(b/Math.pow(k,i)).toFixed(1)+' '+s[i];}
@@ -852,7 +880,20 @@ else if(h.emr==='Meditech')emrCls='emr-meditech';
 else if(h.emr==='Oracle Cerner')emrCls='emr-cerner';
 var emrBadge=h.emr?'<span class="emr-badge '+emrCls+'">'+h.emr+'</span>':'';
 c.innerHTML=emrBadge+'<h3><i class="fas fa-hospital"></i>'+h.name+'</h3><div class="hospital-meta"><span>'+h.version+'</span><span>Updated: '+h.lastUpdated+'</span></div><p style="font-size:0.88rem;color:#555;">'+h.notes+'</p><div class="module-list">'+h.modules.map(m=>'<span class="module-tag">'+m+'</span>').join('')+'</div><div class="hospital-contact"><strong>Contact:</strong> '+h.contact.name+' | '+h.contact.email+'</div><div style="display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap;"><button class="btn btn-primary" style="font-size:0.85rem;padding:0.5rem 1rem;">View Details</button><button class="btn '+(sv?'saved':'btn-outline')+' save-btn" data-id="hosp-'+h.id+'" data-type="hospital" data-name="'+h.name+'"><i class="fas '+(sv?'fa-check':'fa-bookmark')+'"></i> '+(sv?'Saved':'Save')+'</button></div>';return c;}
-function mkResCard(r,isUp=false){const sv=isSaved(r.id);const isVid=(r.type||'').toLowerCase().includes('video');const c=document.createElement('div');c.className='resource-card';c.innerHTML=(isUp?'':'<div class="premium-lock"><i class="fas fa-lock"></i></div>')+'<h3>'+r.title+'</h3><div class="resource-meta"><span>'+(r.type||'Document')+'</span><span>'+(r.size||'')+'</span></div><p style="font-size:0.86rem;color:#555;">'+(r.description||'')+'</p><div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;"><button class="btn btn-primary" style="font-size:0.85rem;padding:0.5rem 1rem;"><i class="fas '+(isVid?'fa-play-circle':'fa-download')+'"></i> '+(isVid?'Watch':'Download')+'</button><button class="btn '+(sv?'saved':'btn-outline')+' save-btn" data-id="'+r.id+'" data-type="resource" data-name="'+r.title+'"><i class="fas '+(sv?'fa-check':'fa-bookmark')+'"></i> '+(sv?'Saved':'Save')+'</button></div>';return c;}
+function mkResCard(r,isUp=false){const sv=isSaved(r.id);const isVid=(r.type||'').toLowerCase().includes('video');const c=document.createElement('div');c.className='resource-card';c.innerHTML=(isUp?'':'<div class="premium-lock"><i class="fas fa-lock"></i></div>')+'<h3>'+r.title+'</h3><div class="resource-meta"><span>'+(r.type||'Document')+'</span><span>'+(r.size||'')+'</span></div><p style="font-size:0.86rem;color:#555;">'+(r.description||'')+'</p><div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;"><button class="btn btn-primary watch-btn" style="font-size:0.85rem;padding:0.5rem 1rem;" data-embed="'+(r.embed||'')+'" data-url="'+(r.url||'')+'" data-title="'+r.title+'"><i class="fas '+(isVid?'fa-play-circle':'fa-download')+'"></i> '+(isVid?'Watch':'Open')+'</button><button class="btn '+(sv?'saved':'btn-outline')+' save-btn" data-id="'+r.id+'" data-type="resource" data-name="'+r.title+'"><i class="fas '+(sv?'fa-check':'fa-bookmark')+'"></i> '+(sv?'Saved':'Save')+'</button></div>';
+c.querySelector('.watch-btn').addEventListener('click', function() {
+    const embed = this.dataset.embed;
+    const url = this.dataset.url;
+    const title = this.dataset.title;
+    if (embed) {
+        document.getElementById('video-modal-title').textContent = title;
+        document.getElementById('video-modal-iframe').src = embed + '?autoplay=1';
+        document.getElementById('video-modal').classList.add('active');
+    } else if (url) {
+        window.open(url, '_blank');
+    }
+});
+return c;}
 function mkFAQItem(f){const sv=isSaved('faq-'+f.id);const el=document.createElement('div');el.className='faq-item';el.innerHTML='<div class="faq-question">'+f.question+' <span>+</span></div><div class="faq-answer"><p>'+f.answer+'</p><div class="faq-meta"><span class="faq-category">'+f.category+'</span><span>'+f.helpfulCount+' found this helpful</span></div><div style="margin-top:0.75rem;"><button class="btn '+(sv?'saved':'btn-outline')+' save-btn" data-id="faq-'+f.id+'" data-type="faq" data-name="'+f.question+'"><i class="fas '+(sv?'fa-check':'fa-bookmark')+'"></i> '+(sv?'Saved':'Save this answer')+'</button></div></div>';el.querySelector('.faq-question').addEventListener('click',function(){const a=this.nextElementSibling;a.classList.toggle('active');this.querySelector('span').textContent=a.classList.contains('active')?'-':'+';});return el;}
 function renderHospitals(){var dashEl=document.getElementById('dashboard-hospitals');if(dashEl){dashEl.innerHTML='';hospitals.slice(0,2).forEach(function(h){dashEl.appendChild(mkHospCard(h));});attachSaveBtns();}}
 function renderResources(){const el=document.getElementById('resource-list');if(!el)return;el.innerHTML='';const all=[...defaultResources,...STATE.uploadedFiles.map(f=>({id:'upload-'+f.id,title:f.title,type:f.type||'Uploaded',size:f.size,description:f.description||'',uploaded:true}))];all.forEach(r=>el.appendChild(mkResCard(r,r.uploaded)));const de=document.getElementById('dashboard-resources');if(de){de.innerHTML='';defaultResources.slice(0,2).forEach(r=>de.appendChild(mkResCard(r)));}const st=document.getElementById('stat-resources');if(st)st.textContent=all.length;attachSaveBtns();}
@@ -996,6 +1037,9 @@ initAuth();
     loadTip();
     updatePersonalStats();
     initDarkMode();
+    initVideoModal();
+    applyCustomLinks();
+    initResourceAdmin();
 });
 
 // =====================
@@ -1594,6 +1638,18 @@ function initEMRFilters(){
             filterHospitals();
         });
     }
+}
+
+
+// ── SERVICE WORKER REGISTRATION ──
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').then(function(reg) {
+            console.log('SW registered:', reg.scope);
+        }).catch(function(err) {
+            console.log('SW registration failed:', err);
+        });
+    });
 }
 
 </script>
