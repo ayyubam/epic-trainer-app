@@ -261,52 +261,8 @@ if ('serviceWorker' in navigator) {
 }
 
 
-// ── EMR FILTER ──
-var currentEMRFilter = "all";
-var currentHospSearch = "";
 
-function filterHospitals() {
-    var el = document.getElementById("hospital-list");
-    if (!el) return;
-    el.innerHTML = "";
-    var filtered = hospitals.filter(function(h) {
-        var matchEMR = currentEMRFilter === "all" ||
-            (currentEMRFilter === "other" && h.emr !== "Epic" && h.emr !== "Meditech" && h.emr !== "Oracle Cerner" && h.emr !== "Allscripts") ||
-            h.emr === currentEMRFilter;
-        var matchSearch = !currentHospSearch || 
-            h.name.toLowerCase().indexOf(currentHospSearch) >= 0 ||
-            h.notes.toLowerCase().indexOf(currentHospSearch) >= 0 ||
-            h.version.toLowerCase().indexOf(currentHospSearch) >= 0 ||
-            h.modules.some(function(m){ return m.toLowerCase().indexOf(currentHospSearch) >= 0; });
-        return matchEMR && matchSearch;
-    });
-    var label = document.getElementById("hosp-count-label");
-    if (label) label.textContent = "Showing " + filtered.length + " hospital" + (filtered.length !== 1 ? "s" : "");
-    filtered.forEach(function(h){ el.appendChild(mkHospCard(h)); });
-    attachSaveBtns();
-}
 
-function initEMRFilters() {
-    document.querySelectorAll(".emr-filter-btn").forEach(function(btn) {
-        btn.addEventListener("click", function() {
-            document.querySelectorAll(".emr-filter-btn").forEach(function(b){ b.className = "btn btn-outline emr-filter-btn"; });
-            btn.className = "btn btn-primary emr-filter-btn";
-            currentEMRFilter = btn.dataset.emr;
-            filterHospitals();
-        });
-    });
-    var hospSearch = document.getElementById("hospital-search");
-    if (hospSearch) {
-        hospSearch.removeEventListener("input", hospSearch._filterHandler);
-        hospSearch._filterHandler = function(e) {
-            currentHospSearch = e.target.value.toLowerCase();
-            filterHospitals();
-        };
-        hospSearch.addEventListener("input", hospSearch._filterHandler);
-    }
-}
-
-</script>
 </head>
 <body>
 <div id="login-gate">
@@ -1603,6 +1559,53 @@ function initAITools() {
         callAITool("Give me 5 powerful Epic EMR productivity tips for " + topic + (role ? " for " + role + " users" : "") + ". For each: title, 2-3 sentence explanation, exact steps or shortcut, why it saves time. Focus on tips most users do not know.", document.getElementById("tip-gen-answer"));
     });
 }
+
+
+// ── EMR FILTER ──
+var currentEMRFilter = "all";
+var currentHospSearch = "";
+
+function filterHospitals() {
+    var el = document.getElementById("hospital-list");
+    if (!el) return;
+    el.innerHTML = "";
+    var filtered = hospitals.filter(function(h) {
+        var matchEMR = currentEMRFilter === "all" ||
+            (currentEMRFilter === "other" && h.emr !== "Epic" && h.emr !== "Meditech" && h.emr !== "Oracle Cerner" && h.emr !== "Allscripts") ||
+            h.emr === currentEMRFilter;
+        var matchSearch = !currentHospSearch || 
+            h.name.toLowerCase().indexOf(currentHospSearch) >= 0 ||
+            h.notes.toLowerCase().indexOf(currentHospSearch) >= 0 ||
+            h.version.toLowerCase().indexOf(currentHospSearch) >= 0 ||
+            h.modules.some(function(m){ return m.toLowerCase().indexOf(currentHospSearch) >= 0; });
+        return matchEMR && matchSearch;
+    });
+    var label = document.getElementById("hosp-count-label");
+    if (label) label.textContent = "Showing " + filtered.length + " hospital" + (filtered.length !== 1 ? "s" : "");
+    filtered.forEach(function(h){ el.appendChild(mkHospCard(h)); });
+    attachSaveBtns();
+}
+
+function initEMRFilters() {
+    document.querySelectorAll(".emr-filter-btn").forEach(function(btn) {
+        btn.addEventListener("click", function() {
+            document.querySelectorAll(".emr-filter-btn").forEach(function(b){ b.className = "btn btn-outline emr-filter-btn"; });
+            btn.className = "btn btn-primary emr-filter-btn";
+            currentEMRFilter = btn.dataset.emr;
+            filterHospitals();
+        });
+    });
+    var hospSearch = document.getElementById("hospital-search");
+    if (hospSearch) {
+        hospSearch.removeEventListener("input", hospSearch._filterHandler);
+        hospSearch._filterHandler = function(e) {
+            currentHospSearch = e.target.value.toLowerCase();
+            filterHospitals();
+        };
+        hospSearch.addEventListener("input", hospSearch._filterHandler);
+    }
+}
+
 
 </script>
 </body>
