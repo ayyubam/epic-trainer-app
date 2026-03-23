@@ -403,8 +403,8 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
 <h3 style="margin-bottom:1rem;">Choose Your Plan</h3>
 <div class="pricing-plans">
 <div class="pricing-plan"><h4>Free</h4><div class="plan-price">$0<span>/mo</span></div><ul class="plan-features"><li>All hospitals</li><li>Browse resources</li><li>AI Trainer chat</li></ul><button class="btn btn-outline" disabled>Current Plan</button></div>
-<div class="pricing-plan popular"><div class="popular-badge">MOST POPULAR</div><h4>EMR Trainer Pro</h4><div class="plan-price">$19.99<span>/mo</span></div><ul class="plan-features"><li>Everything in Free</li><li>Unlimited saves</li><li>Cert tracker</li><li>Hours log</li></ul><button class="btn btn-premium upgrade-trigger"><i class="fas fa-crown"></i> Upgrade Now</button></div>
-<div class="pricing-plan"><h4>EMR Trainer Teams</h4><div class="plan-price">$49.99<span>/mo</span></div><ul class="plan-features"><li>Everything in Premium</li><li>Priority support</li></ul><button class="btn btn-premium upgrade-trigger"><i class="fas fa-crown"></i> Upgrade Now</button></div>
+<div class="pricing-plan popular"><div class="popular-badge">MOST POPULAR</div><h4>EMR Trainer Pro</h4><div class="plan-price">$19.99<span>/mo</span></div><ul class="plan-features"><li>Everything in Free</li><li>Unlimited saves</li><li>Cert tracker</li><li>Hours log</li></ul><button class="btn btn-premium upgrade-trigger" data-plan="pro"><i class="fas fa-crown"></i> Upgrade Now</button></div>
+<div class="pricing-plan"><h4>EMR Trainer Teams</h4><div class="plan-price">$49.99<span>/mo</span></div><ul class="plan-features"><li>Everything in Premium</li><li>Priority support</li></ul><button class="btn btn-premium upgrade-trigger" data-plan="teams"><i class="fas fa-crown"></i> Upgrade Now</button></div>
 </div>
 </section>
 
@@ -645,7 +645,7 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
 </div></div>
 <div class="modal-overlay" id="upgrade-modal">
 <div class="modal"><div class="modal-header"><h2><i class="fas fa-crown"></i> Upgrade to Premium</h2><button class="modal-close" data-modal="upgrade-modal">&times;</button></div>
-<div style="text-align:center;padding:1rem;"><h3>Start Your 7-Day Free Trial</h3><div class="plan-price">$19.99<span>/month after trial</span></div><button class="btn btn-premium" id="start-trial-btn" style="width:100%;padding:1rem;margin-top:1rem;"><i class="fas fa-play-circle"></i> Start Free Trial</button><p class="small" style="margin-top:0.75rem;">No credit card required.</p></div>
+<div style="text-align:center;padding:1rem;"><h3>Upgrade to Premium</h3><div class="plan-price">$19.99<span>/month</span></div><button class="btn btn-premium" id="start-trial-btn" style="width:100%;padding:1rem;margin-top:1rem;"><i class="fas fa-crown"></i> Subscribe Now</button><p class="small" style="margin-top:0.75rem;">Secure payment via Stripe. Cancel anytime.</p></div>
 </div></div>
 
 <div class="video-modal-overlay" id="video-modal">
@@ -709,6 +709,8 @@ async function loadFromCloud(){
         var questions=await supa.from("my_questions").select("*").eq("user_id",supaUser.id).order("asked_at",{ascending:false}).limit(50);
         if(questions.data&&questions.data.length){STATE.myQuestions=questions.data.map(function(d){return{question:d.question,askedAt:d.asked_at};});}
         saveState();
+        var profile=await supa.from("profiles").select("is_premium,plan").eq("id",supaUser.id).single();
+        if(profile.data&&profile.data.is_premium){STATE.isPremium=true;var lbl=profile.data.plan==='teams'?'Teams Member':'Pro Member';var pl=document.getElementById('plan-label');var ppl=document.getElementById('profile-plan-label');if(pl)pl.textContent=lbl;if(ppl)ppl.textContent=lbl;}
     }catch(e){console.warn("Load from cloud error:",e);}
 }
 async function saveItemToCloud(item){
@@ -734,6 +736,15 @@ async function saveAIResponseToCloud(question,answer){
 
 const STATE={savedItems:JSON.parse(localStorage.getItem('savedItems')||'[]'),uploadedFiles:JSON.parse(localStorage.getItem('uploadedFiles')||'[]'),aiSavedResponses:JSON.parse(localStorage.getItem('aiSavedResponses')||'[]'),myQuestions:JSON.parse(localStorage.getItem('myQuestions')||'[]'),aiHistory:[],isPremium:false};
 function saveState(){localStorage.setItem('savedItems',JSON.stringify(STATE.savedItems));localStorage.setItem('uploadedFiles',JSON.stringify(STATE.uploadedFiles));localStorage.setItem('aiSavedResponses',JSON.stringify(STATE.aiSavedResponses));localStorage.setItem('myQuestions',JSON.stringify(STATE.myQuestions));}
+async function startStripeCheckout(plan){
+    if(!supaUser){notify('Please sign in first.','error');return;}
+    try{
+        var resp=await fetch('/.netlify/functions/create-checkout-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({plan:plan,email:supaUser.email,userId:supaUser.id})});
+        var data=await resp.json();
+        if(data.url){window.location.href=data.url;}
+        else{notify('Checkout error: '+(data.error||'Unknown error'),'error');}
+    }catch(e){notify('Checkout failed. Try again.','error');}
+}
 const hospitals=[
 {id:1,name:"Mayo Clinic",emr:"Epic",version:"Epic 2023",modules:["Radiant","Beaker","OpTime","Research","Cadence","Prelude"],notes:"One of the top-ranked hospitals in the US. Strong focus on oncology, cardiology, and research workflows.",lastUpdated:"2024-01-15",contact:{name:"Epic Training Department",email:"training@mayoclinic.org",phone:"507-284-2511"}},
 {id:2,name:"Johns Hopkins Hospital",emr:"Epic",version:"Epic 2023",modules:["Care Everywhere","MyChart","Healthy Planet","Research","Cupid"],notes:"World-renowned academic medical center. Early adopter of new Epic features with strong research integration.",lastUpdated:"2024-02-01",contact:{name:"IS Training Team",email:"istraining@jhmi.edu",phone:"410-955-5000"}},
@@ -1010,8 +1021,12 @@ document.querySelectorAll('.nav-link').forEach(link=>{link.addEventListener('cli
 document.querySelectorAll('.profile-tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.profile-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.profile-tab-content').forEach(c=>c.classList.remove('active'));tab.classList.add('active');const el=document.getElementById(tab.dataset.tab+'-tab');if(el)el.classList.add('active');if(tab.dataset.tab==='saved')renderSaved();if(tab.dataset.tab==='uploads')renderUploads();if(tab.dataset.tab==='ai-saved')renderAISaved();if(tab.dataset.tab==='questions')renderQuestions();});});
 document.querySelectorAll('.modal-close').forEach(btn=>{btn.addEventListener('click',()=>{const m=document.getElementById(btn.dataset.modal);if(m)m.classList.remove('active');});});
 document.querySelectorAll('.modal-overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('active');});});
-document.querySelectorAll('.upgrade-trigger').forEach(btn=>{btn.addEventListener('click',()=>document.getElementById('upgrade-modal').classList.add('active'));});
-document.getElementById('start-trial-btn').addEventListener('click',()=>{STATE.isPremium=true;document.getElementById('plan-label').textContent='Pro Member';document.getElementById('profile-plan-label').textContent='Pro Member';document.getElementById('upgrade-modal').classList.remove('active');notify('Welcome to Premium!','success');});
+var _selectedPlan='pro';
+document.querySelectorAll('.upgrade-trigger').forEach(btn=>{btn.addEventListener('click',async()=>{_selectedPlan=btn.dataset.plan||'pro';if(!supaUser){document.getElementById('upgrade-modal').classList.add('active');return;}await startStripeCheckout(_selectedPlan);});});
+document.getElementById('start-trial-btn').addEventListener('click',async()=>{await startStripeCheckout(_selectedPlan);});
+var _urlParams=new URLSearchParams(window.location.search);
+if(_urlParams.get('payment')==='success'){history.replaceState({},'','/');setTimeout(()=>notify('Subscription activated! Welcome to Premium!','success'),800);}
+if(_urlParams.get('payment')==='cancelled'){history.replaceState({},'','/');notify('Checkout cancelled.','error');}
 const area=document.getElementById('file-upload-area'),inp=document.getElementById('file-input'),info=document.getElementById('file-info'),fnEl=document.getElementById('file-name'),fsEl=document.getElementById('file-size'),upBtn=document.getElementById('start-upload-btn');
 let sel=null;
 ['upload-resource-btn','upload-from-profile-btn'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('click',()=>document.getElementById('upload-modal').classList.add('active'));});
