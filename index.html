@@ -10,7 +10,14 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EMR Trainer App</title>
+<title>Epic EMR Trainer | Training Resources & Tools for Epic EHR</title>
+<meta name="description" content="The #1 app for Epic EMR trainers and go-live teams. Access hospital directories, training videos, flashcards, quizzes, and go-live checklists — all in one place.">
+<meta property="og:title" content="Epic EMR Trainer | Training Resources & Tools for Epic EHR">
+<meta property="og:description" content="The #1 app for Epic EMR trainers and go-live teams. Access hospital directories, training videos, flashcards, quizzes, and go-live checklists.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Epic EMR Trainer | Training Resources & Tools for Epic EHR">
+<meta name="twitter:description" content="The #1 app for Epic EMR trainers. Hospital directory, videos, flashcards, quizzes, and go-live checklists.">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root{--ep:#4B286D;--elp:#7B52AB;--elpr:#E6E6FA;--eg:#F5F5F5;--td:#333;--suc:#28a745;--dan:#dc3545;--gold:#FFD700;--dark:#D4AF37;}
@@ -964,7 +971,23 @@ const defaultResources=[
 {id:"res-009",title:"Nurse Documentation",type:"Video",size:"YouTube",description:"Epic nursing documentation workflows for clinical staff.",url:"https://www.youtube.com/watch?v=yB8EASV07iQ",embed:"https://www.youtube.com/embed/yB8EASV07iQ"},
 {id:"res-010",title:"Epic Scheduling in Cadence",type:"Video",size:"YouTube",description:"How to schedule patient appointments using Epic Cadence.",url:"https://www.youtube.com/watch?v=1OJ79S1fCtg",embed:"https://www.youtube.com/embed/1OJ79S1fCtg"}
 ];
-const faqs=[{id:1,question:"How do I access the Epic Playground?",answer:"Connect through your VPN using a URL provided by your Epic team. Some organizations require additional authentication from your Epic coordinator.",category:"Access",helpfulCount:24},{id:2,question:"What's the difference between Hyperspace and Hyperdrive?",answer:"Hyperspace is the traditional Epic interface; Hyperdrive is the newer web-based version offering improved performance, faster navigation, and better mobile compatibility.",category:"Navigation",helpfulCount:31},{id:3,question:"How often does Epic release updates?",answer:"Major updates release once a year, typically spring or fall. Preview environments are available 3-4 months before production upgrades.",category:"Updates",helpfulCount:18},{id:4,question:"How can I customize training for different specialties?",answer:"Create specialized training profiles, use Training Wheels to guide users, and develop specialty-specific patient scenarios.",category:"Training",helpfulCount:29},{id:5,question:"How do I get access to Epic UserWeb?",answer:"UserWeb access is provided by your Epic coordinator after completing required training and signing access agreements.",category:"Access",helpfulCount:15},{id:6,question:"What's the best way to train physicians on Epic?",answer:"Keep training specialty-specific and workflow-focused. Use real clinical scenarios and combine classroom training with one-on-one coaching.",category:"Training",helpfulCount:42}];
+const faqs=[
+{id:1,question:"How do I access the Epic Playground?",answer:"Connect through your VPN using a URL provided by your Epic team. Some organizations require additional authentication from your Epic coordinator.",category:"Access",helpfulCount:24},
+{id:2,question:"What's the difference between Hyperspace and Hyperdrive?",answer:"Hyperspace is the traditional Epic thick-client desktop application. Hyperdrive is the newer web-based version that offers improved performance, faster navigation, automatic updates, and better mobile compatibility. Most organizations are migrating to Hyperdrive.",category:"Navigation",helpfulCount:31},
+{id:3,question:"How often does Epic release updates?",answer:"Epic releases one major annual upgrade per year, typically in the spring or fall. Preview environments are usually available 3–4 months before production upgrades so trainers can prepare updated materials.",category:"Updates",helpfulCount:18},
+{id:4,question:"How can I customize training for different specialties?",answer:"Create specialty-specific training profiles with relevant patient scenarios, use Training Wheels to guide users through key workflows, and build role-based tip sheets. Focus on the 3–5 workflows each role uses daily rather than covering everything.",category:"Training",helpfulCount:29},
+{id:5,question:"How do I get access to Epic UserWeb?",answer:"UserWeb access is granted by your organization's Epic coordinator after you complete required training and sign access agreements. Once approved, go to userweb.epic.com and log in with your Epic credentials.",category:"Access",helpfulCount:15},
+{id:6,question:"What's the best way to train physicians on Epic?",answer:"Keep sessions short (60–90 minutes max), specialty-specific, and workflow-focused. Use real clinical scenarios from their practice. Combine classroom training with at-the-elbow support during go-live. Physicians respond best when they see how Epic saves them time.",category:"Training",helpfulCount:42},
+{id:7,question:"What is a SmartPhrase and how do I create one?",answer:"A SmartPhrase is a reusable text template triggered by typing a dot command (e.g., .MYGREETING). To create one: go to the Epic menu > SmartPhrase Manager > New. Give it a name, write your template text, and save. You can include SmartLinks to pull in live patient data automatically.",category:"Documentation",helpfulCount:38},
+{id:8,question:"What is the difference between a SmartPhrase and a SmartText?",answer:"SmartPhrases are short, single-line or paragraph templates for quick insertion. SmartTexts are longer, structured document templates that can include SmartLists, SmartLinks, and conditional logic — ideal for full note templates like H&Ps or discharge summaries.",category:"Documentation",helpfulCount:22},
+{id:9,question:"What is Epic Training Wheels?",answer:"Training Wheels is an Epic feature that overlays step-by-step guidance directly onto the Epic interface. It highlights which buttons to click and provides instructions at each step, making it ideal for go-live support without needing a trainer physically present.",category:"Training",helpfulCount:35},
+{id:10,question:"How do I reset a training patient?",answer:"In the Epic training environment (playground), you can reset a patient's chart using the Reset Patient function in the Epic menu. This clears orders, notes, and results so the scenario can be practiced again from scratch. Ask your Epic build team to set up reset scripts for common scenarios.",category:"Training",helpfulCount:27},
+{id:11,question:"What is a SmartSet?",answer:"A SmartSet is a bundled order set that groups commonly ordered items (labs, meds, imaging) for a specific diagnosis or procedure. Physicians can place multiple orders at once by selecting a SmartSet, saving significant time during documentation.",category:"Documentation",helpfulCount:19},
+{id:12,question:"What is the difference between Ambulatory and Inpatient workflows?",answer:"Ambulatory workflows are for outpatient clinic visits — scheduling, rooming, provider documentation, and checkout. Inpatient workflows cover hospital admissions, bed management, nursing documentation, and discharge. The Epic modules and screens used differ significantly between the two.",category:"Navigation",helpfulCount:33},
+{id:13,question:"What is Care Everywhere and when should I use it?",answer:"Care Everywhere is Epic's interoperability feature that allows providers to view medical records from other Epic organizations and some non-Epic systems. Use it when a patient presents with records from another health system — search for their external records from the Care Everywhere tab in the chart.",category:"Interoperability",helpfulCount:26},
+{id:14,question:"What is In Basket and how do I manage it efficiently?",answer:"In Basket is Epic's internal messaging system for patient messages, lab results, referrals, phone calls, and staff messages. Best practices: process by priority (results first), use SmartPhrases for common responses, set up message pools for your team, and avoid letting it build up — clear it daily.",category:"Navigation",helpfulCount:44},
+{id:15,question:"What is an Epic go-live and what should I expect?",answer:"A go-live is when an organization switches from their old system to Epic in production. Expect high anxiety from end users, lots of at-the-elbow support needs, and workflow slowdowns for the first 2–4 weeks. Key trainer roles include command center support, floor rounding, and tip sheet distribution.",category:"Go-Live",helpfulCount:51}
+];
 function notify(msg,type=''){const n=document.createElement('div');n.className='notification '+type;n.textContent=msg;document.body.appendChild(n);setTimeout(()=>{if(n.parentNode)n.parentNode.removeChild(n);},3000);}
 function fmtSz(b){if(!b)return'0 B';const k=1024,s=['B','KB','MB','GB'],i=Math.floor(Math.log(b)/Math.log(k));return(b/Math.pow(k,i)).toFixed(1)+' '+s[i];}
 function isSaved(id){return STATE.savedItems.some(i=>i.id===id);}
@@ -1165,7 +1188,22 @@ const quizQuestions = [
     {q:"Which Epic module handles surgical scheduling?",options:["Cadence","OpTime","Grand Central","Radiant"],answer:1},
     {q:"What is MyChart?",options:["Epic's internal reporting tool","Epic's patient-facing portal","Epic's scheduling module","Epic's pharmacy system"],answer:1},
     {q:"What is Hyperdrive?",options:["Epic's mobile application","Epic's web-based interface replacing Hyperspace","Epic's data analytics tool","Epic's training environment"],answer:1},
-    {q:"What does 'Care Everywhere' enable?",options:["Remote patient monitoring","Sharing patient records across different Epic organizations","Video telemedicine visits","Automated care plan generation"],answer:1}
+    {q:"What does 'Care Everywhere' enable?",options:["Remote patient monitoring","Sharing patient records across different Epic organizations","Video telemedicine visits","Automated care plan generation"],answer:1},
+    {q:"Which Epic module is used for patient registration?",options:["Cadence","Grand Central","Prelude","Beaker"],answer:2},
+    {q:"Which Epic module handles radiology and imaging workflows?",options:["Cupid","Radiant","Beaker","Willow"],answer:1},
+    {q:"What is a SmartSet?",options:["A keyboard macro","A bundled order set for a diagnosis or procedure","A patient list filter","A training scenario template"],answer:1},
+    {q:"Which Epic module is focused on cardiology workflows?",options:["Cupid","Radiant","Phoenix","Bones"],answer:0},
+    {q:"What is Epic's population health management module called?",options:["Care Everywhere","Grand Central","Healthy Planet","Compass Rose"],answer:2},
+    {q:"What does 'Grand Central' manage in Epic?",options:["Surgical scheduling","Bed management and patient flow","Pharmacy orders","Radiology results"],answer:1},
+    {q:"What is Epic Training Wheels used for?",options:["Scheduling training sessions","Overlaying step-by-step guidance onto the Epic interface","Creating SmartPhrases","Resetting training patients"],answer:1},
+    {q:"Which dot command prefix triggers a SmartPhrase?",options:["#","@",".","!"],answer:2},
+    {q:"What is the Epic module for transplant management?",options:["Cupid","Phoenix","Bones","OpTime"],answer:1},
+    {q:"What does PAL stand for in Epic?",options:["Patient Activity List","Provider Access Log","Physician Alert Level","Pharmacy Allocation List"],answer:0},
+    {q:"Where can Epic trainers find training resources, build tips, and community forums?",options:["Epic App Orchard","Epic UserWeb","Epic Playground","Epic Signal"],answer:1},
+    {q:"What is a SmartLink in Epic?",options:["A hyperlink in a patient note","A field that pulls live patient data into documentation","A messaging shortcut","An order set item"],answer:1},
+    {q:"What is OpTime used for?",options:["Outpatient scheduling","Managing surgical cases in the OR","Pharmacy dispensing","Cardiology documentation"],answer:1},
+    {q:"What is the In Basket used for in Epic?",options:["Ordering labs","Internal messaging for results, patient messages, and staff communication","Scheduling patients","Pharmacy verification"],answer:1},
+    {q:"What is Cadence in Epic?",options:["The inpatient nursing module","The patient scheduling module","The pharmacy module","The radiology module"],answer:1}
 ];
 let quizCurrent = 0, quizScore = 0, quizAnswered = false;
 function loadQuestion() {
@@ -1234,7 +1272,23 @@ const flashcards = [
     {term:"Beaker",def:"The Epic laboratory information system (LIS) module"},
     {term:"Willow",def:"The Epic pharmacy management module for inpatient and outpatient dispensing"},
     {term:"Cadence",def:"The Epic scheduling module used to book patient appointments"},
-    {term:"MyChart",def:"The Epic patient-facing portal for viewing records, messaging providers, and scheduling"}
+    {term:"MyChart",def:"The Epic patient-facing portal for viewing records, messaging providers, and scheduling"},
+    {term:"Prelude",def:"The Epic patient registration module used to create and manage patient demographics and insurance"},
+    {term:"Radiant",def:"The Epic radiology information system (RIS) module for imaging orders, scheduling, and results"},
+    {term:"OpTime",def:"The Epic module for managing surgical cases, OR scheduling, and perioperative documentation"},
+    {term:"Cupid",def:"The Epic cardiology module for EKGs, cath lab, echo, and other cardiac workflows"},
+    {term:"Grand Central",def:"The Epic bed management and patient flow module for capacity planning and admissions"},
+    {term:"Healthy Planet",def:"The Epic population health management module for care gaps, registries, and outreach"},
+    {term:"Phoenix",def:"The Epic module for managing transplant workflows including organ allocation and post-transplant care"},
+    {term:"SmartSet",def:"A bundled order set that groups labs, meds, and imaging for a specific diagnosis — placed in one click"},
+    {term:"SmartLink",def:"A field embedded in documentation that auto-populates live patient data (e.g., vitals, medications)"},
+    {term:"SmartForm",def:"A structured data entry template that captures discrete data for reporting and decision support"},
+    {term:"SmartText",def:"A longer document template that can include SmartLists, SmartLinks, and conditional logic"},
+    {term:"Training Wheels",def:"An Epic feature that overlays step-by-step guidance on the interface to guide users through workflows"},
+    {term:"PAL",def:"Patient Activity List — a customizable list showing assigned patients and key status information for nurses"},
+    {term:"UserWeb",def:"Epic's online customer community where organizations share build tips, report bugs, and access documentation"},
+    {term:"Ambulatory",def:"The Epic module supporting outpatient clinic workflows including rooming, visit documentation, and checkout"},
+    {term:"Dot Phrase",def:"The shorthand name for a SmartPhrase — triggered by typing a period followed by the phrase name (e.g., .HPI)"}
 ];
 let flashCurrent = 0, flashShowing = 'term';
 function loadFlashcard() {
