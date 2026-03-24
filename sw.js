@@ -1,7 +1,5 @@
-const CACHE_NAME = 'epic-trainer-v2';
+const CACHE_NAME = 'epic-trainer-v3';
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
   '/manifest.json',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
 ];
@@ -28,12 +26,24 @@ self.addEventListener('activate', function(e) {
 });
 
 self.addEventListener('fetch', function(e) {
-  // Always fetch API calls from network
+  // Always fetch from network for API calls
   if (e.request.url.includes('netlify/functions') ||
       e.request.url.includes('supabase.co') ||
       e.request.url.includes('anthropic.com')) {
     return;
   }
+  // Network-first for HTML navigation so updates always land immediately
+  if (e.request.mode === 'navigate' || e.request.url.endsWith('.html') || e.request.url.endsWith('/')) {
+    e.respondWith(
+      fetch(e.request).then(function(response) {
+        return response;
+      }).catch(function() {
+        return caches.match('/index.html');
+      })
+    );
+    return;
+  }
+  // Cache-first for static assets (fonts, icons, etc.)
   e.respondWith(
     caches.match(e.request).then(function(cached) {
       return cached || fetch(e.request).then(function(response) {
