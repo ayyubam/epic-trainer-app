@@ -16,7 +16,7 @@ exports.handler = async (event) => {
 
     if (!priceId) throw new Error('Price ID not configured for plan: ' + plan);
 
-    const origin = event.headers.origin || event.headers.referer?.replace(/\/[^/]*$/, '') || 'https://yourapp.netlify.app';
+    const origin = event.headers.origin || event.headers.referer?.replace(/\/[^/]*$/, '') || 'https://emrtrainerapp.com';
 
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
