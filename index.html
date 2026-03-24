@@ -320,9 +320,9 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
 <p class="subtitle">Your central hub for Epic EMR training resources</p>
 <div class="search-container"><i class="fas fa-search search-icon"></i><input type="text" class="search-box" id="dash-search" placeholder="Search hospitals, resources, FAQs..."></div>
 <div class="stats-grid">
-<div class="stat-card"><i class="fas fa-hospital"></i><h3>120</h3><p>Hospital Systems</p></div>
-<div class="stat-card"><i class="fas fa-file-alt"></i><h3 id="stat-resources">6</h3><p>Training Resources</p></div>
-<div class="stat-card"><i class="fas fa-question-circle"></i><h3>6</h3><p>FAQs</p></div>
+<div class="stat-card"><i class="fas fa-hospital"></i><h3 id="stat-hospitals">0</h3><p>Hospital Systems</p></div>
+<div class="stat-card"><i class="fas fa-file-alt"></i><h3 id="stat-resources">0</h3><p>Training Resources</p></div>
+<div class="stat-card"><i class="fas fa-question-circle"></i><h3 id="stat-faqs">0</h3><p>FAQs</p></div>
 <div class="stat-card"><i class="fas fa-bookmark"></i><h3 id="stat-saved">0</h3><p>Saved Items</p></div>
 </div>
 <div id="tip-of-day" style="background:linear-gradient(135deg,var(--ep),var(--elp));color:white;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:flex-start;gap:1rem;">
@@ -360,6 +360,57 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
 </section>
 <section id="playground" class="tab-content">
 <h2>Epic Playground Navigation</h2><p class="subtitle">Guidance for using the Epic training environments</p>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin-bottom:2rem;">
+
+<div style="background:white;border-radius:10px;padding:1.5rem;box-shadow:0 4px 6px rgba(0,0,0,0.1);border-left:4px solid var(--ep);">
+<h3 style="color:var(--ep);margin-bottom:1rem;"><i class="fas fa-sign-in-alt"></i> Accessing the Playground</h3>
+<ol style="padding-left:1.2rem;line-height:2;">
+<li>Connect to your organization's <strong>VPN</strong></li>
+<li>Open a browser and go to your Epic training URL (provided by your Epic coordinator)</li>
+<li>Log in with your <strong>training account credentials</strong></li>
+<li>Select the <strong>Training environment</strong> from the environment picker</li>
+<li>You should see <em>"Training"</em> or <em>"Playground"</em> in the banner to confirm you're not in production</li>
+</ol>
+</div>
+
+<div style="background:white;border-radius:10px;padding:1.5rem;box-shadow:0 4px 6px rgba(0,0,0,0.1);border-left:4px solid var(--elp);">
+<h3 style="color:var(--ep);margin-bottom:1rem;"><i class="fas fa-user-cog"></i> Setting Up Training Accounts</h3>
+<ol style="padding-left:1.2rem;line-height:2;">
+<li>Request training user accounts from your Epic team or coordinator</li>
+<li>Each role (physician, nurse, scheduler) needs a <strong>separate training login</strong></li>
+<li>Accounts are created in the Epic Security module by your build team</li>
+<li>Test each login before training sessions begin</li>
+<li>Set temporary passwords and share securely with trainees</li>
+</ol>
+</div>
+
+<div style="background:white;border-radius:10px;padding:1.5rem;box-shadow:0 4px 6px rgba(0,0,0,0.1);border-left:4px solid #28a745;">
+<h3 style="color:var(--ep);margin-bottom:1rem;"><i class="fas fa-redo"></i> Resetting Training Patients</h3>
+<ol style="padding-left:1.2rem;line-height:2;">
+<li>Navigate to the Epic menu in Hyperspace</li>
+<li>Search for <strong>Reset Patient</strong> or ask your build team to run a reset script</li>
+<li>Select the training patient to reset (e.g., "Test, Patient One")</li>
+<li>Choose which data to clear: orders, notes, results, or full reset</li>
+<li>Confirm the reset — the chart returns to its baseline state</li>
+</ol>
+</div>
+
+<div style="background:white;border-radius:10px;padding:1.5rem;box-shadow:0 4px 6px rgba(0,0,0,0.1);border-left:4px solid #fd7e14;">
+<h3 style="color:var(--ep);margin-bottom:1rem;"><i class="fas fa-lightbulb"></i> Playground Best Practices</h3>
+<ul style="padding-left:1.2rem;line-height:2;">
+<li>Always verify you're in <strong>Training</strong>, never production</li>
+<li>Use <strong>Training Wheels</strong> to guide new users through workflows</li>
+<li>Create realistic patient scenarios matching your specialty</li>
+<li>Run through each scenario yourself before training others</li>
+<li>Keep a list of training patient MRNs handy for quick access</li>
+<li>Coordinate reset schedules so multiple trainers don't reset simultaneously</li>
+</ul>
+</div>
+
+</div>
+
+<h3 style="margin-bottom:1rem;">Common Playground Questions</h3>
 <div id="playground-faqs"></div>
 </section>
 <section id="resources" class="tab-content">
@@ -466,11 +517,16 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
                     <p style="font-size:0.82rem;opacity:0.8;text-transform:uppercase;letter-spacing:0.05em;" id="flash-side">Click to reveal answer</p>
                     <p style="font-size:1.3rem;font-weight:bold;" id="flash-content">Loading...</p>
                 </div>
-                <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
+                <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-bottom:0.75rem;">
                     <button class="btn btn-outline" onclick="prevCard()"><i class="fas fa-arrow-left"></i> Previous</button>
                     <button class="btn btn-primary" onclick="flipCard()"><i class="fas fa-sync-alt"></i> Flip Card</button>
                     <button class="btn btn-outline" onclick="nextCard()">Next <i class="fas fa-arrow-right"></i></button>
                 </div>
+                <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
+                    <button id="master-btn" class="btn btn-outline" onclick="toggleMastered()"><i class="fas fa-star"></i> Mark as Mastered</button>
+                    <button class="btn btn-outline" onclick="resetMastered()" style="font-size:0.82rem;"><i class="fas fa-redo"></i> Reset Progress</button>
+                </div>
+                <div style="text-align:center;margin-top:0.75rem;font-size:0.82rem;color:#666;" id="flash-mastered-count">0 of 0 mastered</div>
             </div>
         </div>
 
@@ -999,11 +1055,8 @@ else if(h.emr==='Meditech')emrCls='emr-meditech';
 else if(h.emr==='Oracle Cerner')emrCls='emr-cerner';
 var emrBadge=h.emr?'<span class="emr-badge '+emrCls+'">'+h.emr+'</span>':'';
 c.innerHTML=emrBadge+'<h3><i class="fas fa-hospital"></i>'+h.name+'</h3><div class="hospital-meta"><span>'+h.version+'</span><span>Updated: '+h.lastUpdated+'</span></div><p style="font-size:0.88rem;color:#555;">'+h.notes+'</p><div class="module-list">'+h.modules.map(m=>'<span class="module-tag">'+m+'</span>').join('')+'</div><div class="hospital-contact"><strong>Contact:</strong> '+h.contact.name+' | '+h.contact.email+'</div><div style="display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap;"><button class="btn btn-primary" style="font-size:0.85rem;padding:0.5rem 1rem;">View Details</button><button class="btn '+(sv?'saved':'btn-outline')+' save-btn" data-id="hosp-'+h.id+'" data-type="hospital" data-name="'+h.name+'"><i class="fas '+(sv?'fa-check':'fa-bookmark')+'"></i> '+(sv?'Saved':'Save')+'</button></div>';return c;}
-function mkResCard(r,isUp=false){const sv=isSaved(r.id);const isVid=(r.type||'').toLowerCase().includes('video');const c=document.createElement('div');c.className='resource-card';c.innerHTML=(isUp?'':'<div class="premium-lock"><i class="fas fa-lock"></i></div>')+'<h3>'+r.title+'</h3><div class="resource-meta"><span>'+(r.type||'Document')+'</span><span>'+(r.size||'')+'</span></div><p style="font-size:0.86rem;color:#555;">'+(r.description||'')+'</p><div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;"><button class="btn btn-primary watch-btn" style="font-size:0.85rem;padding:0.5rem 1rem;" data-embed="'+(r.embed||'')+'" data-url="'+(r.url||'')+'" data-title="'+r.title+'"><i class="fas '+(isVid?'fa-play-circle':'fa-download')+'"></i> '+(isVid?'Watch':'Open')+'</button><button class="btn '+(sv?'saved':'btn-outline')+' save-btn" data-id="'+r.id+'" data-type="resource" data-name="'+r.title+'"><i class="fas '+(sv?'fa-check':'fa-bookmark')+'"></i> '+(sv?'Saved':'Save')+'</button></div>';
-c.querySelector('.watch-btn').addEventListener('click', function() {
-    const embed = this.dataset.embed;
-    const url = this.dataset.url;
-    const title = this.dataset.title;
+function mkResCard(r,isUp=false){const sv=isSaved(r.id);const isVid=(r.type||'').toLowerCase().includes('video');const c=document.createElement('div');c.className='resource-card';var videoId='';if(r.embed){var m=r.embed.match(/embed\/([^?\/]+)/);if(m)videoId=m[1];}var thumbHtml=(isVid&&videoId)?'<div style="position:relative;margin-bottom:0.75rem;border-radius:6px;overflow:hidden;cursor:pointer;" class="thumb-wrap"><img src="https://img.youtube.com/vi/'+videoId+'/mqdefault.jpg" style="width:100%;display:block;" loading="lazy"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);"><i class="fas fa-play-circle" style="font-size:2.5rem;color:white;opacity:0.9;"></i></div></div>':'';c.innerHTML=thumbHtml+'<h3>'+r.title+'</h3><div class="resource-meta"><span>'+(r.type||'Document')+'</span><span>'+(r.size||'')+'</span></div><p style="font-size:0.86rem;color:#555;">'+(r.description||'')+'</p><div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;"><button class="btn btn-primary watch-btn" style="font-size:0.85rem;padding:0.5rem 1rem;" data-embed="'+(r.embed||'')+'" data-url="'+(r.url||'')+'" data-title="'+r.title+'"><i class="fas '+(isVid?'fa-play-circle':'fa-download')+'"></i> '+(isVid?'Watch':'Open')+'</button><button class="btn '+(sv?'saved':'btn-outline')+' save-btn" data-id="'+r.id+'" data-type="resource" data-name="'+r.title+'"><i class="fas '+(sv?'fa-check':'fa-bookmark')+'"></i> '+(sv?'Saved':'Save')+'</button></div>';
+function openVideo(embed, url, title) {
     if (embed) {
         document.getElementById('video-modal-title').textContent = title;
         document.getElementById('video-modal-iframe').src = embed + '?autoplay=1';
@@ -1011,7 +1064,17 @@ c.querySelector('.watch-btn').addEventListener('click', function() {
     } else if (url) {
         window.open(url, '_blank');
     }
+}
+c.querySelector('.watch-btn').addEventListener('click', function() {
+    openVideo(this.dataset.embed, this.dataset.url, this.dataset.title);
 });
+var thumb = c.querySelector('.thumb-wrap');
+if (thumb) {
+    var watchBtn = c.querySelector('.watch-btn');
+    thumb.addEventListener('click', function() {
+        openVideo(watchBtn.dataset.embed, watchBtn.dataset.url, watchBtn.dataset.title);
+    });
+}
 return c;}
 function mkFAQItem(f){const sv=isSaved('faq-'+f.id);const el=document.createElement('div');el.className='faq-item';el.innerHTML='<div class="faq-question">'+f.question+' <span>+</span></div><div class="faq-answer"><p>'+f.answer+'</p><div class="faq-meta"><span class="faq-category">'+f.category+'</span><span>'+f.helpfulCount+' found this helpful</span></div><div style="margin-top:0.75rem;"><button class="btn '+(sv?'saved':'btn-outline')+' save-btn" data-id="faq-'+f.id+'" data-type="faq" data-name="'+f.question+'"><i class="fas '+(sv?'fa-check':'fa-bookmark')+'"></i> '+(sv?'Saved':'Save this answer')+'</button></div></div>';el.querySelector('.faq-question').addEventListener('click',function(){const a=this.nextElementSibling;a.classList.toggle('active');this.querySelector('span').textContent=a.classList.contains('active')?'-':'+';});return el;}
 function renderHospitals(){var dashEl=document.getElementById('dashboard-hospitals');if(dashEl){dashEl.innerHTML='';hospitals.slice(0,2).forEach(function(h){dashEl.appendChild(mkHospCard(h));});attachSaveBtns();}}
@@ -1120,7 +1183,7 @@ document.getElementById('profile-name-display').textContent=user.name;
 document.getElementById('set-name').value=user.name||'';
 document.getElementById('set-email').value=user.email||'';
 document.getElementById('set-hospital').value=user.hospital||'';
-renderHospitals();renderResources();renderFAQs();renderSaved();renderUploads();renderAISaved();renderQuestions();updateSavedStat();
+renderHospitals();renderResources();renderFAQs();renderSaved();renderUploads();renderAISaved();renderQuestions();updateSavedStat();updateStatCards();
 notify('Welcome, '+user.name.split(' ')[0]+'!','success');
 }
 document.getElementById('logout-btn').addEventListener('click',()=>{if(supa&&supaUser){supaSignOut();}else{sessionStorage.removeItem('_sess');location.reload();}});
@@ -1146,7 +1209,14 @@ inp.addEventListener('change',e=>{if(e.target.files[0])pick(e.target.files[0]);}
 function pick(f){sel=f;fnEl.textContent=f.name;fsEl.textContent=fmtSz(f.size);info.style.display='block';upBtn.disabled=!document.getElementById('doc-title').value.trim();}
 document.getElementById('doc-title').addEventListener('input',()=>{upBtn.disabled=!(sel&&document.getElementById('doc-title').value.trim());});
 upBtn.addEventListener('click',()=>{if(!sel)return;upBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Uploading...';upBtn.disabled=true;setTimeout(()=>{STATE.uploadedFiles.push({id:Date.now().toString(),title:document.getElementById('doc-title').value.trim(),description:document.getElementById('doc-description').value.trim(),type:document.getElementById('doc-category').value||'Uploaded File',size:fmtSz(sel.size),fileType:sel.type,uploadedAt:new Date().toISOString()});saveState();renderUploads();renderResources();document.getElementById('upload-modal').classList.remove('active');upBtn.innerHTML='<i class="fas fa-upload"></i> Upload Document';upBtn.disabled=false;sel=null;inp.value='';info.style.display='none';document.getElementById('doc-title').value='';document.getElementById('doc-description').value='';document.getElementById('doc-category').value='';notify('File uploaded!','success');},1200);});
-[['hospital-search','#hospital-list .hospital-card'],['faq-search','#faq-list .faq-item'],['resource-search','#resource-list .resource-card'],['dash-search','#dashboard .hospital-card,#dashboard .resource-card']].forEach(([id,sel])=>{const el=document.getElementById(id);if(el)el.addEventListener('input',e=>{const t=e.target.value.toLowerCase();document.querySelectorAll(sel).forEach(c=>{c.style.display=c.textContent.toLowerCase().includes(t)?'':'none';});});});
+[['hospital-search','#hospital-list .hospital-card'],['faq-search','#faq-list .faq-item'],['resource-search','#resource-list .resource-card']].forEach(([id,sel])=>{const el=document.getElementById(id);if(el)el.addEventListener('input',e=>{const t=e.target.value.toLowerCase();document.querySelectorAll(sel).forEach(c=>{c.style.display=c.textContent.toLowerCase().includes(t)?'':'none';});});});
+const dashSearch=document.getElementById('dash-search');
+if(dashSearch)dashSearch.addEventListener('input',function(e){
+    const t=e.target.value.toLowerCase();
+    document.querySelectorAll('#dashboard .hospital-card,#dashboard .resource-card').forEach(c=>{c.style.display=c.textContent.toLowerCase().includes(t)?'':'none';});
+    document.querySelectorAll('#dashboard .faq-item').forEach(c=>{c.style.display=c.textContent.toLowerCase().includes(t)?'':'none';});
+    if(!t){document.querySelectorAll('#dashboard .hospital-card,#dashboard .resource-card,#dashboard .faq-item').forEach(c=>c.style.display='');}
+});
 document.getElementById('save-settings-btn').addEventListener('click',()=>{const name=document.getElementById('set-name').value;const hospital=document.getElementById('set-hospital').value;const sess=JSON.parse(sessionStorage.getItem('_sess')||'{}');sess.name=name;sess.hospital=hospital;sessionStorage.setItem('_sess',JSON.stringify(sess));document.getElementById('greeting-name').textContent=name.split(' ')[0];document.getElementById('dashboard-name').textContent=name.split(' ')[0];document.getElementById('profile-name-display').textContent=name;notify('Settings saved!','success');});
 const fab=document.getElementById('ai-fab'),panel=document.getElementById('ai-panel'),closeBtn=document.getElementById('ai-close-btn'),input=document.getElementById('ai-input'),sendBtn=document.getElementById('ai-send'),msgs=document.getElementById('ai-messages');
 fab.addEventListener('click',()=>{panel.classList.toggle('open');if(panel.classList.contains('open'))input.focus();});
@@ -1161,7 +1231,7 @@ initAuth();
     updatePersonalStats();
     initDarkMode();
     initVideoModal();
-    applyCustomLinks(); // may be undefined — called for legacy support
+    applyCustomLinks();
     initResourceAdmin();
 });
 
@@ -1291,16 +1361,32 @@ const flashcards = [
     {term:"Dot Phrase",def:"The shorthand name for a SmartPhrase — triggered by typing a period followed by the phrase name (e.g., .HPI)"}
 ];
 let flashCurrent = 0, flashShowing = 'term';
+var masteredCards = new Set(JSON.parse(localStorage.getItem('masteredCards') || '[]'));
 function loadFlashcard() {
     const card = flashcards[flashCurrent];
+    const isMastered = masteredCards.has(flashCurrent);
     document.getElementById('flash-progress').textContent = 'Card ' + (flashCurrent+1) + ' of ' + flashcards.length;
     document.getElementById('flash-content').textContent = card[flashShowing];
     document.getElementById('flash-side').textContent = flashShowing === 'term' ? 'TERM — Click to see definition' : 'DEFINITION — Click to see term';
-    document.getElementById('flashcard').style.background = flashShowing === 'term' ? 'linear-gradient(135deg,var(--epic-purple),var(--epic-light-purple))' : 'linear-gradient(135deg,#28a745,#1e7e34)';
+    var bg = isMastered ? 'linear-gradient(135deg,#D4AF37,#f0c040)' : (flashShowing === 'term' ? 'linear-gradient(135deg,var(--epic-purple),var(--epic-light-purple))' : 'linear-gradient(135deg,#28a745,#1e7e34)');
+    document.getElementById('flashcard').style.background = bg;
+    var masterBtn = document.getElementById('master-btn');
+    if (masterBtn) {
+        masterBtn.innerHTML = isMastered ? '<i class="fas fa-star"></i> Mastered!' : '<i class="fas fa-star"></i> Mark as Mastered';
+        masterBtn.className = isMastered ? 'btn btn-premium' : 'btn btn-outline';
+    }
+    var countEl = document.getElementById('flash-mastered-count');
+    if (countEl) countEl.textContent = masteredCards.size + ' of ' + flashcards.length + ' mastered';
 }
 function flipCard() { flashShowing = flashShowing === 'term' ? 'def' : 'term'; loadFlashcard(); }
 function nextCard() { flashCurrent = (flashCurrent + 1) % flashcards.length; flashShowing = 'term'; loadFlashcard(); }
 function prevCard() { flashCurrent = (flashCurrent - 1 + flashcards.length) % flashcards.length; flashShowing = 'term'; loadFlashcard(); }
+function toggleMastered() {
+    if (masteredCards.has(flashCurrent)) { masteredCards.delete(flashCurrent); } else { masteredCards.add(flashCurrent); }
+    localStorage.setItem('masteredCards', JSON.stringify([...masteredCards]));
+    loadFlashcard();
+}
+function resetMastered() { masteredCards.clear(); localStorage.removeItem('masteredCards'); loadFlashcard(); notify('Progress reset.'); }
 
 // ── GO-LIVE CHECKLIST ──
 const checklistData = [
@@ -1578,6 +1664,16 @@ function newTip() {
     el.textContent = allTips[currentTipIdx];
 }
 
+// ── STAT CARDS ──
+function updateStatCards() {
+    var h = document.getElementById('stat-hospitals');
+    var r = document.getElementById('stat-resources');
+    var f = document.getElementById('stat-faqs');
+    if (h) h.textContent = hospitals.length;
+    if (r) r.textContent = defaultResources.length + STATE.uploadedFiles.length;
+    if (f) f.textContent = faqs.length;
+}
+
 // ── PERSONAL STATS ──
 function updatePersonalStats() {
     var saved = document.getElementById("ps-saved");
@@ -1794,6 +1890,54 @@ function initEMRFilters(){
     }
 }
 
+
+// ── RESOURCE ADMIN ──
+function applyCustomLinks() {
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem('customResourceLinks') || '{}'); } catch(e) {}
+    defaultResources.forEach(function(r) {
+        if (saved[r.id]) {
+            var url = saved[r.id];
+            r.embed = url;
+            var idMatch = url.match(/embed\/([^?\/]+)/);
+            if (idMatch) r.url = 'https://www.youtube.com/watch?v=' + idMatch[1];
+        }
+    });
+}
+function initResourceAdmin() {
+    var toggleBtn = document.getElementById('toggle-admin-btn');
+    var panel = document.getElementById('resource-admin-panel');
+    var adminList = document.getElementById('resource-admin-list');
+    var saveBtn = document.getElementById('save-resource-links-btn');
+    if (!toggleBtn || !panel) return;
+    toggleBtn.addEventListener('click', function() {
+        var visible = panel.style.display !== 'none';
+        panel.style.display = visible ? 'none' : 'block';
+        if (!visible) {
+            var saved = {};
+            try { saved = JSON.parse(localStorage.getItem('customResourceLinks') || '{}'); } catch(e) {}
+            adminList.innerHTML = '';
+            defaultResources.forEach(function(r) {
+                var row = document.createElement('div');
+                row.style.marginBottom = '0.75rem';
+                row.innerHTML = '<label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.25rem;">' + r.title + '</label>' +
+                    '<input type="text" class="form-control" data-id="' + r.id + '" value="' + (saved[r.id] || r.embed || '') + '" placeholder="https://www.youtube.com/embed/VIDEO_ID" style="font-size:0.82rem;">';
+                adminList.appendChild(row);
+            });
+        }
+    });
+    saveBtn.addEventListener('click', function() {
+        var saved = {};
+        adminList.querySelectorAll('input[data-id]').forEach(function(inp) {
+            if (inp.value.trim()) saved[inp.dataset.id] = inp.value.trim();
+        });
+        localStorage.setItem('customResourceLinks', JSON.stringify(saved));
+        applyCustomLinks();
+        renderResources();
+        panel.style.display = 'none';
+        notify('Resource links saved!', 'success');
+    });
+}
 
 // ── VIDEO MODAL ──
 function initVideoModal() {
