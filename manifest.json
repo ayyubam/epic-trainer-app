@@ -2,7 +2,7 @@
   "name": "EMR Trainer App",
   "short_name": "EMR Trainer",
   "description": "The ultimate tool for Epic EMR trainers — emrtrainerapp.com",
-  "start_url": "/",
+  "start_url": "/app.html",
   "display": "standalone",
   "background_color": "#4B286D",
   "theme_color": "#4B286D",

@@ -38,7 +38,7 @@ self.addEventListener('fetch', function(e) {
       fetch(e.request).then(function(response) {
         return response;
       }).catch(function() {
-        return caches.match('/index.html');
+        return caches.match('/app.html');
       })
     );
     return;
@@ -55,7 +55,7 @@ self.addEventListener('fetch', function(e) {
         }
         return response;
       }).catch(function() {
-        return caches.match('/index.html');
+        return caches.match('/app.html');
       });
     })
   );
