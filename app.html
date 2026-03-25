@@ -65,6 +65,16 @@ main{max-width:1400px;margin:0 auto;padding:2rem 1rem;}
 .module-list{display:flex;flex-wrap:wrap;gap:0.4rem;margin:0.75rem 0;}
 .module-tag{background:var(--elpr);color:var(--ep);padding:0.2rem 0.7rem;border-radius:20px;font-size:0.78rem;}
 .premium-lock{position:absolute;top:1rem;right:1rem;color:var(--gold);font-size:1.2rem;}
+#pwa-banner{position:fixed;bottom:0;left:0;right:0;z-index:3000;background:var(--ep);color:white;padding:1rem 1.25rem;display:none;align-items:center;gap:1rem;box-shadow:0 -4px 20px rgba(0,0,0,0.25);animation:slideUp 0.4s ease;}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.pwa-icon{width:46px;height:46px;background:rgba(255,255,255,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.pwa-text{flex:1;min-width:0;}
+.pwa-text strong{display:block;font-size:0.95rem;font-weight:700;}
+.pwa-text span{font-size:0.82rem;opacity:0.85;}
+.pwa-ios-hint{display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;opacity:0.9;margin-top:0.3rem;flex-wrap:wrap;}
+.btn-pwa-install{background:white;color:var(--ep);border:none;padding:0.55rem 1.1rem;border-radius:8px;font-weight:700;font-size:0.88rem;cursor:pointer;flex-shrink:0;white-space:nowrap;}
+.btn-pwa-dismiss{background:none;border:none;color:rgba(255,255,255,0.6);font-size:1.5rem;cursor:pointer;padding:0 0.25rem;line-height:1;flex-shrink:0;}
+.btn-pwa-dismiss:hover{color:white;}
 .paywall-box{background:white;border-radius:14px;padding:3rem 2rem;text-align:center;box-shadow:0 8px 30px rgba(75,40,109,0.12);border:2px solid var(--elpr);margin-top:1rem;}
 .paywall-box i.fa-lock{font-size:2.5rem;color:var(--gold);margin-bottom:1rem;display:block;}
 .paywall-box h3{color:var(--ep);margin-bottom:0.5rem;font-size:1.2rem;}
@@ -823,6 +833,20 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
 </div>
 </div>
 </div>
+<!-- PWA INSTALL BANNER -->
+<div id="pwa-banner">
+  <div class="pwa-icon"><i class="fas fa-heartbeat"></i></div>
+  <div class="pwa-text">
+    <strong>Install EMR Trainer App</strong>
+    <span id="pwa-hint-text">Add to your home screen for instant access</span>
+    <div class="pwa-ios-hint" id="pwa-ios-steps" style="display:none;">
+      Tap <i class="fas fa-share-square" style="margin:0 4px;font-size:0.95rem;"></i> then <strong style="margin-left:2px;">"Add to Home Screen"</strong>
+    </div>
+  </div>
+  <button class="btn-pwa-install" id="pwa-install-btn" style="display:none;">Install</button>
+  <button class="btn-pwa-dismiss" onclick="dismissPWABanner()" aria-label="Dismiss">&times;</button>
+</div>
+
 <script>
 // =====================
 // SUPABASE BACKEND
@@ -2007,6 +2031,46 @@ function initVideoModal() {
         if (e.key === 'Escape') closeModal();
     });
 }
+
+// ── PWA INSTALL BANNER ──
+(function(){
+  if(localStorage.getItem('pwa-dismissed'))return;
+  if(window.matchMedia('(display-mode:standalone)').matches||window.navigator.standalone)return;
+  var banner=document.getElementById('pwa-banner');
+  var installBtn=document.getElementById('pwa-install-btn');
+  var iosSteps=document.getElementById('pwa-ios-steps');
+  var hintText=document.getElementById('pwa-hint-text');
+  var deferredPrompt=null;
+  var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase());
+  var isSafari=!!navigator.userAgent.match(/Version\/[\d.]+.*Safari/);
+  window.addEventListener('beforeinstallprompt',function(e){
+    e.preventDefault();
+    deferredPrompt=e;
+    banner.style.display='flex';
+    installBtn.style.display='inline-block';
+  });
+  if(isIOS&&isSafari){
+    setTimeout(function(){
+      if(window.matchMedia('(display-mode:standalone)').matches||window.navigator.standalone)return;
+      banner.style.display='flex';
+      iosSteps.style.display='flex';
+      hintText.style.display='none';
+      installBtn.style.display='none';
+    },4000);
+  }
+  installBtn.addEventListener('click',function(){
+    if(!deferredPrompt)return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(r){
+      if(r.outcome==='accepted')localStorage.setItem('pwa-dismissed','1');
+      banner.style.display='none';
+    });
+  });
+  window.dismissPWABanner=function(){
+    banner.style.display='none';
+    localStorage.setItem('pwa-dismissed','1');
+  };
+})();
 
 // ── SERVICE WORKER REGISTRATION ──
 if ('serviceWorker' in navigator) {
