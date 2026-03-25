@@ -65,6 +65,14 @@ main{max-width:1400px;margin:0 auto;padding:2rem 1rem;}
 .module-list{display:flex;flex-wrap:wrap;gap:0.4rem;margin:0.75rem 0;}
 .module-tag{background:var(--elpr);color:var(--ep);padding:0.2rem 0.7rem;border-radius:20px;font-size:0.78rem;}
 .premium-lock{position:absolute;top:1rem;right:1rem;color:var(--gold);font-size:1.2rem;}
+.paywall-box{background:white;border-radius:14px;padding:3rem 2rem;text-align:center;box-shadow:0 8px 30px rgba(75,40,109,0.12);border:2px solid var(--elpr);margin-top:1rem;}
+.paywall-box i.fa-lock{font-size:2.5rem;color:var(--gold);margin-bottom:1rem;display:block;}
+.paywall-box h3{color:var(--ep);margin-bottom:0.5rem;font-size:1.2rem;}
+.paywall-box p{color:#666;margin-bottom:1.5rem;font-size:0.92rem;max-width:400px;margin-left:auto;margin-right:auto;}
+.resource-card.locked-card{opacity:0.55;position:relative;pointer-events:none;}
+.resource-locked-badge{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,0.88);border-radius:10px;gap:0.5rem;pointer-events:all;}
+.resource-locked-badge i{font-size:1.6rem;color:var(--gold);}
+.resource-locked-badge span{font-size:0.82rem;font-weight:700;color:var(--ep);}
 .hospital-contact{margin:0.75rem 0;padding:0.5rem;background:var(--elpr);border-radius:5px;font-size:0.85rem;}
 .resource-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;}
 .resource-card{background:white;border-radius:10px;padding:1.5rem;box-shadow:0 4px 6px rgba(0,0,0,0.1);transition:transform 0.2s;position:relative;}
@@ -460,7 +468,7 @@ footer{background:var(--ep);color:white;text-align:center;padding:2rem;margin-to
 </div></div>
 <h3 style="margin-bottom:1rem;">Choose Your Plan</h3>
 <div class="pricing-plans">
-<div class="pricing-plan"><h4>Free</h4><div class="plan-price">$0<span>/mo</span></div><ul class="plan-features"><li>All hospitals</li><li>Browse resources</li><li>AI Trainer chat</li></ul><button class="btn btn-outline" disabled>Current Plan</button></div>
+<div class="pricing-plan"><h4>Free</h4><div class="plan-price">$0<span>/mo</span></div><ul class="plan-features"><li>4 training videos</li><li>8 flashcards</li><li>Go-live checklist</li><li>FAQ library</li></ul><button class="btn btn-outline" disabled>Current Plan</button></div>
 <div class="pricing-plan popular"><div class="popular-badge">MOST POPULAR</div><h4>EMR Trainer Pro</h4><div class="plan-price">$19.99<span>/mo</span></div><ul class="plan-features"><li>Everything in Free</li><li>Unlimited saves</li><li>Cert tracker</li><li>Hours log</li></ul><button class="btn btn-premium upgrade-trigger" data-plan="pro"><i class="fas fa-crown"></i> Upgrade Now</button></div>
 <div class="pricing-plan"><h4>EMR Trainer Teams</h4><div class="plan-price">$49.99<span>/mo</span></div><ul class="plan-features"><li>Everything in Premium</li><li>Priority support</li></ul><button class="btn btn-premium upgrade-trigger" data-plan="teams"><i class="fas fa-crown"></i> Upgrade Now</button></div>
 </div>
@@ -1078,7 +1086,7 @@ if (thumb) {
 return c;}
 function mkFAQItem(f){const sv=isSaved('faq-'+f.id);const el=document.createElement('div');el.className='faq-item';el.innerHTML='<div class="faq-question">'+f.question+' <span>+</span></div><div class="faq-answer"><p>'+f.answer+'</p><div class="faq-meta"><span class="faq-category">'+f.category+'</span><span>'+f.helpfulCount+' found this helpful</span></div><div style="margin-top:0.75rem;"><button class="btn '+(sv?'saved':'btn-outline')+' save-btn" data-id="faq-'+f.id+'" data-type="faq" data-name="'+f.question+'"><i class="fas '+(sv?'fa-check':'fa-bookmark')+'"></i> '+(sv?'Saved':'Save this answer')+'</button></div></div>';el.querySelector('.faq-question').addEventListener('click',function(){const a=this.nextElementSibling;a.classList.toggle('active');this.querySelector('span').textContent=a.classList.contains('active')?'-':'+';});return el;}
 function renderHospitals(){var dashEl=document.getElementById('dashboard-hospitals');if(dashEl){dashEl.innerHTML='';hospitals.slice(0,2).forEach(function(h){dashEl.appendChild(mkHospCard(h));});attachSaveBtns();}}
-function renderResources(){const el=document.getElementById('resource-list');if(!el)return;el.innerHTML='';const all=[...defaultResources,...STATE.uploadedFiles.map(f=>({id:'upload-'+f.id,title:f.title,type:f.type||'Uploaded',size:f.size,description:f.description||'',uploaded:true}))];all.forEach(r=>el.appendChild(mkResCard(r,r.uploaded)));const de=document.getElementById('dashboard-resources');if(de){de.innerHTML='';defaultResources.slice(0,2).forEach(r=>de.appendChild(mkResCard(r)));}const st=document.getElementById('stat-resources');if(st)st.textContent=all.length;attachSaveBtns();}
+function renderResources(){const el=document.getElementById('resource-list');if(!el)return;el.innerHTML='';const all=[...defaultResources,...STATE.uploadedFiles.map(f=>({id:'upload-'+f.id,title:f.title,type:f.type||'Uploaded',size:f.size,description:f.description||'',uploaded:true}))];var videoCount=0;all.forEach(r=>{const isVid=(r.type||'').toLowerCase().includes('video');if(isVid&&!STATE.isPremium){videoCount++;if(videoCount>FREE_VIDEO_LIMIT){const lc=document.createElement('div');lc.className='resource-card locked-card';lc.innerHTML='<div class="resource-locked-badge"><i class="fas fa-lock"></i><span>Pro Feature</span><button class="btn btn-premium" style="pointer-events:all;font-size:0.8rem;padding:0.4rem 0.9rem;margin-top:0.25rem;" onclick="startStripeCheckout(\'pro\')"><i class="fas fa-crown"></i> Upgrade</button></div><h3>'+r.title+'</h3><div class="resource-meta"><span>Video</span><span>YouTube</span></div>';el.appendChild(lc);return;}}el.appendChild(mkResCard(r,r.uploaded));});const de=document.getElementById('dashboard-resources');if(de){de.innerHTML='';defaultResources.slice(0,2).forEach(r=>de.appendChild(mkResCard(r)));}const st=document.getElementById('stat-resources');if(st)st.textContent=all.length;attachSaveBtns();}
 function renderFAQs(){['faq-list','playground-faqs'].forEach(id=>{const el=document.getElementById(id);if(!el)return;el.innerHTML='';faqs.forEach(f=>el.appendChild(mkFAQItem(f)));});attachSaveBtns();}
 function renderSaved(){const c=document.getElementById('saved-items-container');if(!c)return;if(!STATE.savedItems.length){c.innerHTML='<div class="empty-state"><i class="fas fa-bookmark"></i><p>Nothing saved yet.</p></div>';return;}c.innerHTML='';const g=document.createElement('div');g.className='saved-items-grid';STATE.savedItems.forEach(item=>{const card=document.createElement('div');card.className='saved-item-card';const icons={hospital:'fa-hospital',resource:'fa-file-alt',faq:'fa-question-circle'};card.innerHTML='<div style="position:absolute;top:0.75rem;right:0.75rem;"><button class="btn btn-danger" style="padding:0.25rem 0.6rem;font-size:0.78rem;" data-rm="'+item.id+'"><i class="fas fa-trash"></i></button></div><h4 style="padding-right:3rem;font-size:0.95rem;"><i class="fas '+(icons[item.type]||'fa-file')+'" style="color:var(--elp);margin-right:0.4rem;"></i>'+item.name+'</h4><p class="small" style="margin-top:0.4rem;">'+item.type+' - Saved '+new Date(item.savedAt).toLocaleDateString()+'</p>';card.querySelector('[data-rm]').addEventListener('click',()=>{STATE.savedItems=STATE.savedItems.filter(i=>i.id!==item.id);saveState();renderSaved();updateSavedStat();notify('Removed.');});g.appendChild(card);});c.appendChild(g);}
 function renderUploads(){const el=document.getElementById('uploaded-files-list');if(!el)return;if(!STATE.uploadedFiles.length){el.innerHTML='<div class="empty-state"><i class="fas fa-cloud-upload-alt"></i><p>No uploads yet.</p></div>';return;}el.innerHTML='';STATE.uploadedFiles.forEach(f=>{const item=document.createElement('div');item.className='uploaded-file-item';const icon=(f.fileType||'').includes('pdf')?'fa-file-pdf':'fa-file-alt';item.innerHTML='<i class="fas '+icon+'" style="color:var(--elp);font-size:1.3rem;"></i><div class="uploaded-file-meta"><strong>'+f.title+'</strong><small>'+(f.type||'File')+' - '+f.size+'</small></div><button class="btn btn-danger" style="padding:0.35rem 0.65rem;font-size:0.8rem;" data-rm="'+f.id+'"><i class="fas fa-trash"></i></button>';item.querySelector('[data-rm]').addEventListener('click',()=>{STATE.uploadedFiles=STATE.uploadedFiles.filter(u=>u.id!==f.id);saveState();renderUploads();renderResources();notify('Removed.');});el.appendChild(item);});}
@@ -1237,14 +1245,34 @@ initAuth();
 
 // =====================
 // PHASE 3 - TRAINING TOOLS
+// ── FREE TIER LIMITS ──
+const FREE_VIDEO_LIMIT = 4;
+const FREE_FLASH_LIMIT = 8;
+
+function paywallHTML(feature) {
+    return '<div class="paywall-box"><i class="fas fa-lock"></i><h3>'+feature+' is a Pro Feature</h3><p>Upgrade to Pro or Teams to unlock full access. Starting at $19.99/month.</p><button class="btn btn-premium upgrade-trigger" data-plan="pro" onclick="startStripeCheckout(\'pro\')"><i class="fas fa-crown"></i> Upgrade to Pro</button></div>';
+}
+
 // =====================
 function showTrainingTool(tool) {
+    if (tool === 'quiz' && !STATE.isPremium) {
+        document.querySelectorAll('.training-tool').forEach(t => t.style.display = 'none');
+        var quizDiv = document.getElementById('tt-quiz');
+        quizDiv.style.display = 'block';
+        quizDiv.innerHTML = paywallHTML('The Epic Quiz');
+        ['quiz','flashcards','checklist','agenda'].forEach(t => {
+            const btn = document.getElementById('tt-' + t + '-btn');
+            if (btn) btn.className = t === tool ? 'btn btn-primary' : 'btn btn-outline';
+        });
+        return;
+    }
     document.querySelectorAll('.training-tool').forEach(t => t.style.display = 'none');
     document.getElementById('tt-' + tool).style.display = 'block';
     ['quiz','flashcards','checklist','agenda'].forEach(t => {
         const btn = document.getElementById('tt-' + t + '-btn');
         if (btn) { btn.className = t === tool ? 'btn btn-primary' : 'btn btn-outline'; }
     });
+    if (tool === 'flashcards') loadFlashcard();
 }
 
 // ── QUIZ ──
@@ -1362,10 +1390,13 @@ const flashcards = [
 ];
 let flashCurrent = 0, flashShowing = 'term';
 var masteredCards = new Set(JSON.parse(localStorage.getItem('masteredCards') || '[]'));
+function flashLimit() { return STATE.isPremium ? flashcards.length : FREE_FLASH_LIMIT; }
 function loadFlashcard() {
+    const limit = flashLimit();
+    if (flashCurrent >= limit) flashCurrent = limit - 1;
     const card = flashcards[flashCurrent];
     const isMastered = masteredCards.has(flashCurrent);
-    document.getElementById('flash-progress').textContent = 'Card ' + (flashCurrent+1) + ' of ' + flashcards.length;
+    document.getElementById('flash-progress').textContent = 'Card ' + (flashCurrent+1) + ' of ' + limit + (STATE.isPremium ? '' : ' (free) — ' + flashcards.length + ' total');
     document.getElementById('flash-content').textContent = card[flashShowing];
     document.getElementById('flash-side').textContent = flashShowing === 'term' ? 'TERM — Click to see definition' : 'DEFINITION — Click to see term';
     var bg = isMastered ? 'linear-gradient(135deg,#D4AF37,#f0c040)' : (flashShowing === 'term' ? 'linear-gradient(135deg,var(--epic-purple),var(--epic-light-purple))' : 'linear-gradient(135deg,#28a745,#1e7e34)');
@@ -1379,8 +1410,22 @@ function loadFlashcard() {
     if (countEl) countEl.textContent = masteredCards.size + ' of ' + flashcards.length + ' mastered';
 }
 function flipCard() { flashShowing = flashShowing === 'term' ? 'def' : 'term'; loadFlashcard(); }
-function nextCard() { flashCurrent = (flashCurrent + 1) % flashcards.length; flashShowing = 'term'; loadFlashcard(); }
-function prevCard() { flashCurrent = (flashCurrent - 1 + flashcards.length) % flashcards.length; flashShowing = 'term'; loadFlashcard(); }
+function nextCard() {
+    var limit = flashLimit();
+    if (!STATE.isPremium && flashCurrent >= limit - 1) {
+        notify('Upgrade to Pro to access all ' + flashcards.length + ' flashcards!', 'error');
+        return;
+    }
+    flashCurrent = (flashCurrent + 1) % limit;
+    flashShowing = 'term';
+    loadFlashcard();
+}
+function prevCard() {
+    var limit = flashLimit();
+    flashCurrent = (flashCurrent - 1 + limit) % limit;
+    flashShowing = 'term';
+    loadFlashcard();
+}
 function toggleMastered() {
     if (masteredCards.has(flashCurrent)) { masteredCards.delete(flashCurrent); } else { masteredCards.add(flashCurrent); }
     localStorage.setItem('masteredCards', JSON.stringify([...masteredCards]));
@@ -1851,6 +1896,12 @@ var currentHospSearch = '';
 function filterHospitals(){
     var el=document.getElementById('hospital-list');
     if(!el)return;
+    if(!STATE.isPremium){
+        el.innerHTML=paywallHTML('The Hospital Directory');
+        var label=document.getElementById('hosp-count-label');
+        if(label)label.textContent='';
+        return;
+    }
     el.innerHTML='';
     var filtered=hospitals.filter(function(h){
         var matchEMR=currentEMRFilter==='all'||
