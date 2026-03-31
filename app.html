@@ -1279,7 +1279,7 @@ const FREE_VIDEO_LIMIT = 4;
 const FREE_FLASH_LIMIT = 8;
 
 function paywallHTML(feature) {
-    return '<div class="paywall-box"><i class="fas fa-lock"></i><h3>'+feature+' is a Pro Feature</h3><p>Upgrade to Pro or Teams to unlock full access. Starting at $19.99/month.</p><button class="btn btn-premium upgrade-trigger" data-plan="pro" onclick="startStripeCheckout(\'pro\')"><i class="fas fa-crown"></i> Upgrade to Pro</button></div>';
+    return '<div class="paywall-box"><i class="fas fa-lock"></i><h3>'+feature+' is a Pro Feature</h3><p>Try Pro free for 3 weeks — then $19.99/month. Cancel anytime.</p><button class="btn btn-premium upgrade-trigger" data-plan="pro" onclick="startStripeCheckout(\'pro\')"><i class="fas fa-crown"></i> Start Free 3-Week Trial</button></div>';
 }
 
 // =====================
@@ -1442,7 +1442,7 @@ function flipCard() { flashShowing = flashShowing === 'term' ? 'def' : 'term'; l
 function nextCard() {
     var limit = flashLimit();
     if (!STATE.isPremium && flashCurrent >= limit - 1) {
-        notify('Upgrade to Pro to access all ' + flashcards.length + ' flashcards!', 'error');
+        notify('Start your free 3-week trial to access all ' + flashcards.length + ' flashcards!', 'error');
         return;
     }
     flashCurrent = (flashCurrent + 1) % limit;

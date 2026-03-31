@@ -24,8 +24,9 @@ exports.handler = async (event) => {
       customer_email: email,
       client_reference_id: userId,
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${origin}/?payment=success&plan=${plan}`,
-      cancel_url: `${origin}/?payment=cancelled`,
+      subscription_data: { trial_period_days: 21 },
+      success_url: `${origin}/app.html?payment=success&plan=${plan}`,
+      cancel_url: `${origin}/app.html?payment=cancelled`,
       metadata: { plan, userId },
     });
 
