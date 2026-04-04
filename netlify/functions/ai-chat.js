@@ -1,3 +1,8 @@
+const { createClient } = require('@supabase/supabase-js');
+
+const FREE_DAILY_LIMIT = 3;
+const FREE_TRIAL_DAYS = 21;
+
 exports.handler = async function (event, context) {
   const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -12,6 +17,32 @@ exports.handler = async function (event, context) {
 
   try {
     const body = JSON.parse(event.body);
+    const userId = body.userId;
+
+    // Check free tier limits
+    if (userId) {
+      const supa = createClient(
+        process.env.SUPABASE_URL || 'https://rrfcukkvdsraukybkxzc.supabase.co',
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+      );
+      const { data: profile } = await supa.from('profiles').select('is_premium, ai_questions_today, ai_questions_date, created_at').eq('id', userId).single();
+
+      if (profile && !profile.is_premium) {
+        const today = new Date().toISOString().split('T')[0];
+        const accountAgeDays = Math.floor((new Date() - new Date(profile.created_at)) / (1000 * 60 * 60 * 24));
+
+        if (accountAgeDays >= FREE_TRIAL_DAYS) {
+          return { statusCode: 403, headers: { ...corsHeaders, "Content-Type": "application/json" }, body: JSON.stringify({ error: 'TRIAL_EXPIRED' }) };
+        }
+
+        const questionsToday = profile.ai_questions_date === today ? (profile.ai_questions_today || 0) : 0;
+        if (questionsToday >= FREE_DAILY_LIMIT) {
+          return { statusCode: 403, headers: { ...corsHeaders, "Content-Type": "application/json" }, body: JSON.stringify({ error: 'DAILY_LIMIT_REACHED', remaining: 0 }) };
+        }
+
+        await supa.from('profiles').update({ ai_questions_today: questionsToday + 1, ai_questions_date: today }).eq('id', userId);
+      }
+    }
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
